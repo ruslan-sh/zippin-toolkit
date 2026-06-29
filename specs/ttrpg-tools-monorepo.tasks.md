@@ -1,4 +1,4 @@
-# Tasks For Zippin Toolkit Monorepo
+# Tasks For Zippin's Tookit Monorepo
 
 ## Task 1: Relocate Fantasy Calendar Into Its Project Folder
 
@@ -49,14 +49,14 @@ Definition of done:
 
 Status: done
 
-Summary: Create the minimal Zippin Toolkit landing app and change the shared
+Summary: Create the minimal Zippin's Tookit landing app and change the shared
 webpack workflow to build and serve both the landing page and Fantasy Calendar
 at their final paths.
 
 Scope:
 
 - Add a framework-free TypeScript/SCSS landing app under `app/src/`.
-- Render a `Zippin Toolkit` title, short description, and accessible relative
+- Render a `Zippin's Tookit` title, short description, and accessible relative
   link or card to `fantasy-calendar/`.
 - Adapt the shared webpack configuration to emit the landing page at
   `dist/index.html` and the calendar at
@@ -91,7 +91,7 @@ Validation:
 
 Definition of done:
 
-- The root URL renders the Zippin Toolkit landing page.
+- The root URL renders the Zippin's Tookit landing page.
 - The landing page links to the calendar with a relative URL.
 - Fantasy Calendar loads directly from `fantasy-calendar/`, including with a
   `#year/month/day` hash.
@@ -100,7 +100,7 @@ Definition of done:
 
 ## Task 3: Move Calendar Documentation and Planning History
 
-Status: todo
+Status: done
 
 Summary: Complete the calendar project boundary by moving its documentation,
 archived specs, and TODO file under `fantasy-calendar/` and correcting all
@@ -145,7 +145,7 @@ Definition of done:
 
 ## Task 4: Finalize Repository Integration and Deployment Readiness
 
-Status: todo
+Status: done
 
 Summary: Reconcile repository-facing documentation, metadata, contributor
 guidance, and deployment configuration with the completed multi-app layout,
@@ -153,7 +153,7 @@ then validate the full GitHub Pages artifact.
 
 Scope:
 
-- Rewrite the root README around Zippin Toolkit, its shared commands, project
+- Rewrite the root README around Zippin's Tookit, its shared commands, project
   layout, available tools, and deployed routes.
 - Update root package identity and repository metadata from the old
   calendar-only naming where applicable, keeping one package and lockfile.
@@ -186,7 +186,7 @@ Validation:
 
 Definition of done:
 
-- Repository documentation and metadata describe Zippin Toolkit accurately.
+- Repository documentation and metadata describe Zippin's Tookit accurately.
 - Contributor and CI guidance uses the final project paths and shared commands.
 - The complete build, test, and lint suite passes.
 - The deployable artifact serves the landing page at `/zippin-toolkit/` and

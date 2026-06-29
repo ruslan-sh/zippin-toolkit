@@ -1,48 +1,44 @@
-# Fantasy Calendar
+# Zippin's Tookit
 
-[![Build And Deploy Static Content to Pages](https://github.com/ruslan-sh/fantasy-calendar/actions/workflows/pages.yml/badge.svg)](https://github.com/ruslan-sh/fantasy-calendar/actions/workflows/pages.yml)
+[![Build and deploy to GitHub Pages](https://github.com/ruslan-sh/zippin-toolkit/actions/workflows/pages.yml/badge.svg)](https://github.com/ruslan-sh/zippin-toolkit/actions/workflows/pages.yml)
 
-[Fantasy Calendar](https://ruslan-sh.github.io/fantasy-calendar)
+[Open Zippin's Tookit](https://ruslan-sh.github.io/zippin-toolkit/)
 
-Fantasy Calendar is a framework-free TypeScript app that renders the Forgotten
-Realms Calendar of Harptos. It supports festivals, leap-day Shieldmeet, moon
-phases, date arithmetic, interactive date selection, and shareable URL state.
+Zippin's Tookit is a collection of focused, framework-free TypeScript tools for
+tabletop role-playing games.
+
+## Tools
+
+- [Fantasy Calendar](fantasy-calendar/) —
+  [open app](https://ruslan-sh.github.io/zippin-toolkit/fantasy-calendar/)
 
 ## Development
 
 ```sh
 npm install
 npm run start
-npm test
 npm run build
+npm test
+npm run lint
+npm run lint:styles
 ```
 
-Webpack builds the static app from `src/index.ts` and `src/index.ejs`. SCSS is
-compiled from `src/scss/index.scss`; generated files in `dist/` should not be
-edited directly.
+All dependencies and commands are managed from the repository root. The build
+produces one deployable `dist/` artifact containing the landing page and every
+tool.
 
-## Architecture
+## Project Layout
 
-- `src/ts/props.ts` defines the calendar and astronomical configuration.
-- `src/ts/calendar.ts` owns month, leap-year, and date calculations.
-- `src/ts/moon.ts` calculates moon-cycle positions and phases.
-- `src/ts/render.ts` renders the controls and full calendar year into the DOM.
-- `src/ts/url-utils.ts` reads and writes the selected date in the URL.
+- `app/src/`: Zippin's Tookit landing page.
+- `fantasy-calendar/`: Fantasy Calendar tool and its project documentation.
+- `specs/`: active repository-wide specifications and task trackers.
+- `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
 
-At startup, the app reads `#year/month/day` (or legacy query parameters),
-creates the controls, and renders the year. Selection changes rebuild the year
-and update the URL hash.
+Generated files in `dist/` should not be edited directly.
 
-## Current constraints
+## Deployment
 
-- Date offsets support forward, non-negative movement only.
-- URL and control values receive minimal validation.
-- Every month currently starts at the first weekday column.
-- `springEquinox` and `isMonthsWeeksSynced` are reserved configuration fields
-  and are not currently used by rendering or calculations.
+GitHub Pages publishes `dist/` with these routes:
 
-## Documentation
-
-- [Calendar date selection](docs/calendar-date-selection.md)
-- [Calendar logic](docs/calendar-logic.md)
-- [Moon phase calculation](docs/moon-phase-calculation.md)
+- `/zippin-toolkit/` — landing page.
+- `/zippin-toolkit/fantasy-calendar/` — Fantasy Calendar.

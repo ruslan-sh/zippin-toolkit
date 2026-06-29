@@ -1,27 +1,18 @@
 # Purpose
 
 This file guides AI and human contributors making changes in this repository.
-Prioritize minimal, focused diffs and preserve the existing architecture unless the task explicitly requires structural changes.
+Prioritize minimal, focused diffs and preserve existing project boundaries
+unless a task explicitly requires structural changes.
 
 # Project Layout
 
-- `src/index.ts`: app entry point.
-- `src/index.ejs`: HTML template used by webpack.
-- `src/ts/calendar.ts`: calendar logic and state transitions.
-- `src/ts/moon.ts`: moon phase calculation logic and moon-specific state helpers.
-- `src/ts/render.ts`: DOM rendering and UI updates.
-- `src/scss/index.scss`: SCSS entry point that composes partials.
-- `src/scss/abstracts/_variables.scss`: shared style variables.
-- `src/scss/base/_base.scss`: base/global styles.
-- `src/scss/components/`: component-level styles (for example `_controls.scss`, `_moon.scss`).
-- `src/scss/layout/_calendar.scss`: calendar layout styles.
-- `src/ts/url-utils.ts`: TypeScript URL helper utilities.
-- `tests/moon.test.ts`: moon logic unit tests.
-- `tsconfig.test.json`: TypeScript config used for the unit test build.
-- `webpack.common.js`, `webpack.dev.js`, `webpack.prod.js`: build and development configuration.
-- `dist/`: build output; do not hand-edit generated assets.
+- `app/src/`: Zippin's Tookit landing page source and styles.
+- `fantasy-calendar/`: Fantasy Calendar tool; see its scoped `AGENTS.md`.
+- `specs/`: active repository-wide specifications and task trackers.
+- `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
+- `dist/`: generated build output; do not edit it manually.
 
-# Run & Validate
+# Run and Validate
 
 Core commands:
 
@@ -29,41 +20,45 @@ Core commands:
 - `npm run start`
 - `npm run build`
 - `npm test`
+- `npm run lint`
+- `npm run lint:styles`
 
 Validation policy for substantive changes:
 
 - Run `npm run build`.
-- In WSL, `npm run build` may hang after webpack finishes when run by the agent. If that happens, use `npx webpack --config webpack.prod.js --stats errors-warnings` as the fallback verification command and note that `webpack compiled successfully`.
-- Run `npm test` when changing moon logic or adding logic-level behavior that has unit coverage.
-- Run lint checks relevant to touched files:
-  - JS/TS changes: run ESLint (for example `npx eslint src`).
-  - SCSS changes: run Stylelint (prefer `npm run lint:styles`; equivalent: `npx stylelint "src/**/*.scss"`).
-- If any check cannot be run, document exactly what failed and why.
+- In WSL, if the build hangs after webpack finishes, use
+  `npx webpack --config webpack.prod.js --stats errors-warnings` and note the
+  successful webpack result.
+- Run `npm test` for logic changes or behavior with unit coverage.
+- Run `npm run lint` for JavaScript or TypeScript changes.
+- Run `npm run lint:styles` for SCSS changes.
+- Document any check that cannot run and the exact reason.
 
 # Coding Guardrails
 
-- Keep changes small and localized to the task.
-- Preserve existing style, naming, and module boundaries in touched files.
-- Avoid new dependencies unless they are explicitly required.
+- Keep changes small and localized to the active task.
+- Preserve naming, style, and module boundaries in touched projects.
+- Keep shared dependencies and build orchestration at the repository root.
+- Avoid new dependencies unless explicitly required.
 - Do not refactor unrelated code in the same change.
-- Prefer logic-only updates in `src/ts/calendar.ts` and UI-only updates in `src/ts/render.ts` / `src/scss/`.
 
 # Change Workflow
 
-1. Understand affected module boundaries before editing.
+1. Identify the affected project and shared integration points.
 2. Implement the smallest viable change.
-3. Validate with required build and relevant lint checks.
-4. Summarize files changed, behavior impact, verification performed, assumptions, and edge cases considered.
+3. Run the required build, tests, and relevant lint checks.
+4. Summarize behavior, files changed, verification, assumptions, and edge cases.
 
 # Definition of Done
 
-- Build passes (`npm run build`).
-- Relevant lint checks pass for all touched JS/TS/SCSS files.
-- No unintended regressions in primary calendar interactions.
-- Change summary includes concrete verification evidence.
+- The production build passes.
+- Relevant tests and lint checks pass.
+- Primary interactions in affected projects have no regressions.
+- Generated output remains unedited and uncommitted.
+- The change summary includes concrete verification evidence.
 
-# Non-Goals / Cautions
+# Non-Goals and Cautions
 
-- Do not modify webpack config unless required by the task.
-- Do not manually edit generated output files in `dist/`.
-- Do not broaden scope into unrelated cleanup.
+- Do not modify shared build configuration unless the task requires it.
+- Do not manually edit generated files in `dist/`.
+- Do not broaden a tool-specific change into unrelated repository cleanup.

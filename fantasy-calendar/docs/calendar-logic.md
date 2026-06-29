@@ -1,7 +1,7 @@
 # Calendar Logic Design
 
 ## Purpose
-This document describes the implemented calendar logic surface used by the application. It reflects the `Calendar` class in `src/ts/calendar.ts`, its render-layer integration in `src/ts/render.ts`, its use from `src/ts/moon.ts`, and the regression coverage in `tests/calendar.test.ts`.
+This document describes the implemented calendar logic surface used by the application. It reflects the `Calendar` class in `fantasy-calendar/src/ts/calendar.ts`, its render-layer integration in `fantasy-calendar/src/ts/render.ts`, its use from `fantasy-calendar/src/ts/moon.ts`, and the regression coverage in `fantasy-calendar/tests/calendar.test.ts`.
 
 ## Scope
 - Shared calendar calculations for month lookup, leap years, month lengths, day-of-year offsets, and date rollover.
@@ -9,15 +9,15 @@ This document describes the implemented calendar logic surface used by the appli
 - The integration points that consume the shared `Calendar` instance.
 
 ## Module Boundaries
-- `src/ts/calendar.ts`
+- `fantasy-calendar/src/ts/calendar.ts`
   - Owns the shared `Calendar` class.
   - Exposes the explicit `CalendarProps` constructor contract.
-- `src/ts/render.ts`
+- `fantasy-calendar/src/ts/render.ts`
   - Instantiates the shared `Calendar` instance from app props.
   - Uses `Calendar` for festival leap-year checks, month lookup, month length lookup, and relative date calculation.
-- `src/ts/moon.ts`
+- `fantasy-calendar/src/ts/moon.ts`
   - Receives a `Calendar` instance explicitly and uses it for shared calendar math.
-- `tests/calendar.test.ts`
+- `fantasy-calendar/tests/calendar.test.ts`
   - Covers the public `Calendar` API directly.
 
 ## Constructor Contract

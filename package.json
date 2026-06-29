@@ -1,8 +1,7 @@
 {
-  "name": "fantasy-calendar",
+  "name": "zippin-toolkit",
   "version": "1.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "A collection of focused tools for tabletop role-playing games.",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "start": "webpack serve --open --config webpack.dev.js",
@@ -13,20 +12,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ruslan-sh/fantasy-calendar.git"
+    "url": "git+https://github.com/ruslan-sh/zippin-toolkit.git"
   },
   "keywords": [
     "html",
     "js",
     "typescript",
+    "ttrpg",
+    "toolkit",
     "fantasy-calendar"
   ],
   "author": "Ruslan Shokhirev",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ruslan-sh/fantasy-calendar/issues"
+    "url": "https://github.com/ruslan-sh/zippin-toolkit/issues"
   },
-  "homepage": "https://github.com/ruslan-sh/fantasy-calendar#readme",
+  "homepage": "https://ruslan-sh.github.io/zippin-toolkit/",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
