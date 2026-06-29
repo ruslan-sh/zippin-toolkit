@@ -61,7 +61,7 @@ These rules are shared by the renderer and moon logic, which keeps festival and 
 This shared behavior is used directly by the moon logic when converting fantasy-calendar dates into offsets from the configured full-moon anchor.
 
 ## Date Rollover
-`calculateDate(...)` treats the selected date as a day-of-year position, applies the requested offset, then rolls forward through year lengths and month lengths until it resolves the resulting date.
+`calculateDate(...)` treats the selected date as a day-of-year position, applies a non-negative offset, then rolls forward through year lengths and month lengths until it resolves the resulting date. Backward movement is not currently supported.
 
 Current behavior:
 - preserves leap-year and non-leap-year year lengths derived from `astronomical.daysInYear`;
