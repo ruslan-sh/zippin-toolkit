@@ -99,3 +99,27 @@ test("writeDateToUrl writes the date into the hash path", () => {
 
     assert.equal(pushedUrl, "/calendar#1504/Feast%20of%20the%20Moon/1");
 });
+
+test("writeDateToUrl preserves the nested calendar pathname", () => {
+    let pushedUrl = "";
+
+    withMockWindow(
+        {
+            location: {
+                hash: "",
+                search: "",
+                pathname: "/zippin-toolkit/fantasy-calendar/",
+            },
+            history: {
+                pushState: (_state: object, _unused: string, url?: string | URL | null) => {
+                    pushedUrl = String(url);
+                },
+            },
+        },
+        () => {
+            writeDateToUrl(1504, "Hammer", 1);
+        },
+    );
+
+    assert.equal(pushedUrl, "/zippin-toolkit/fantasy-calendar/#1504/Hammer/1");
+});

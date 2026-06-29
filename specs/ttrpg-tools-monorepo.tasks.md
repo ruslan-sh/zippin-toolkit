@@ -47,7 +47,7 @@ Definition of done:
 
 ## Task 2: Add the Landing App and Multi-App Build
 
-Status: todo
+Status: done
 
 Summary: Create the minimal Zippin Toolkit landing app and change the shared
 webpack workflow to build and serve both the landing page and Fantasy Calendar

@@ -18,7 +18,4 @@ module.exports = mergeWithRules({
     module: {
         rules: [{ test: /\.(sa|sc|c)ss$/, use: ["style-loader"] }],
     },
-    optimization: {
-        runtimeChunk: "single",
-    },
 });

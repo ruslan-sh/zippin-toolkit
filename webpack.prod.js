@@ -20,5 +20,5 @@ module.exports = mergeWithRules({
     optimization: {
         minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
     },
-    plugins: [new MiniCssExtractPlugin()],
+    plugins: [new MiniCssExtractPlugin({ filename: "[name]/[name].css" })],
 });
