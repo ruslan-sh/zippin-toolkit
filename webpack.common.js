@@ -2,7 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-    entry: "./src/index.ts",
+    entry: "./fantasy-calendar/src/index.ts",
     module: {
         rules: [
             { test: /\.(sa|sc|c)ss$/, use: ["css-loader", "sass-loader"] },
@@ -17,7 +17,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./src/index.ejs",
+            template: "./fantasy-calendar/src/index.ejs",
         }),
     ],
     resolve: {

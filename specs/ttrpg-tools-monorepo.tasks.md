@@ -2,7 +2,7 @@
 
 ## Task 1: Relocate Fantasy Calendar Into Its Project Folder
 
-Status: todo
+Status: done
 
 Summary: Move the calendar implementation and tests under
 `fantasy-calendar/` while adapting the shared root toolchain so the existing

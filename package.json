@@ -6,9 +6,10 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "start": "webpack serve --open --config webpack.dev.js",
-    "lint:styles": "stylelint \"src/**/*.scss\"",
+    "lint": "eslint fantasy-calendar/src fantasy-calendar/tests",
+    "lint:styles": "stylelint \"fantasy-calendar/src/**/*.scss\"",
     "test": "npm run test:unit",
-    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/tests/*.test.js"
+    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/fantasy-calendar/tests/*.test.js"
   },
   "repository": {
     "type": "git",
