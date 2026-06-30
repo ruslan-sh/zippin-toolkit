@@ -2,9 +2,9 @@
 
 [![Build and deploy to GitHub Pages](https://github.com/ruslan-sh/zippin-toolkit/actions/workflows/pages.yml/badge.svg)](https://github.com/ruslan-sh/zippin-toolkit/actions/workflows/pages.yml)
 
-[Open Zippin's Tookit](https://ruslan-sh.github.io/zippin-toolkit/)
+[Open Zippin's Toolkit](https://ruslan-sh.github.io/zippin-toolkit/)
 
-Zippin's Tookit is a collection of focused, framework-free TypeScript tools for
+Zippin's Toolkit is a collection of focused, framework-free TypeScript tools for
 tabletop role-playing games.
 
 ## Tools
