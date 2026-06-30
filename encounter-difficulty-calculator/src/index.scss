@@ -1,0 +1,28 @@
+@use "../../shared/src/scss/theme";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  background-color: var(--color-surface);
+}
+
+h1 {
+  font-family: var(--font-header);
+}
+
+main {
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+:focus-visible {
+  outline: 0.125rem solid currentcolor;
+  outline-offset: 0.125rem;
+}

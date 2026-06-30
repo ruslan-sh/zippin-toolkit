@@ -5,10 +5,11 @@ slice, beginning with landing-page and production-route integration. All
 existing tasks were `todo`, so no in-progress or completed work was displaced.
 
 ## Task 1: Add the navigable calculator page
-Status: todo
+Status: completed
 Summary: Create the new tool as a minimal standalone page, integrate it into the shared production build, and link it from the landing page so it can be opened and tested immediately.
 Scope:
-- Create the self-contained `encounter-difficulty-calculator/` project with a semantic HTML template, TypeScript entry point, minimal SCSS, and scoped documentation as appropriate.
+- Create the tool-specific `encounter-difficulty-calculator/` project with a semantic HTML template, TypeScript entry point, minimal SCSS, and scoped documentation as appropriate.
+- Reuse the repository's shared theme values for common colors and font stacks without sharing component or layout styles.
 - Add the calculator entry and HTML generation to webpack with isolated output under `dist/encounter-difficulty-calculator/`.
 - Include the new source in shared TypeScript, lint, and stylelint configuration without broad build refactoring.
 - Add an accessible calculator link or card to the toolkit landing page without changing Fantasy Calendar behavior or routing.

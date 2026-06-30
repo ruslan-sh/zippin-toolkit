@@ -34,14 +34,15 @@ and external monster data are intentionally deferred.
 - Multiple encounters on the same page.
 - User accounts, saved encounter libraries, or cross-device synchronization.
 - Decorative styling, animation, a bespoke visual identity, or a reusable
-  component/design system.
+  component/design system beyond the repository's small shared theme.
 - Changing Fantasy Calendar behavior or introducing a shared UI framework.
 
 ## Repository Integration
 
-Create a self-contained top-level tool directory, following the existing
-multi-tool structure. Keep dependencies and build orchestration at the
-repository root.
+Create a top-level tool directory, following the existing multi-tool structure.
+Keep calculator behavior and tool-specific presentation self-contained while
+reusing the repository's shared theme values for the common palette and font
+stacks. Keep dependencies and build orchestration at the repository root.
 
 The implementation must:
 
@@ -68,12 +69,14 @@ accessibility.
   basic legibility, or a minimal usable layout.
 - Each class must contain only the declarations needed for that purpose; avoid
   decorative rules and speculative styling hooks.
-- Do not create a component library, utility-class system, design tokens, or
-  elaborate SCSS structure for this tool.
+- Do not create a component library, utility-class system, tool-specific design
+  tokens, or elaborate SCSS structure. Consume the repository's shared CSS
+  custom properties for common colors and font stacks so cross-tool theme
+  changes remain centralized.
 - Keep spacing, typography, borders, colors, and responsive rules to the
   minimum needed to keep inputs and results readable and usable.
-- Do not imitate or refactor Fantasy Calendar styling merely for visual
-  consistency.
+- Do not import or imitate Fantasy Calendar component or layout styles. Shared
+  theme values are the only intended styling dependency between tools.
 
 ## Party Input
 

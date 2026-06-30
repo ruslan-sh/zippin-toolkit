@@ -1,11 +1,13 @@
+@use "../../../../shared/src/scss/theme";
+
 $color-accent: #f44336;
-$color-surface: #fff3e0;
-$color-text-primary: #212121;
-$color-text-muted: #777;
+$color-surface: var(--color-surface);
+$color-text-primary: var(--color-text);
+$color-text-muted: var(--color-muted);
 $color-white: #fafafa;
 
-$font-header: "MedievalSharp", serif;
-$font-body: "Almendra", cursive;
+$font-header: var(--font-header);
+$font-body: var(--font-body);
 
 $space-2: 2px;
 $space-8: 8px;
