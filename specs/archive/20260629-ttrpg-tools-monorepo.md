@@ -1,6 +1,6 @@
 # Archived on 2026-06-29 after implementation. Current behavior is documented in [Project Structure and Deployment](../../docs/project-structure.md).
 
-# Zippin's Tookit Monorepo
+# Zippin's Toolkit Monorepo
 
 ## Summary
 

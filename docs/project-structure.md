@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Zippin's Tookit is a single repository for independently addressable TTRPG
+Zippin's Toolkit is a single repository for independently addressable TTRPG
 tools. A landing page is served at the GitHub Pages root and links to each tool
 at its own subpath.
 

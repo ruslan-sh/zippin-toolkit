@@ -1,4 +1,4 @@
-# Zippin's Tookit
+# Zippin's Toolkit
 
 [![Build and deploy to GitHub Pages](https://github.com/ruslan-sh/zippin-toolkit/actions/workflows/pages.yml/badge.svg)](https://github.com/ruslan-sh/zippin-toolkit/actions/workflows/pages.yml)
 

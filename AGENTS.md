@@ -6,7 +6,7 @@ unless a task explicitly requires structural changes.
 
 # Project Layout
 
-- `app/src/`: Zippin's Tookit landing page source and styles.
+- `app/src/`: Zippin's Toolkit landing page source and styles.
 - `fantasy-calendar/`: Fantasy Calendar tool; see its scoped `AGENTS.md`.
 - `specs/`: active repository-wide specifications and task trackers.
 - `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
