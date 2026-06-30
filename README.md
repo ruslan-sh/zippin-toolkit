@@ -36,6 +36,10 @@ tool.
 
 Generated files in `dist/` should not be edited directly.
 
+## Documentation
+
+- [Project structure and deployment](docs/project-structure.md)
+
 ## Deployment
 
 GitHub Pages publishes `dist/` with these routes:
