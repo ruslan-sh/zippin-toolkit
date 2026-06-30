@@ -30,7 +30,7 @@ Definition of done:
 - Generated `dist/` output is inspected but not manually edited or committed.
 
 ## Task 2: Add the party difficulty calculator
-Status: todo
+Status: completed
 Summary: Turn the standalone page into a useful party calculator that accepts player count, shared level, and one modifier and immediately displays correct Low, Moderate, and High XP thresholds.
 Scope:
 - Add labeled controls for positive-integer player count and one shared level from 1 through 20.

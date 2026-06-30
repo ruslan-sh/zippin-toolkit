@@ -21,7 +21,34 @@
     <main>
       <a href="../">Zippin's Toolkit</a>
       <h1>D&amp;D 5.5 Encounter Difficulty Calculator</h1>
-      <p>Calculate party XP thresholds and rank a custom encounter.</p>
+      <section aria-label="Party difficulty">
+        <div class="controls">
+          <label for="player-count">Players:</label>
+          <input id="player-count" type="number" min="1" step="1" value="4" aria-describedby="player-count-error" />
+          <span aria-hidden="true">×</span>
+          <label for="party-level">Level:</label>
+          <input id="party-level" type="number" min="1" max="20" step="1" value="5" aria-describedby="party-level-error" />
+          <span aria-hidden="true">+</span>
+          <label class="visually-hidden" for="modifier-value">Difficulty modifier</label>
+          <input id="modifier-value" type="number" step="any" value="0" aria-describedby="modifier-value-error" />
+          <label class="visually-hidden" for="modifier-type">Modifier type</label>
+          <select id="modifier-type">
+            <option value="percentage">%</option>
+            <option value="flat">XP</option>
+          </select>
+        </div>
+        <div class="errors">
+          <p id="player-count-error" class="error" aria-live="polite"></p>
+          <p id="party-level-error" class="error" aria-live="polite"></p>
+          <p id="modifier-value-error" class="error" aria-live="polite"></p>
+        </div>
+
+        <dl class="results" aria-live="polite">
+          <div><dt>Low</dt><dd id="low-result">—</dd></div>
+          <div><dt>Moderate</dt><dd id="moderate-result">—</dd></div>
+          <div><dt>High</dt><dd id="high-result">—</dd></div>
+        </dl>
+      </section>
     </main>
   </body>
 </html>

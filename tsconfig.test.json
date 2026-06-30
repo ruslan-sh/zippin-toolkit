@@ -7,6 +7,8 @@
     "rootDir": "."
   },
   "include": [
+    "encounter-difficulty-calculator/src/**/*.ts",
+    "encounter-difficulty-calculator/tests/**/*.ts",
     "fantasy-calendar/src/**/*.ts",
     "fantasy-calendar/tests/**/*.ts"
   ]
