@@ -76,7 +76,7 @@ Generated output is disposable and should not be edited or committed.
 
 GitHub Pages publishes the `dist/` directory at these routes:
 
-- `/zippin-toolkit/` — Zippin's Tookit landing page.
+- `/zippin-toolkit/` — Zippin's Toolkit landing page.
 - `/zippin-toolkit/fantasy-calendar/` — Fantasy Calendar.
 
 The landing page uses the relative link `fantasy-calendar/`, which works in

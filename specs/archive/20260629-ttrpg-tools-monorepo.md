@@ -88,7 +88,7 @@ require copying dependencies.
 Create a framework-free TypeScript/SCSS landing page consistent with the
 existing toolchain. It must include:
 
-- a clear `Zippin's Tookit` title and short description;
+- a clear `Zippin's Toolkit` title and short description;
 - a visible, accessible `Fantasy Calendar` link or card;
 - a relative link to `fantasy-calendar/`, so navigation works locally and
   under the GitHub Pages repository base path.
@@ -140,7 +140,7 @@ its page without first visiting the landing app.
 
 ## Acceptance Criteria
 
-- The root page renders the Zippin's Tookit landing app and links to Fantasy
+- The root page renders the Zippin's Toolkit landing app and links to Fantasy
   Calendar.
 - Fantasy Calendar is rendered at `fantasy-calendar/` in development and in
   the production artifact.

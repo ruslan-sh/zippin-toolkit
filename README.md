@@ -29,7 +29,7 @@ tool.
 
 ## Project Layout
 
-- `app/src/`: Zippin's Tookit landing page.
+- `app/src/`: Zippin's Toolkit landing page.
 - `fantasy-calendar/`: Fantasy Calendar tool and its project documentation.
 - `specs/`: active repository-wide specifications and task trackers.
 - `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
