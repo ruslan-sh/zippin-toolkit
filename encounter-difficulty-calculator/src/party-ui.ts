@@ -1,4 +1,4 @@
-import { calculatePartyThresholds, ModifierType } from "./party-calculator";
+import { calculatePartyThresholds, ModifierType, Thresholds } from "./party-calculator";
 
 const RESULT_IDS = ["low", "moderate", "high"] as const;
 
@@ -8,7 +8,10 @@ function requiredElement<T extends HTMLElement>(document: Document, id: string):
     return element as T;
 }
 
-export function initializePartyCalculator(document: Document): void {
+export function initializePartyCalculator(
+    document: Document,
+    updateEncounter: (thresholds: Thresholds | null) => void = () => undefined,
+): void {
     const playerCount = requiredElement<HTMLInputElement>(document, "player-count");
     const partyLevel = requiredElement<HTMLInputElement>(document, "party-level");
     const modifierType = requiredElement<HTMLSelectElement>(document, "modifier-type");
@@ -34,6 +37,7 @@ export function initializePartyCalculator(document: Document): void {
             RESULT_IDS.forEach((difficulty) => {
                 requiredElement(document, `${difficulty}-result`).textContent = "—";
             });
+            updateEncounter(null);
             return;
         }
 
@@ -47,6 +51,7 @@ export function initializePartyCalculator(document: Document): void {
             requiredElement(document, `${difficulty}-result`).textContent =
                 `${thresholds[difficulty].toLocaleString()} XP`;
         });
+        updateEncounter(thresholds);
     };
 
     [playerCount, partyLevel, modifierType, modifierValue].forEach((control) => {

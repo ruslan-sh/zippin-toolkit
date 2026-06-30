@@ -57,11 +57,11 @@ Definition of done:
 - Existing landing-page and Fantasy Calendar behavior remains intact.
 
 ## Task 3: Add the encounter builder and live ranking
-Status: todo
+Status: completed
 Summary: Complete the tool with one encounter containing multiple monsters, live XP totals, safe statblock links, and automatic Trivial-to-Deadly ranking against the party thresholds.
 Scope:
 - Add one permanent encounter editor with controls to add and remove multiple monster rows using stable internal identifiers.
-- Add labeled name, quantity, XP-per-unit, and optional statblock URL fields for each monster.
+- Add labeled optional name, quantity, XP-per-unit, and optional statblock URL fields for each monster.
 - Validate required fields, positive-integer quantity, non-negative-integer XP, and optional safe external URLs; invalid or incomplete rows must not contribute partial XP.
 - Calculate each complete monster total and the summed encounter XP immediately as monster or party inputs change.
 - Implement centralized highest-rank-first classification for Trivial, Low, Moderate, High, and Deadly using the exact inclusive and exclusive boundaries in the spec.
@@ -85,3 +85,23 @@ Definition of done:
 - Invalid rows, exact rank boundaries, extreme modifiers, and safe links behave as specified and have automated coverage.
 - All acceptance criteria in the spec are implemented and verified without adding persistence, external monster data, encounter multipliers, or multiple encounters.
 - All repository checks pass, or any check that cannot run is documented with its exact cause.
+
+## Task 4: Move reusable styling tokens out of the tool
+Status: completed
+Summary: Fix the tool-scoped design-token regression by moving reusable colors, spacing, icon sizes, and focus values to the shared application theme while keeping calculator-only optical adjustments local.
+Scope:
+- Move reusable custom properties from `encounter-difficulty-calculator/src/index.scss` into the shared application theme.
+- Reuse the shared tokens from the calculator without changing its current layout or interaction behavior.
+- Keep one-off glyph alignment and tool-specific layout dimensions local rather than presenting them as reusable tokens.
+- Confirm the landing page and Fantasy Calendar retain their existing appearance and behavior when the shared theme grows.
+Dependencies:
+- Depends on: Task 1
+- Parallelizable: yes
+- Parallel with: Task 3
+Validation:
+- Run `npm run lint:styles` and `npm run build`.
+- Inspect the focused stylesheet diff to confirm reusable values have one shared definition and calculator-specific values remain local.
+- Confirm `dist/` has no tracked or staged changes.
+Definition of done:
+- Reusable visual tokens used by the calculator are defined at the shared application level rather than inside the tool stylesheet.
+- The calculator, landing page, and Fantasy Calendar build successfully without visual or behavioral regressions.

@@ -16,12 +16,17 @@
       href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <main>
       <a href="../">Zippin's Toolkit</a>
       <h1>D&amp;D 5.5 Encounter Difficulty Calculator</h1>
-      <section aria-label="Party difficulty">
+      <section aria-labelledby="party-heading">
+        <h2 id="party-heading">Party</h2>
         <div class="controls">
           <label for="player-count">Players:</label>
           <input id="player-count" type="number" min="1" step="1" value="4" aria-describedby="player-count-error" />
@@ -48,6 +53,22 @@
           <div><dt>Moderate</dt><dd id="moderate-result">—</dd></div>
           <div><dt>High</dt><dd id="high-result">—</dd></div>
         </dl>
+      </section>
+      <section aria-labelledby="encounter-heading">
+        <h2 id="encounter-heading" aria-live="polite">
+          Encounter — <span id="encounter-rank"></span>
+          (<span id="encounter-total">0 XP</span>)
+        </h2>
+        <div class="monster-headers" aria-hidden="true">
+          <span>Monster Name</span>
+          <span>XP</span>
+          <span>Quantity</span>
+          <span class="monster-actions-header"></span>
+        </div>
+        <div id="monster-rows"></div>
+        <button id="add-monster" type="button" aria-label="Add monster">
+          <span class="material-icons" aria-hidden="true">add_circle</span>
+        </button>
       </section>
     </main>
   </body>

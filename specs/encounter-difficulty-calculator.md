@@ -162,7 +162,7 @@ Each monster row contains:
 - XP per unit; and
 - statblock URL.
 
-Name, quantity, and XP are required for a complete monster row. Quantity must
+Quantity and XP are required for a complete monster row; name is optional. Quantity must
 be a positive integer and XP must be a non-negative integer. The statblock URL
 is optional so custom monsters remain usable; when present and valid, render it
 as a safe external link. Invalid or incomplete monster rows must show clear
