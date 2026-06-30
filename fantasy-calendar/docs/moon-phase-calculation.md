@@ -1,7 +1,7 @@
 # Moon Phase Calculation Design
 
 ## Purpose
-This document describes the current moon phase calculation design used by the application. It reflects the implemented behavior in `src/ts/moon.ts`, the shared calendar dependency in `src/ts/calendar.ts`, the renderer integration in `src/ts/render.ts`, and the regression coverage in `tests/moon.test.ts`.
+This document describes the current moon phase calculation design used by the application. It reflects the implemented behavior in `fantasy-calendar/src/ts/moon.ts`, the shared calendar dependency in `fantasy-calendar/src/ts/calendar.ts`, the renderer integration in `fantasy-calendar/src/ts/render.ts`, and the regression coverage in `fantasy-calendar/tests/moon.test.ts`.
 
 ## Scope
 - Daily moon phase classification for calendar rendering.
@@ -9,14 +9,14 @@ This document describes the current moon phase calculation design used by the ap
 - Month-level moon state generation for normal months and festivals.
 
 ## Module Boundaries
-- `src/ts/moon.ts`
+- `fantasy-calendar/src/ts/moon.ts`
   - Owns moon-specific calculation logic.
   - Exposes the `Moon` class.
-- `src/ts/calendar.ts`
+- `fantasy-calendar/src/ts/calendar.ts`
   - Owns shared calendar helpers used by moon logic and general date logic.
-- `src/ts/render.ts`
+- `fantasy-calendar/src/ts/render.ts`
   - Consumes day-classified moon states and maps them to existing CSS classes.
-- `tests/moon.test.ts`
+- `fantasy-calendar/tests/moon.test.ts`
   - Covers moon calculation boundaries, directionality, initialization, and continuity.
 
 ## Data Model
@@ -155,7 +155,7 @@ Class mapping:
 The existing moon symbol element and SCSS selectors are preserved. Visibility remains controlled by the moon-specific modifier classes.
 
 ## Shared Calendar Dependencies
-The moon module depends on an injected `Calendar` instance from `src/ts/calendar.ts`.
+The moon module depends on an injected `Calendar` instance from `fantasy-calendar/src/ts/calendar.ts`.
 
 It uses the following shared instance methods:
 - `getMonthByName(...)`
@@ -163,7 +163,7 @@ It uses the following shared instance methods:
 - `getDayOfYear(...)`
 - `countLeapYearsBetween(...)`
 
-This keeps month and leap-year rules centralized while keeping moon-specific behavior isolated in `src/ts/moon.ts`.
+This keeps month and leap-year rules centralized while keeping moon-specific behavior isolated in `fantasy-calendar/src/ts/moon.ts`.
 
 ## Validation Coverage
 The current unit tests cover:

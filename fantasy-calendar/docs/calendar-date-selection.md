@@ -1,7 +1,7 @@
 # Calendar Date Selection
 
 ## Purpose
-This document describes the implemented ways the active calendar date can be selected or changed in the UI. It reflects the current renderer behavior in `src/ts/render.ts`, the application bootstrap in `src/index.ts`, and the URL synchronization handled through `src/ts/url-utils.ts`.
+This document describes the implemented ways the active calendar date can be selected or changed in the UI. It reflects the current renderer behavior in `fantasy-calendar/src/ts/render.ts`, the application bootstrap in `fantasy-calendar/src/index.ts`, and the URL synchronization handled through `fantasy-calendar/src/ts/url-utils.ts`.
 
 ## Scope
 - Initial date selection from the URL.
@@ -11,9 +11,9 @@ This document describes the implemented ways the active calendar date can be sel
 - Synchronization between rendered current-day state, form controls, and URL hash.
 
 ## Initial Selection
-- On startup, `src/index.ts` reads the date from the browser URL before rendering the controls.
+- On startup, `fantasy-calendar/src/index.ts` reads the date from the browser URL before rendering the controls.
 - The preferred URL format is the hash path `#year/month/day`.
-- `src/ts/url-utils.ts` also accepts the older query-string form `?y=...&m=...&d=...`.
+- `fantasy-calendar/src/ts/url-utils.ts` also accepts the older query-string form `?y=...&m=...&d=...`.
 - If a URL part is missing, the controls fall back to their built-in defaults during render.
 
 ## Selection Methods
@@ -48,8 +48,8 @@ All implemented selection methods converge on the same rendered state:
 - Calendar-grid selection does not provide direct year-to-year navigation; changing year remains a control-driven action.
 
 ## Implementation Notes
-- `src/index.ts` initializes the first rendered date from `readDateFromUrl()`.
-- `src/ts/render.ts` stores target dates on interactive elements with `data-year`, `data-month`, and `data-day`.
+- `fantasy-calendar/src/index.ts` initializes the first rendered date from `readDateFromUrl()`.
+- `fantasy-calendar/src/ts/render.ts` stores target dates on interactive elements with `data-year`, `data-month`, and `data-day`.
 - A single click handler on `#calendarContainer` resolves the clicked target by event delegation.
 - Calendar-grid selection reuses the same input-update and rerender path used by control-based changes, which keeps URL updates and current-day styling aligned.
 - URL writes always use the hash-path format, even when the initial date came from the older query-string format.

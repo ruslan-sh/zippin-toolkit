@@ -9,5 +9,5 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["./src/**/*"]
+  "include": ["./app/src/**/*", "./fantasy-calendar/src/**/*"]
 }
