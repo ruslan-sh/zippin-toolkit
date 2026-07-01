@@ -18,7 +18,7 @@ monsters and statblock links without requiring pointer input.
 
 ### `multiple-encounters-and-mixed-party-levels`
 
-Status: planned
+Status: in-progress
 
 Support mixed-level parties and multiple independently editable encounters in
 one calculator session.
