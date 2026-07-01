@@ -25,13 +25,22 @@ Trigger this skill for requests like:
 - "turn this issue into a spec"
 - "plan this feature before implementation"
 
-If the target feature is omitted, infer it from conversation context when possible. If it is still ambiguous, ask the user to clarify the feature before proceeding.
+If the target feature is omitted, infer it from conversation context when possible. If it is still ambiguous, inspect `specs/roadmap.md` before asking an open-ended clarification question. Propose the relevant roadmap items so the user can choose the intended feature.
 
 ## Workflow
 
 ### 1. Identify the feature boundary
 
 Determine the feature, change, or issue the spec should cover.
+
+When the feature is unclear:
+
+1. Read `specs/roadmap.md` if it exists.
+2. Propose its applicable `planned` items by slug and short description.
+3. Ask the user to select one or clarify a different feature.
+4. Do not choose a roadmap item or begin writing the spec until the user confirms the target.
+
+Do not use the roadmap when the user or conversation already identifies a clear feature.
 
 Anchor on:
 - what is changing;

@@ -8,7 +8,8 @@ unless a task explicitly requires structural changes.
 
 - `app/src/`: Zippin's Toolkit landing page source and styles.
 - `fantasy-calendar/`: Fantasy Calendar tool; see its scoped `AGENTS.md`.
-- `specs/`: active repository-wide specifications and task trackers.
+- `specs/`: active repository-wide specifications, task trackers, and the
+  follow-up roadmap.
 - `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
 - `dist/`: generated build output; do not edit it manually.
 
@@ -48,6 +49,18 @@ Validation policy for substantive changes:
 2. Implement the smallest viable change.
 3. Run the required build, tests, and relevant lint checks.
 4. Summarize behavior, files changed, verification, assumptions, and edge cases.
+
+# Specs and Roadmap
+
+- Record deferred feature ideas in `specs/roadmap.md` under the affected tool.
+- Use a short kebab-case `h3` slug and a concise description that preserves
+  enough context for a future `create-spec` run.
+- Give every roadmap entry a status; use `in-progress` for an active spec and
+  `planned` for deferred follow-up work.
+- Keep work belonging to an active spec in that spec's task tracker rather than
+  duplicating it in the roadmap.
+- Remove a roadmap entry after its implemented spec is archived or when the
+  work is intentionally dropped.
 
 # Definition of Done
 

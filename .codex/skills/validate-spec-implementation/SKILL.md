@@ -51,6 +51,7 @@ Read [`references/checklist.md`](./references/checklist.md) before writing the r
 - Do not ask to update the spec just because later tasks are still open.
 - Treat the spec as the intended end state unless the implementation proves the spec is internally inconsistent or materially outdated.
 - If task boundaries are blurred but still coherent, call that out as a note, not a defect.
+- Treat `specs/roadmap.md` as read-only during validation. Do not delete, add, or update roadmap entries; roadmap cleanup belongs to the post-implementation archival workflow.
 
 ## Output
 
