@@ -39,6 +39,11 @@ Add a short archival note at the top stating that:
 Remove the active spec file from `specs/`.
 If `specs/<name>.tasks.md` exists beside the active spec, delete that tasks file instead of archiving it.
 
+After the archive file exists, check `specs/roadmap.md` for an entry whose slug
+matches the original spec basename. Remove that entry, from its `h3` slug
+heading through its content, without changing sibling entries or the tool
+heading. If no matching entry exists, leave the roadmap unchanged.
+
 ## Rewrite Rules
 
 Translate planning material into documentation for the implemented system.

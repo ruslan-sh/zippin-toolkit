@@ -53,6 +53,10 @@ If appropriate, archive the spec according to [`references/archive-rules.md`](./
 Treat archival as cleanup after the documentation is correctly updated, not as the primary goal of the skill.
 If the spec has a sibling `*.tasks.md` file, delete it as part of the same cleanup.
 
+After the spec has been successfully archived, remove its matching entry from
+`specs/roadmap.md` if one exists. Do not remove the roadmap entry before the
+archive is in place. Leave unrelated roadmap entries unchanged.
+
 ### 4. Rewrite as current-state documentation
 
 Translate planning material into documentation for the implemented system.
@@ -65,6 +69,7 @@ Do not refactor unrelated docs. Limit the change to:
 - the target doc in `docs/`;
 - the archived spec when archival is part of the requested or sensible cleanup;
 - deletion of the sibling `*.tasks.md` file when present;
+- removal of the archived spec's matching roadmap entry when present;
 - small README link updates if needed.
 
 ### 6. Verify the result
@@ -78,4 +83,5 @@ A good result has these properties:
 - the documentation is easier to find than the spec;
 - the spec is archived under `specs/archive/` when that cleanup is appropriate;
 - any sibling `*.tasks.md` tracker is removed when the spec is archived;
+- the matching roadmap entry is removed after archival when present;
 - the final summary calls out files changed, behavior impact, and verification performed.
