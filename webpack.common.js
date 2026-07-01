@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
     entry: {
         app: "./app/src/index.ts",
+        "encounter-difficulty-calculator": "./encounter-difficulty-calculator/src/index.ts",
         "fantasy-calendar": "./fantasy-calendar/src/index.ts",
     },
     module: {
@@ -19,6 +20,11 @@ module.exports = {
         clean: true,
     },
     plugins: [
+        new HtmlWebpackPlugin({
+            template: "./encounter-difficulty-calculator/src/index.ejs",
+            filename: "encounter-difficulty-calculator/index.html",
+            chunks: ["encounter-difficulty-calculator"],
+        }),
         new HtmlWebpackPlugin({
             template: "./app/src/index.ejs",
             filename: "index.html",

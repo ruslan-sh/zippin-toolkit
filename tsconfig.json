@@ -9,5 +9,9 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["./app/src/**/*", "./fantasy-calendar/src/**/*"]
+  "include": [
+    "./app/src/**/*",
+    "./encounter-difficulty-calculator/src/**/*",
+    "./fantasy-calendar/src/**/*"
+  ]
 }

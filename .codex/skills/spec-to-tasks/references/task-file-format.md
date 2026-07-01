@@ -18,10 +18,16 @@ If split files are used, the first file should explain the sequence and list the
 
 ## Section Structure
 
-Each task should be a separate section. Task IDs may be simple and local to the file, such as:
+Each vertical delivery slice should be a separate primary task section. Task IDs may be simple and local to the file, such as:
 - `Task 1`
 - `Task 2`
 - `Task 3`
+
+If a slice is too large for one safe, reviewable increment, add development-task sections immediately after its primary task using IDs such as:
+- `Dev Task 2.1`
+- `Dev Task 2.2`
+
+The primary task describes the user-testable delivery outcome. Its development tasks describe the implementation increments required to reach it. Do not add development tasks to a manageable slice.
 
 Example shape:
 
@@ -46,6 +52,25 @@ Definition of done:
 - ...
 ```
 
+Development tasks use the same required fields:
+
+```md
+## Dev Task 2.1: <short technical increment>
+Status: todo
+Summary: <concrete contribution to Task 2>
+Scope:
+- ...
+Dependencies:
+- Parent slice: Task 2
+- Depends on: ...
+- Parallelizable: no
+- Parallel with: none
+Validation:
+- ...
+Definition of done:
+- The repository remains working and this increment clearly advances Task 2.
+```
+
 ## Required Fields
 
 Every task must include:
@@ -55,6 +80,8 @@ Every task must include:
 - `Dependencies`
 - `Validation`
 - `Definition of done`
+
+Every development task must also identify its `Parent slice` under `Dependencies`.
 
 Recommended dependency metadata inside `Dependencies`:
 - `Depends on:`

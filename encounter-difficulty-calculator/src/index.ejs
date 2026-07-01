@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Calculate D&amp;D 5.5 encounter difficulty from party and monster XP."
+    />
+    <title>Encounter Difficulty Calculator | Zippin's Toolkit</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main>
+      <a href="../">Zippin's Toolkit</a>
+      <h1>D&amp;D 5.5 Encounter Difficulty Calculator</h1>
+      <section aria-labelledby="party-heading">
+        <h2 id="party-heading">Party</h2>
+        <div class="controls">
+          <label for="player-count">Players:</label>
+          <input id="player-count" type="number" min="1" step="1" value="4" aria-describedby="player-count-error" />
+          <span aria-hidden="true">×</span>
+          <label for="party-level">Level:</label>
+          <input id="party-level" type="number" min="1" max="20" step="1" value="5" aria-describedby="party-level-error" />
+          <span aria-hidden="true">+</span>
+          <label class="visually-hidden" for="modifier-value">Difficulty modifier</label>
+          <input id="modifier-value" type="number" step="any" value="0" aria-describedby="modifier-value-error" />
+          <label class="visually-hidden" for="modifier-type">Modifier type</label>
+          <select id="modifier-type">
+            <option value="percentage">%</option>
+            <option value="flat">XP</option>
+          </select>
+        </div>
+        <div class="errors">
+          <p id="player-count-error" class="error" aria-live="polite"></p>
+          <p id="party-level-error" class="error" aria-live="polite"></p>
+          <p id="modifier-value-error" class="error" aria-live="polite"></p>
+        </div>
+
+        <dl class="results" aria-live="polite">
+          <div><dt>Low</dt><dd id="low-result">—</dd></div>
+          <div><dt>Moderate</dt><dd id="moderate-result">—</dd></div>
+          <div><dt>High</dt><dd id="high-result">—</dd></div>
+        </dl>
+      </section>
+      <section aria-labelledby="encounter-heading">
+        <h2 id="encounter-heading" aria-live="polite">
+          Encounter — <span id="encounter-rank"></span>
+          (<span id="encounter-total">0 XP</span>)
+        </h2>
+        <div class="monster-headers" aria-hidden="true">
+          <span>Monster Name</span>
+          <span>XP</span>
+          <span>Quantity</span>
+          <span class="monster-actions-header"></span>
+        </div>
+        <div id="monster-rows"></div>
+        <button id="add-monster" type="button" aria-label="Add monster">
+          <span class="material-icons" aria-hidden="true">add_circle</span>
+        </button>
+      </section>
+    </main>
+  </body>
+</html>

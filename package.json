@@ -5,10 +5,10 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "start": "webpack serve --open --config webpack.dev.js",
-    "lint": "eslint app/src fantasy-calendar/src fantasy-calendar/tests",
-    "lint:styles": "stylelint \"app/src/**/*.scss\" \"fantasy-calendar/src/**/*.scss\"",
+    "lint": "eslint app/src encounter-difficulty-calculator/src encounter-difficulty-calculator/tests fantasy-calendar/src fantasy-calendar/tests",
+    "lint:styles": "stylelint \"app/src/**/*.scss\" \"encounter-difficulty-calculator/src/**/*.scss\" \"fantasy-calendar/src/**/*.scss\" \"shared/src/**/*.scss\"",
     "test": "npm run test:unit",
-    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/fantasy-calendar/tests/*.test.js"
+    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/fantasy-calendar/tests/*.test.js .tmp-tests/encounter-difficulty-calculator/tests/*.test.js"
   },
   "repository": {
     "type": "git",
