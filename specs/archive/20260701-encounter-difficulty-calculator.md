@@ -1,3 +1,6 @@
+> Archived after implementation on 2026-07-01. The shipped behavior is
+> documented in `encounter-difficulty-calculator/README.md`.
+
 # Encounter Difficulty Calculator
 
 ## Summary
