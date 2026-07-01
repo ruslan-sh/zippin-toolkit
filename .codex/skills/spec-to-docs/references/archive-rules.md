@@ -40,9 +40,11 @@ Remove the active spec file from `specs/`.
 If `specs/<name>.tasks.md` exists beside the active spec, delete that tasks file instead of archiving it.
 
 After the archive file exists, check `specs/roadmap.md` for an entry whose slug
-matches the original spec basename. Remove that entry, from its `h3` slug
-heading through its content, without changing sibling entries or the tool
-heading. If no matching entry exists, leave the roadmap unchanged.
+matches the original spec basename. If exactly one entry matches, remove it
+from its `h3` slug heading through its content, without changing sibling
+entries or the tool heading. If no entry matches, leave the roadmap unchanged.
+If multiple entries match, do not remove any of them; ask the user which
+tool-scoped entry belongs to the archived spec.
 
 ## Rewrite Rules
 
