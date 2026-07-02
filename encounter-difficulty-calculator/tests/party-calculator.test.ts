@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { calculatePartyThresholds, roundThreshold, XP_BY_LEVEL } from "../src/party-calculator";
+import { calculateMixedPartyThresholds, calculatePartyThresholds, roundThreshold, XP_BY_LEVEL } from "../src/party-calculator";
 
 const expectedRows = [
     [50, 75, 100], [100, 150, 200], [150, 225, 400], [250, 375, 500],
@@ -25,6 +25,17 @@ test("applies percentage and flat modifiers independently", () => {
     assert.deepEqual(calculatePartyThresholds(4, 5, "flat", -500), { low: 1500, moderate: 2500, high: 3900 });
 });
 
+test("aggregates mixed levels before applying modifiers and rounding", () => {
+    const groups = [{ playerCount: 2, level: 5 }, { playerCount: 2, level: 7 }];
+    assert.deepEqual(calculateMixedPartyThresholds(groups), { low: 2500, moderate: 4100, high: 5600 });
+    assert.deepEqual(calculateMixedPartyThresholds(groups, "percentage", 3), {
+        low: 2600, moderate: 4200, high: 5800,
+    });
+    assert.deepEqual(calculateMixedPartyThresholds(groups, "flat", 75), {
+        low: 2600, moderate: 4200, high: 5700,
+    });
+});
+
 test("clamps negative results to zero", () => {
     assert.deepEqual(calculatePartyThresholds(1, 1, "flat", -1000), { low: 0, moderate: 0, high: 0 });
 });
@@ -41,4 +52,5 @@ test("rejects invalid party inputs", () => {
     assert.throws(() => calculatePartyThresholds(0, 1), RangeError);
     assert.throws(() => calculatePartyThresholds(1.5, 1), RangeError);
     assert.throws(() => calculatePartyThresholds(1, 21), RangeError);
+    assert.throws(() => calculateMixedPartyThresholds([]), RangeError);
 });

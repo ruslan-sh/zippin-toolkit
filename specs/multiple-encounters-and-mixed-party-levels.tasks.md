@@ -2,7 +2,7 @@
 
 ## Task 1: Build and calculate a mixed-level party
 
-Status: todo
+Status: done
 
 Summary: Replace the single party count/level pair with repeatable level-group
 rows so users can calculate shared thresholds for a mixed-level party while
@@ -132,3 +132,57 @@ Definition of done:
   behavior while persistence/import/export remain deferred.
 - All required validation commands pass, or an exact environmental reason for
   any command that cannot run is documented.
+
+## Task 3: Polish calculator sizing and layout
+
+Status: todo
+
+Summary: Polish the completed calculator UI as a separate reviewable slice,
+starting by shrinking input controls across the page so the party, modifier,
+encounter, and monster interfaces use space more efficiently.
+
+Scope:
+
+- First, review and reduce the widths and heights of inputs throughout the
+  calculator while keeping values readable and controls easy to operate.
+- Keep related labels, inputs, actions, and result values visually aligned.
+- Present invalid party inputs like invalid monster inputs: use the existing
+  error outline and expose the correction guidance through the input's title
+  instead of rendering a persistent error message below the party row.
+- Preserve responsive behavior so controls wrap or stack cleanly on narrow
+  screens and remain usable with long lists of party groups and encounters.
+- Keep accessible labels, focus indicators, validation messages, and keyboard
+  behavior intact while adjusting presentation.
+- Limit this slice to visual polish; do not change calculation rules, state,
+  validation semantics, or encounter behavior.
+- Add or update focused tests only where layout-related markup or accessible
+  control structure changes.
+
+Dependencies:
+
+- Depends on: Task 2
+- Parallelizable: no
+- Parallel with: none
+
+Validation:
+
+- Manually review input sizing and alignment for party groups, the modifier,
+  encounters, and monster rows at wide and narrow viewport widths.
+- Verify focus indicators, accessible names, and validation remain clear after
+  controls are resized.
+- Verify invalid party inputs receive the error outline and descriptive title,
+  that visible row-level error messages are removed, and that correction clears
+  the invalid presentation without changing validation semantics.
+- Run `npm test`, `npm run lint`, `npm run lint:styles`, and `npm run build`.
+
+Definition of done:
+
+- Inputs across the calculator are consistently smaller without reducing
+  readability, accessibility, or touch and keyboard usability.
+- The party, difficulty, encounter, and monster layouts remain aligned and
+  responsive with both minimal and repeated content.
+- Party and monster validation use a consistent outline-and-title presentation
+  while remaining programmatically identifiable and understandable.
+- Calculator behavior is unchanged and all required validation commands pass,
+  or an exact environmental reason for any command that cannot run is
+  documented.

@@ -1,6 +1,10 @@
 export type Difficulty = "low" | "moderate" | "high";
 export type Thresholds = Record<Difficulty, number>;
 export type ModifierType = "percentage" | "flat";
+export interface PartyGroup {
+    playerCount: number;
+    level: number;
+}
 
 export const XP_BY_LEVEL: readonly Thresholds[] = [
     { low: 50, moderate: 75, high: 100 },
@@ -37,6 +41,18 @@ export function calculatePartyThresholds(
     modifierType: ModifierType = "percentage",
     modifier = 0,
 ): Thresholds {
+    return calculateMixedPartyThresholds([{ playerCount, level }], modifierType, modifier);
+}
+
+export function calculateMixedPartyThresholds(
+    groups: readonly PartyGroup[],
+    modifierType: ModifierType = "percentage",
+    modifier = 0,
+): Thresholds {
+    if (groups.length === 0) throw new RangeError("At least one party group is required.");
+
+    const base: Thresholds = { low: 0, moderate: 0, high: 0 };
+    groups.forEach(({ playerCount, level }) => {
     if (!Number.isInteger(playerCount) || playerCount < 1) {
         throw new RangeError("Player count must be a positive integer.");
     }
@@ -44,7 +60,12 @@ export function calculatePartyThresholds(
         throw new RangeError("Party level must be an integer from 1 through 20.");
     }
 
-    const perCharacter = XP_BY_LEVEL[level - 1];
+        const perCharacter = XP_BY_LEVEL[level - 1];
+        base.low += perCharacter.low * playerCount;
+        base.moderate += perCharacter.moderate * playerCount;
+        base.high += perCharacter.high * playerCount;
+    });
+
     const adjust = (value: number): number => {
         const adjusted = modifierType === "percentage"
             ? value * (1 + modifier / 100)
@@ -53,8 +74,8 @@ export function calculatePartyThresholds(
     };
 
     return {
-        low: adjust(perCharacter.low * playerCount),
-        moderate: adjust(perCharacter.moderate * playerCount),
-        high: adjust(perCharacter.high * playerCount),
+        low: adjust(base.low),
+        moderate: adjust(base.moderate),
+        high: adjust(base.high),
     };
 }
