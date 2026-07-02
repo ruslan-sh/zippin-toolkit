@@ -59,3 +59,24 @@ h3 {
 .toolkit__tool .material-icons {
   font-size: 2rem;
 }
+
+.site-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-muted);
+}
+
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.site-footer__link:hover,
+.site-footer__link:focus-visible {
+  color: var(--color-text);
+  text-decoration: underline;
+  outline: none;
+}
