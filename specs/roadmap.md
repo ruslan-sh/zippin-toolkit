@@ -29,3 +29,27 @@ Status: planned
 
 Store encounters locally and support portable import and export for backup,
 sharing, and restoration.
+
+### `monster-cr-mode-support`
+
+Status: planned
+
+Allow monsters to be added by Challenge Rating instead of by XP value, with
+automatic CR-to-XP conversion, so that users can build encounters directly
+from stat blocks.
+
+### `encounter-generation`
+
+Status: planned
+
+Automatically suggest or generate a balanced encounter for a given party
+composition and target difficulty, selecting appropriate monsters and
+quantities without manual entry.
+
+### `monster-library`
+
+Status: planned
+
+Provide a searchable, filterable library of monsters (by name, CR, type, etc.)
+that users can browse and add directly to an encounter from within the
+calculator.
