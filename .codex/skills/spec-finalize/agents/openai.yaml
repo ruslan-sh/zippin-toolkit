@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Finalize"
+  short_description: "Turn implemented specs into current-state docs"
+  default_prompt: "Use $spec-finalize to update project documentation from an implemented spec and archive the spec as cleanup when appropriate."

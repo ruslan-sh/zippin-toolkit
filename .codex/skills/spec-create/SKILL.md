@@ -1,13 +1,9 @@
 ---
-name: create-spec
+name: spec-create
 description: Create a spec for a specified feature. Use when the user wants to define or refine an implementation plan in specs/ before coding.
-license: MIT
-metadata:
-  version: "1.0"
-  generatedBy: "1.1.1"
 ---
 
-# Create Spec
+# Spec Create
 
 ## Overview
 

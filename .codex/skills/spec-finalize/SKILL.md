@@ -1,9 +1,9 @@
 ---
-name: spec-to-docs
+name: spec-finalize
 description: Update current-state project documentation from an implemented spec, and archive the spec as cleanup when appropriate. Use when a spec in specs/ reflects shipped behavior that should now live in docs/ or other project documentation.
 ---
 
-# Spec To Docs
+# Spec Finalize
 
 ## Overview
 

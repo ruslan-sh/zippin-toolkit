@@ -1,9 +1,9 @@
 ---
-name: validate-spec-implementation
+name: spec-validate
 description: Validate repository implementation against a spec in `specs/*.md` and its sibling `*.tasks.md`. Use when the user asks whether current code matches the spec, whether completed tasks really satisfy the spec, or whether the spec/tasks file need updates after implementation work.
 ---
 
-# Validate Spec Implementation
+# Spec Validate
 
 Use this skill when the user wants a spec-alignment review for the repo's `spec.md` + `spec.tasks.md` workflow.
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Create"
+  short_description: "Create an implementation-ready feature spec"
+  default_prompt: "Use $spec-create to create an implementation-ready spec for this feature."

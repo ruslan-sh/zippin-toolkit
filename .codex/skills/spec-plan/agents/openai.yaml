@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Plan"
+  short_description: "Split specs into tracked implementation tasks"
+  default_prompt: "Use $spec-plan to split a spec into executable implementation tasks, or update an existing tasks file while preserving task status and notes."
