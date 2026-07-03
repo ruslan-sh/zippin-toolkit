@@ -14,6 +14,11 @@ Implement the selected scope completely, including code, tests, validation, and 
 3. If multiple trackers contain unfinished work and repository context does not identify one as active, ask the user which spec to use. Do not guess based only on filename ordering.
 4. Read the complete spec, its sibling task tracker, `specs/roadmap.md`, and applicable `AGENTS.md` files before editing code.
 
+If the spec's matching roadmap entry lists any prerequisite slug, stop before
+implementation and report the unresolved prerequisites. Do not offer or accept
+an override while the roadmap dependency remains. A missing matching entry or
+`Prerequisite: none` does not block implementation.
+
 Treat statuses other than `done` or equivalent checked completion as unfinished. Respect dependencies and select the earliest actionable unfinished task, including an unfinished development subtask when the tracker uses them.
 
 ## Select the scope

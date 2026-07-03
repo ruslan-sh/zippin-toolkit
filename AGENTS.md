@@ -55,12 +55,19 @@ Validation policy for substantive changes:
 - Record deferred feature ideas in `specs/roadmap.md` under the affected tool.
 - Use a short kebab-case `h3` slug and a concise description that preserves
   enough context for a future `spec-create` run.
-- Give every roadmap entry a status; use `in-progress` for an active spec and
-  `planned` for deferred follow-up work.
+- Give every roadmap entry a `Status` and `Prerequisite` field. Use
+  `in-progress` for an active spec and `planned` for deferred follow-up work.
+  Set `Prerequisite: none` when the item is unblocked; otherwise list the
+  prerequisite roadmap slugs.
+- Do not create a spec or task tracker for a roadmap item while any listed
+  prerequisite remains. A prerequisite is satisfied when its implemented spec
+  is archived and its slug is removed from the dependent entry.
 - Keep work belonging to an active spec in that spec's task tracker rather than
   duplicating it in the roadmap.
 - Remove a roadmap entry after its implemented spec is archived or when the
-  work is intentionally dropped.
+  work is intentionally dropped. When removing an implemented entry, also
+  remove its slug from every dependent entry and set `Prerequisite: none` when
+  the final prerequisite is removed.
 
 # Definition of Done
 

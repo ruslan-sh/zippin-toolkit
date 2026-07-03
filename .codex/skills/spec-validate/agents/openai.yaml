@@ -1,4 +1,4 @@
 interface:
   display_name: "Spec Validate"
   short_description: "Compare code, spec, and task file for alignment."
-  default_prompt: "Use $spec-validate to validate the implementation against the target spec and tasks file."
+  default_prompt: "Use $spec-validate to validate implementation, task status, and roadmap prerequisite consistency against the target spec."

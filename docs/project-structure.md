@@ -18,7 +18,6 @@ fantasy-calendar/
   specs/archive/
   AGENTS.md
   README.md
-  TODO
 docs/
 specs/
 package.json
@@ -29,7 +28,7 @@ tsconfig*.json
 
 - `app/` owns the landing page.
 - `fantasy-calendar/` is self-contained for implementation, tests,
-  documentation, archived planning, contributor guidance, and backlog.
+  documentation, archived planning, and contributor guidance.
 - `docs/` contains current repository-wide documentation.
 - `specs/` contains active repository-wide plans; implemented plans are moved
   to `specs/archive/`.

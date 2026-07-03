@@ -40,5 +40,5 @@ update the URL hash while preserving the nested calendar path.
 - [Calendar logic](docs/calendar-logic.md)
 - [Moon-phase calculation](docs/moon-phase-calculation.md)
 
-Archived implementation specifications live in `specs/archive/`, and the
-calendar-specific backlog lives in [TODO](TODO).
+Archived implementation specifications live in `specs/archive/`. Planned
+follow-up work is tracked in the repository [roadmap](../specs/roadmap.md).

@@ -46,6 +46,14 @@ entries or the tool heading. If no entry matches, leave the roadmap unchanged.
 If multiple entries match, do not remove any of them; ask the user which
 tool-scoped entry belongs to the archived spec.
 
+After archival, find every remaining `Prerequisite` field that names the
+original spec basename, whether or not a matching roadmap entry existed.
+Remove only that slug while preserving the other listed prerequisites and
+their order. If no prerequisites remain for an entry, set the field to
+`Prerequisite: none`. Do not remove prerequisite references when a spec is
+merely dropped or abandoned; ask the user whether dependents should be
+unblocked or the dependency graph should be revised.
+
 ## Rewrite Rules
 
 Translate planning material into documentation for the implemented system.

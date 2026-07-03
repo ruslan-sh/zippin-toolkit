@@ -21,7 +21,7 @@ Trigger this skill for requests like:
 - "turn this issue into a spec"
 - "plan this feature before implementation"
 
-If the target feature is omitted, infer it from conversation context when possible. If it is still ambiguous, inspect `specs/roadmap.md` before asking an open-ended clarification question. Propose the relevant roadmap items so the user can choose the intended feature.
+If the target feature is omitted, infer it from conversation context when possible. If it is still ambiguous, inspect `specs/roadmap.md` before asking an open-ended clarification question. Propose only relevant roadmap items whose `Prerequisite` field is `none` so the user can choose the intended feature.
 
 ## Workflow
 
@@ -32,11 +32,19 @@ Determine the feature, change, or issue the spec should cover.
 When the feature is unclear:
 
 1. Read `specs/roadmap.md` if it exists.
-2. Propose its applicable `planned` items by slug and short description.
+2. Exclude items whose `Prerequisite` field lists any slug. Propose the
+   remaining applicable `planned` items by slug and short description.
 3. Ask the user to select one or clarify a different feature.
 4. Do not choose a roadmap item or begin writing the spec until the user confirms the target.
 
-Do not use the roadmap when the user or conversation already identifies a clear feature.
+Do not use the roadmap to select a feature when the user or conversation
+already identifies one, but still check a matching entry's prerequisites.
+
+If the identified feature matches a roadmap item, read its `Prerequisite`
+field even when the request is otherwise clear. Do not create the spec while
+prerequisites are listed. Explain which prerequisite slugs remain and direct
+the user to complete them first. Do not offer or accept an override while the
+roadmap still lists those prerequisites.
 
 Anchor on:
 - what is changing;
@@ -63,6 +71,10 @@ Continue the interview until the spec can be written without filling major gaps 
 Use the output and structure guidance in [`references/spec-output.md`](./references/spec-output.md).
 
 Write the smallest useful spec that gives a developer or agent a clear implementation target.
+
+If the spec came from a roadmap entry, change that entry's `Status` from
+`planned` to `in-progress` after writing the spec. Preserve its
+`Prerequisite: none` field and leave all unrelated entries unchanged.
 
 ### 4. Keep the spec practical
 
