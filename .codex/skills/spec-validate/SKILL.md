@@ -20,6 +20,11 @@ Read [`references/checklist.md`](./references/checklist.md) before writing the r
 - task boundaries and validation requirements;
 - any explicit non-goals.
 
+Also inspect `specs/roadmap.md` for a matching slug. If it exists, verify that
+its status is `in-progress` and its `Prerequisite` field is `none`. Treat an
+active spec with unresolved prerequisites as workflow drift and report it, but
+keep the roadmap read-only during validation.
+
 2. Read the implementation that should satisfy the spec:
 
 - start with files named in the spec or task file;
@@ -52,6 +57,8 @@ Read [`references/checklist.md`](./references/checklist.md) before writing the r
 - Treat the spec as the intended end state unless the implementation proves the spec is internally inconsistent or materially outdated.
 - If task boundaries are blurred but still coherent, call that out as a note, not a defect.
 - Treat `specs/roadmap.md` as read-only during validation. Do not delete, add, or update roadmap entries; roadmap cleanup belongs to the post-implementation archival workflow.
+- Report stale prerequisite references, missing prerequisite metadata, and a
+  matching roadmap entry whose status does not reflect the active spec.
 
 ## Output
 

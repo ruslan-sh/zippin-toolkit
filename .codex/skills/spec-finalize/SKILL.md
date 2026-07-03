@@ -55,7 +55,10 @@ If the spec has a sibling `*.tasks.md` file, delete it as part of the same clean
 
 After the spec has been successfully archived, remove its matching entry from
 `specs/roadmap.md` if one exists. Do not remove the roadmap entry before the
-archive is in place. Leave unrelated roadmap entries unchanged.
+archive is in place. Then remove the archived spec basename from every
+`Prerequisite` field that references it. Set `Prerequisite: none` when that
+removes an entry's final prerequisite, even if the archived spec had no
+matching roadmap entry. Leave all other roadmap content unchanged.
 
 ### 4. Rewrite as current-state documentation
 
@@ -70,6 +73,7 @@ Do not refactor unrelated docs. Limit the change to:
 - the archived spec when archival is part of the requested or sensible cleanup;
 - deletion of the sibling `*.tasks.md` file when present;
 - removal of the archived spec's matching roadmap entry when present;
+- removal of its slug from dependent roadmap prerequisites;
 - small README link updates if needed.
 
 ### 6. Verify the result
@@ -84,4 +88,5 @@ A good result has these properties:
 - the spec is archived under `specs/archive/` when that cleanup is appropriate;
 - any sibling `*.tasks.md` tracker is removed when the spec is archived;
 - the matching roadmap entry is removed after archival when present;
+- dependent roadmap entries no longer list the archived slug;
 - the final summary calls out files changed, behavior impact, and verification performed.

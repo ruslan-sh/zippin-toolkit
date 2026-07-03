@@ -7,7 +7,3 @@ insert_final_newline = true
 [*.{js,ts}]
 indent_style = space
 indent_size = 4
-
-[TODO]
-indent_style = tab
-tab_width = 4

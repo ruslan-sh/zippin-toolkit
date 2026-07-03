@@ -9,6 +9,8 @@ Run verification suitable for documentation-focused changes:
 - confirm the archive path is correct;
 - confirm any sibling `*.tasks.md` file was removed when archiving the spec;
 - confirm the matching roadmap entry was removed after archival, or confirm no matching entry existed;
+- confirm the archived slug was removed from every dependent `Prerequisite`
+  field and that empty fields became `Prerequisite: none`;
 - confirm links and references point to the right docs;
 - scan the updated docs for stale planning language or awkward headings introduced by the rewrite.
 

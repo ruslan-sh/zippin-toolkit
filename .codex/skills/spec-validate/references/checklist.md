@@ -8,6 +8,8 @@ Use this checklist while reviewing:
 - Check for sibling `*.tasks.md`.
 - Check `AGENTS.md` for repo-specific validation rules or environment notes.
 - Check relevant git worktree changes when the request is about current implementation progress or uncommitted work.
+- Check the matching roadmap entry, when present, for `Status: in-progress`
+  and `Prerequisite: none` without editing the roadmap.
 
 ## Spec extraction
 

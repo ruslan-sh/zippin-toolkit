@@ -41,6 +41,12 @@ Use it for both:
 
 ## Workflow
 
+Before decomposing a roadmap-backed spec, read `specs/roadmap.md`. If the
+matching slug still lists prerequisites, do not create or update its task
+tracker; report the unresolved prerequisite slugs. A task breakdown may proceed
+only when the matching entry says `Prerequisite: none` or no matching roadmap
+entry exists. Do not offer or accept an override while prerequisites remain.
+
 ### 1. Read the spec and extract work streams
 
 Read the target spec and identify:

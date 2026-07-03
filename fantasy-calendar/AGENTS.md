@@ -20,7 +20,7 @@ self-contained within this project folder.
 - `tests/`: calendar unit and rendering tests.
 - `docs/`: current calendar design documentation.
 - `specs/archive/`: archived calendar specifications.
-- `TODO`: calendar-specific backlog.
+- `../specs/roadmap.md`: repository follow-up roadmap, including calendar work.
 
 # Module Boundaries
 
