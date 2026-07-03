@@ -49,13 +49,6 @@ Status: planned
 Add complete keyboard workflows for creating, editing, navigating, and removing
 monsters and statblock links without requiring pointer input.
 
-### `multiple-encounters-and-mixed-party-levels`
-
-Status: in-progress
-
-Support mixed-level parties and multiple independently editable encounters in
-one calculator session.
-
 ### `encounter-storage-import-export`
 
 Status: planned

@@ -1,9 +1,9 @@
 ---
-name: spec-to-tasks
+name: spec-plan
 description: Split a spec into user-testable vertical delivery slices, with smaller development tasks when a slice is too large, and keep a task-tracking file beside the spec. Use when the user wants a spec in specs/ converted into executable tasks or an existing tasks file updated after the spec changes.
 ---
 
-# Spec To Tasks
+# Spec Plan
 
 ## Overview
 

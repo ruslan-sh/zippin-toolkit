@@ -1,3 +1,6 @@
+> Archived after implementation. Current behavior is documented in
+> `encounter-difficulty-calculator/docs/calculator.md`.
+
 # Multiple Encounters and Mixed-Level Parties
 
 ## Summary

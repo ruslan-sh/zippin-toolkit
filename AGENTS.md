@@ -54,7 +54,7 @@ Validation policy for substantive changes:
 
 - Record deferred feature ideas in `specs/roadmap.md` under the affected tool.
 - Use a short kebab-case `h3` slug and a concise description that preserves
-  enough context for a future `create-spec` run.
+  enough context for a future `spec-create` run.
 - Give every roadmap entry a status; use `in-progress` for an active spec and
   `planned` for deferred follow-up work.
 - Keep work belonging to an active spec in that spec's task tracker rather than

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Implement"
+  short_description: "Implement the next task or full active spec"
+  default_prompt: "Use $spec-implement to implement the next open task in the active spec."

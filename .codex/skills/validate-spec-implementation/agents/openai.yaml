@@ -1,4 +1,0 @@
-interface:
-  display_name: "Validate Spec Implementation"
-  short_description: "Compare code, spec, and task file for alignment."
-  default_prompt: "Validate the implementation against the target spec and tasks file. Report findings first, then note whether the spec or tasks need updates."
