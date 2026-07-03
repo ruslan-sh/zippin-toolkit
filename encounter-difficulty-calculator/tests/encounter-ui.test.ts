@@ -38,6 +38,7 @@ class FakeElement {
     removeAttribute(name: string): void {
         this.attributes.delete(name);
         if (name === "title") this.title = "";
+        if (name === "href") this.href = "";
     }
     addEventListener(name: string, listener: () => void): void {
         this.listeners.set(name, [...(this.listeners.get(name) ?? []), listener]);
@@ -89,7 +90,7 @@ test("creates isolated encounters and distributes shared thresholds", () => {
     assert.equal(firstInputs[0].focused, false);
     [firstInputs[0].value, firstInputs[1].value, firstInputs[2].value] = ["Ogre", "1000", "2"];
     firstInputs[1].dispatch("input");
-    assert.equal(byClass(first, "encounter-total")[0].textContent, "2,000XP");
+    assert.equal(byClass(first, "encounter-total")[0].textContent, "2,000 XP");
     assert.equal(byClass(first, "encounter-rank")[0].textContent, "High");
     assert.equal(byClass(first, "encounter-rank")[0].dataset.difficulty, "high");
 
@@ -97,17 +98,17 @@ test("creates isolated encounters and distributes shared thresholds", () => {
     assert.equal(encounters.children.length, 2);
     const second = encounters.children[1];
     assert.equal(inputs(second)[0].focused, true);
-    assert.equal(byClass(second, "encounter-total")[0].textContent, "0XP");
+    assert.equal(byClass(second, "encounter-total")[0].textContent, "0 XP");
     inputs(second)[1].value = "500";
     inputs(second)[1].dispatch("input");
-    assert.equal(byClass(second, "encounter-total")[0].textContent, "500XP");
-    assert.equal(byClass(first, "encounter-total")[0].textContent, "2,000XP");
+    assert.equal(byClass(second, "encounter-total")[0].textContent, "500 XP");
+    assert.equal(byClass(first, "encounter-total")[0].textContent, "2,000 XP");
 
     setThresholds(null);
     assert.equal(byClass(first, "encounter-rank")[0].textContent, "");
     assert.equal(byClass(first, "encounter-rank")[0].dataset.difficulty, "");
     assert.equal(byClass(second, "encounter-rank")[0].textContent, "");
-    assert.equal(byClass(first, "encounter-total")[0].textContent, "2,000XP");
+    assert.equal(byClass(first, "encounter-total")[0].textContent, "2,000 XP");
 });
 
 test("exposes every encounter difficulty for color coding", () => {
@@ -183,6 +184,10 @@ test("keeps monster controls, validation, URLs, and identities encounter-specifi
     assert.equal(statblockButton.title, "Edit statblock");
     const link = descendants(row).find((element) => element.rel === "noopener noreferrer");
     assert.equal(link?.hidden, false);
+    document.nextPrompt = "";
+    statblockButton.dispatch("click");
+    assert.equal(link?.hidden, true);
+    assert.equal(link?.href, "");
 
     byClass(encounter, "add-monster")[0].dispatch("click");
     assert.equal(byClass(encounter, "monster-row").length, 2);

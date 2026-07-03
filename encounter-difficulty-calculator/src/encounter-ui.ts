@@ -2,7 +2,6 @@ import { encounterTotal, MonsterInput, rankEncounter, safeStatblockUrl } from ".
 import { Thresholds } from "./party-calculator";
 
 interface EncounterEntry {
-    element: HTMLElement;
     setThresholds: (thresholds: Thresholds | null) => void;
 }
 
@@ -55,7 +54,7 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
         rank.className = "encounter-rank";
         const total = document.createElement("span");
         total.className = "encounter-total";
-        total.textContent = "0XP";
+        total.textContent = "0 XP";
         const summarySeparator = document.createElement("span");
         summary.append(total, summarySeparator, rank);
         heading.append(nameArea, summary);
@@ -89,7 +88,7 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
         const monsters = new Map<number, { read: () => MonsterInput; refreshLabels: () => void }>();
         const update = (): void => {
             const xpTotal = encounterTotal(Array.from(monsters.values(), (entry) => entry.read()));
-            total.textContent = `${xpTotal.toLocaleString()}XP`;
+            total.textContent = `${xpTotal.toLocaleString()} XP`;
             rank.textContent = thresholds ? rankEncounter(xpTotal, thresholds) : "";
             rank.dataset.difficulty = rank.textContent.toLowerCase();
             summarySeparator.textContent = rank.textContent ? " — " : "";
@@ -206,6 +205,7 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
                     editStatblock.setAttribute("aria-label", `Edit statblock for monster ${monsterId} in ${name.textContent}`);
                     editStatblock.title = "Edit statblock";
                 } else {
+                    link.removeAttribute("href");
                     editStatblock.setAttribute("aria-label", `Add statblock for monster ${monsterId} in ${name.textContent}`);
                     editStatblock.title = "Add statblock";
                 }
@@ -253,7 +253,6 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
         });
         addMonster.addEventListener("click", () => addMonsterRow(true));
         encounters.set(encounterId, {
-            element: section,
             setThresholds: (nextThresholds) => { thresholds = nextThresholds; update(); },
         });
         encountersElement.append(section);

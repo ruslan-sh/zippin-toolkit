@@ -37,9 +37,9 @@
           <div class="party-row" data-party-row="1">
             <div class="party-row-controls">
               <label class="visually-hidden" for="player-count-1">Players in group 1</label>
-              <input id="player-count-1" type="number" min="1" step="1" value="4" />
+              <input id="player-count-1" type="number" min="1" step="1" value="4" aria-describedby="player-count-1-error" />
               <label class="visually-hidden" for="party-level-1">Level for group 1</label>
-              <input id="party-level-1" type="number" min="1" max="20" step="1" value="5" />
+              <input id="party-level-1" type="number" min="1" max="20" step="1" value="5" aria-describedby="party-level-1-error" />
               <button class="remove-party-row" type="button" aria-label="Remove party group 1" hidden>
                 <span class="material-icons" aria-hidden="true">delete</span>
               </button>
@@ -47,6 +47,8 @@
                 <span class="material-icons party-add-icon" aria-hidden="true">add_circle</span>
               </button>
             </div>
+            <p id="player-count-1-error" class="visually-hidden" aria-live="polite"></p>
+            <p id="party-level-1-error" class="visually-hidden" aria-live="polite"></p>
           </div>
         </div>
 

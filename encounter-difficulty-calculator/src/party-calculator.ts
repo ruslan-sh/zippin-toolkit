@@ -53,12 +53,12 @@ export function calculateMixedPartyThresholds(
 
     const base: Thresholds = { low: 0, moderate: 0, high: 0 };
     groups.forEach(({ playerCount, level }) => {
-    if (!Number.isInteger(playerCount) || playerCount < 1) {
-        throw new RangeError("Player count must be a positive integer.");
-    }
-    if (!Number.isInteger(level) || level < 1 || level > XP_BY_LEVEL.length) {
-        throw new RangeError("Party level must be an integer from 1 through 20.");
-    }
+        if (!Number.isInteger(playerCount) || playerCount < 1) {
+            throw new RangeError("Player count must be a positive integer.");
+        }
+        if (!Number.isInteger(level) || level < 1 || level > XP_BY_LEVEL.length) {
+            throw new RangeError("Party level must be an integer from 1 through 20.");
+        }
 
         const perCharacter = XP_BY_LEVEL[level - 1];
         base.low += perCharacter.low * playerCount;

@@ -29,6 +29,7 @@ function createPartyRow(document: Document, id: number): HTMLElement {
         input.min = "1";
         input.step = "1";
         input.value = "1";
+        input.setAttribute("aria-describedby", `${inputId}-error`);
         if (kind === "party-level") input.max = "20";
         controls.append(label);
         controls.append(input);
@@ -48,6 +49,14 @@ function createPartyRow(document: Document, id: number): HTMLElement {
     remove.append(icon);
     controls.append(remove);
     row.append(controls);
+
+    (["player-count", "party-level"] as const).forEach((kind) => {
+        const error = document.createElement("p");
+        error.id = `${kind}-${id}-error`;
+        error.className = "visually-hidden";
+        error.setAttribute("aria-live", "polite");
+        row.append(error);
+    });
 
     return row;
 }
@@ -86,8 +95,8 @@ export function initializePartyCalculator(
             const level = Number(levelInput.value);
             const countValid = countInput.value !== "" && Number.isInteger(playerCount) && playerCount > 0;
             const levelValid = levelInput.value !== "" && Number.isInteger(level) && level >= 1 && level <= 20;
-            setValidation(countInput, countValid, `Party group ${id}: enter a positive whole number of players.`);
-            setValidation(levelInput, levelValid, `Party group ${id}: select a level from 1 through 20.`);
+            setValidation(countInput, countValid, `Party group ${id}: enter a positive whole number of players.`, `player-count-${id}-error`);
+            setValidation(levelInput, levelValid, `Party group ${id}: select a level from 1 through 20.`, `party-level-${id}-error`);
             rowsValid = rowsValid && countValid && levelValid;
             groups.push({ playerCount, level });
         });
