@@ -60,7 +60,7 @@ Definition of done:
 
 ## Task 2: Manage multiple independent encounters
 
-Status: todo
+Status: done
 
 Summary: Turn the single encounter builder into a repeatable collection so
 users can add, rename, edit, and delete independent encounters that all rank
@@ -135,7 +135,7 @@ Definition of done:
 
 ## Task 3: Polish calculator sizing and layout
 
-Status: todo
+Status: done
 
 Summary: Polish the completed calculator UI as a separate reviewable slice,
 starting by shrinking input controls across the page so the party, modifier,
@@ -146,6 +146,8 @@ Scope:
 - First, review and reduce the widths and heights of inputs throughout the
   calculator while keeping values readable and controls easy to operate.
 - Keep related labels, inputs, actions, and result values visually aligned.
+- Color-code the displayed encounter difficulty: gray for Trivial, green for
+  Low, yellow for Moderate, orange for High, and red for Deadly.
 - Present invalid party inputs like invalid monster inputs: use the existing
   error outline and expose the correction guidance through the input's title
   instead of rendering a persistent error message below the party row.
@@ -173,6 +175,8 @@ Validation:
 - Verify invalid party inputs receive the error outline and descriptive title,
   that visible row-level error messages are removed, and that correction clears
   the invalid presentation without changing validation semantics.
+- Verify each encounter rank receives the matching difficulty color and that
+  the color state clears when party thresholds are unavailable.
 - Run `npm test`, `npm run lint`, `npm run lint:styles`, and `npm run build`.
 
 Definition of done:
@@ -183,6 +187,8 @@ Definition of done:
   responsive with both minimal and repeated content.
 - Party and monster validation use a consistent outline-and-title presentation
   while remaining programmatically identifiable and understandable.
+- Encounter ranks are color-coded by difficulty without relying on color as
+  the only indication of rank.
 - Calculator behavior is unchanged and all required validation commands pass,
   or an exact environmental reason for any command that cannot run is
   documented.

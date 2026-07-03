@@ -18,7 +18,6 @@ function createPartyRow(document: Document, id: number): HTMLElement {
 
     const addInput = (kind: "player-count" | "party-level", labelText: string): void => {
         const inputId = `${kind}-${id}`;
-        const errorId = `${kind}-error-${id}`;
         const label = document.createElement("label");
         label.className = "visually-hidden";
         label.htmlFor = inputId;
@@ -30,7 +29,6 @@ function createPartyRow(document: Document, id: number): HTMLElement {
         input.min = "1";
         input.step = "1";
         input.value = "1";
-        input.setAttribute("aria-describedby", errorId);
         if (kind === "party-level") input.max = "20";
         controls.append(label);
         controls.append(input);
@@ -51,13 +49,6 @@ function createPartyRow(document: Document, id: number): HTMLElement {
     controls.append(remove);
     row.append(controls);
 
-    (["player-count", "party-level"] as const).forEach((kind) => {
-        const error = document.createElement("p");
-        error.id = `${kind}-error-${id}`;
-        error.className = "error";
-        error.setAttribute("aria-live", "polite");
-        row.append(error);
-    });
     return row;
 }
 
@@ -71,9 +62,11 @@ export function initializePartyCalculator(
     const modifierValue = requiredElement<HTMLInputElement>(document, "modifier-value");
     let nextRowId = 2;
 
-    const setValidation = (input: HTMLElement, errorId: string, valid: boolean, message: string): void => {
+    const setValidation = (input: HTMLElement, valid: boolean, message: string, errorId?: string): void => {
         input.setAttribute("aria-invalid", String(!valid));
-        requiredElement(document, errorId).textContent = valid ? "" : message;
+        if (valid) input.removeAttribute("title");
+        else input.setAttribute("title", message);
+        if (errorId) requiredElement(document, errorId).textContent = valid ? "" : message;
     };
 
     const updateRemoveButtons = (): void => {
@@ -93,15 +86,15 @@ export function initializePartyCalculator(
             const level = Number(levelInput.value);
             const countValid = countInput.value !== "" && Number.isInteger(playerCount) && playerCount > 0;
             const levelValid = levelInput.value !== "" && Number.isInteger(level) && level >= 1 && level <= 20;
-            setValidation(countInput, `player-count-error-${id}`, countValid, `Party group ${id}: enter a positive whole number of players.`);
-            setValidation(levelInput, `party-level-error-${id}`, levelValid, `Party group ${id}: select a level from 1 through 20.`);
+            setValidation(countInput, countValid, `Party group ${id}: enter a positive whole number of players.`);
+            setValidation(levelInput, levelValid, `Party group ${id}: select a level from 1 through 20.`);
             rowsValid = rowsValid && countValid && levelValid;
             groups.push({ playerCount, level });
         });
 
         const modifier = modifierValue.value === "" ? 0 : Number(modifierValue.value);
         const modifierValid = Number.isFinite(modifier);
-        setValidation(modifierValue, "modifier-value-error", modifierValid, "Enter a numeric modifier.");
+        setValidation(modifierValue, modifierValid, "Enter a numeric modifier.", "modifier-value-error");
         if (!rowsValid || !modifierValid) {
             RESULT_IDS.forEach((difficulty) => { requiredElement(document, `${difficulty}-result`).textContent = "—"; });
             updateEncounter(null);

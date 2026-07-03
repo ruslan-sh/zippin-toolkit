@@ -1,14 +1,14 @@
 # Encounter Difficulty Calculator
 
-This framework-free D&D 5.5 tool calculates party XP thresholds and ranks one
-multi-monster encounter. It is linked from the toolkit landing page and is
-available at `encounter-difficulty-calculator/`.
+This framework-free D&D 5.5 tool calculates party XP thresholds and ranks
+multiple multi-monster encounters. It is linked from the toolkit landing page
+and is available at `encounter-difficulty-calculator/`.
 
 ## Party thresholds
 
-Enter a positive player count and one shared character level from 1 through
-20. The calculator multiplies the per-character XP values for that level by
-the player count and displays Low, Moderate, and High thresholds.
+Add one or more party groups, each with a positive player count and character
+level from 1 through 20. The calculator sums each group's per-character XP
+thresholds before displaying the party's Low, Moderate, and High thresholds.
 
 One optional modifier applies to all three thresholds:
 
@@ -21,11 +21,11 @@ at 1,000 and above. Halfway values round upward.
 
 ## Encounter builder
 
-The page contains one encounter with any number of monster rows. Each complete
-row requires a positive whole-number quantity and non-negative whole-number XP
-value; its contribution is `quantity × XP`. A name and an HTTP or HTTPS
-statblock URL are optional. Invalid or incomplete rows display validation and
-do not contribute to the total.
+The page supports multiple independently named encounters with any number of
+monster rows. Each complete row requires a positive whole-number quantity and
+non-negative whole-number XP value; its contribution is `quantity × XP`. A
+name and an HTTP or HTTPS statblock URL are optional. Invalid or incomplete
+rows display validation and do not contribute to the total.
 
 The total and textual rank update as party, modifier, or monster values change.
 For adjusted Low (`L`), Moderate (`M`), and High (`H`) thresholds, ranks are:
@@ -45,8 +45,8 @@ valid.
 ## Boundaries
 
 Calculator state is transient and resets on refresh. The tool does not import
-monster data, apply monster-count or party-size multipliers, support mixed
-party levels or multiple encounters, or save and share encounters.
+monster data, apply monster-count or party-size multipliers, or save and share
+encounters.
 
 ## Development
 

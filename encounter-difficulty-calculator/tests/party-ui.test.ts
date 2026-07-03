@@ -12,6 +12,7 @@ class FakeElement {
     max = "";
     step = "";
     htmlFor = "";
+    title = "";
     disabled = false;
     hidden = false;
     focused = false;
@@ -32,6 +33,10 @@ class FakeElement {
     remove(): void { if (this.parent) this.parent.children.splice(this.parent.children.indexOf(this), 1); }
     focus(): void { this.focused = true; }
     setAttribute(name: string, value: string): void { this.attributes.set(name, value); }
+    removeAttribute(name: string): void {
+        this.attributes.delete(name);
+        if (name === "title") this.title = "";
+    }
     addEventListener(name: string, listener: () => void): void {
         this.listeners.set(name, [...(this.listeners.get(name) ?? []), listener]);
     }
@@ -73,14 +78,10 @@ function setup(updateEncounter: (value: unknown) => void = () => undefined): Fak
     row.dataset.partyRow = "1";
     row.add(document.make("player-count-1", "input", "4"));
     row.add(document.make("party-level-1", "input", "5"));
-    document.element("player-count-1").setAttribute("aria-describedby", "player-count-error-1");
-    document.element("party-level-1").setAttribute("aria-describedby", "party-level-error-1");
     const remove = document.make("", "button");
     remove.className = "remove-party-row";
     remove.setAttribute("aria-label", "Remove party group 1");
     row.add(remove);
-    row.add(document.make("player-count-error-1"));
-    row.add(document.make("party-level-error-1"));
     rows.add(row);
     document.make("add-party-row", "button");
     document.make("modifier-type", "select", "percentage");
@@ -114,6 +115,7 @@ test("invalidates the whole party and recovers after removing the bad row", () =
     document.element("player-count-2").dispatch("input");
     assert.equal(document.element("low-result").textContent, "—");
     assert.equal(document.element("player-count-2").attributes.get("aria-invalid"), "true");
+    assert.equal(document.element("player-count-2").attributes.get("title"), "Party group 2: enter a positive whole number of players.");
     assert.equal(updates[updates.length - 1], null);
     const rows = document.element("party-rows");
     rows.querySelectorAll<FakeElement>(".remove-party-row")[1].dispatch("click");
@@ -137,13 +139,15 @@ test("recovers after correcting an invalid row without replacing either group", 
     assert.deepEqual(updates[updates.length - 1], { low: 2800, moderate: 4300, high: 6100 });
 });
 
-test("gives repeated controls stable descriptions and descriptive remove names", () => {
+test("gives invalid controls correction titles and descriptive remove names", () => {
     const document = setup();
     document.element("add-party-row").dispatch("click");
-    assert.equal(document.element("player-count-1").attributes.get("aria-describedby"), "player-count-error-1");
-    assert.equal(document.element("party-level-1").attributes.get("aria-describedby"), "party-level-error-1");
-    assert.equal(document.element("player-count-2").attributes.get("aria-describedby"), "player-count-error-2");
-    assert.equal(document.element("party-level-2").attributes.get("aria-describedby"), "party-level-error-2");
+    document.element("party-level-2").value = "21";
+    document.element("party-level-2").dispatch("input");
+    assert.equal(document.element("party-level-2").attributes.get("title"), "Party group 2: select a level from 1 through 20.");
+    document.element("party-level-2").value = "7";
+    document.element("party-level-2").dispatch("input");
+    assert.equal(document.element("party-level-2").attributes.has("title"), false);
     const removeButtons = document.element("party-rows").querySelectorAll<FakeElement>(".remove-party-row");
     assert.equal(removeButtons[0].attributes.get("aria-label"), "Remove party group 1");
     assert.equal(removeButtons[1].attributes.get("aria-label"), "Remove party group 2");

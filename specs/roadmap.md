@@ -1,7 +1,7 @@
 # Roadmap
 
 This file is the intake queue for follow-up work that may become a focused
-spec. Add a short kebab-case slug and enough context for a future `create-spec`
+spec. Add a short kebab-case slug and enough context for a future `spec-create`
 run to recover the intended boundary. Remove an entry after its implemented
 spec is archived or when the work is intentionally dropped.
 
