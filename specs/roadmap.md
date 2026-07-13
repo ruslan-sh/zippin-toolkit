@@ -114,11 +114,19 @@ monsters and statblock links without requiring pointer input.
 
 ### `encounter-storage-import-export`
 
-Status: planned
+Status: in-progress
 Prerequisite: none
 
 Store encounters locally and support portable import and export for backup,
 sharing, and restoration.
+
+### `encounter-markdown-export`
+
+Status: planned
+Prerequisite: `encounter-storage-import-export`
+
+Export the current Encounter Difficulty Calculator workspace as readable
+Markdown for use in campaign notes, documents, and other text-based tools.
 
 ### `encounter-list-enhancements`
 
