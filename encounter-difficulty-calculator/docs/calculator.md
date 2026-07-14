@@ -57,11 +57,75 @@ the most severe matching rank wins. The displayed rank is also color-coded:
 gray for Trivial, green for Low, yellow for Moderate, orange for High, and red
 for Deadly. Text remains the primary rank indicator.
 
+## Workspace persistence
+
+The calculator automatically stores one complete editable workspace in browser
+local storage under `zippin-toolkit.encounter-workspace.v1`. The stored JSON
+object has `version`, `party`, and ordered `encounters` fields. Party groups and
+monster rows are ordered arrays. Numeric controls are stored as finite JSON
+numbers or `null`; empty or unexpectedly nonnumeric controls become `null`,
+while out-of-range values remain numbers so validation can resume after refresh.
+
+On startup, a supported version-1 workspace is restored before the calculator
+renders, then thresholds, totals, ranks, and validation messages are derived
+again. Calculated results, validation presentation, focus, and generated DOM
+identifiers are not stored. Missing storage uses the normal defaults. If storage
+is unavailable, unreadable, malformed, or unsupported, the calculator remains
+usable, leaves the unreadable value untouched during loading, loads defaults,
+and reports the problem in an accessible status message. The next successful
+autosave after an edit replaces that value with the current workspace. Save
+failures are likewise reported without interrupting in-memory editing.
+
+## YAML backup export
+
+The **Export YAML backup** button downloads the workspace currently visible in
+the calculator as `encounter-workspace.yml`. Export uses the in-memory state, so
+it includes the latest edits even if browser storage is unavailable or full.
+
+The YAML document uses the same stable version-1 source schema as storage:
+
+```yaml
+version: 1
+party:
+  groups:
+    - playerCount: 4
+      level: 5
+  modifierType: percentage
+  modifierValue: 0
+encounters:
+  - name: Encounter 1
+    monsters:
+      - name: ""
+        xp: null
+        quantity: 1
+        url: ""
+```
+
+Array order is significant. Numeric fields are unquoted YAML numbers or `null`;
+out-of-range numbers round-trip and `null` restores as an empty input. Names,
+modifier types, and URLs are ordinary YAML
+strings; let a YAML editor preserve or add quoting for characters such as `:`,
+`#`, line breaks, and non-ASCII text. Derived totals, ranks, validation markup,
+focus, and generated DOM identifiers are never exported.
+
+## YAML backup import
+
+The **Import YAML backup** control accepts `.yml` and `.yaml` files using the
+documented version-1 schema. The complete document is safely parsed and
+validated before a permanent-replacement warning is shown. Unknown or missing
+fields, unsupported versions, wrong scalar types, non-finite numeric values,
+custom YAML tags, and non-HTTP(S) statblock URLs are rejected.
+
+After confirmation, the calculator replaces the visible workspace, derives
+totals, ranks, and validation messages again, and saves the imported snapshot.
+Canceling or encountering a read, parse, validation, rendering, or storage
+failure leaves the previous visible and stored workspace unchanged. Import
+successes, cancellations, and failures are reported in alert dialogs.
+
 ## Boundaries
 
-Calculator state is transient and resets on refresh. The tool does not import
-monster data, apply monster-count or party-size multipliers, persist state, or
-share encounters.
+The tool does not import monster data, apply monster-count or party-size
+multipliers, or share encounters.
 
 ## Implementation
 
@@ -71,3 +135,8 @@ share encounters.
   encounters.
 - `src/encounter-ui.ts` manages independent encounter instances and distributes
   shared thresholds.
+- `src/workspace-state.ts` defines and validates the versioned source state.
+- `src/workspace-storage.ts` loads and saves the state without depending on the
+  DOM.
+- `src/workspace-yaml.ts` serializes the stable YAML backup representation.
+- `src/workspace-import.ts` validates and transactionally applies YAML backups.

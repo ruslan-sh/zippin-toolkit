@@ -33,6 +33,13 @@ main {
   padding: var(--space-2);
 }
 
+.page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1);
+  align-items: center;
+}
+
 .party-row-headers,
 .party-row-controls {
   display: grid;
@@ -178,6 +185,44 @@ main {
 
 .error:empty {
   display: none;
+}
+
+.workspace-status {
+  margin-block: var(--space-1);
+  color: var(--color-error);
+}
+
+.workspace-status:empty {
+  display: none;
+}
+
+.workspace-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#export-workspace,
+.workspace-action {
+  display: grid;
+  padding: 0;
+  place-items: center;
+  color: var(--color-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+#export-workspace:hover,
+#export-workspace:focus-visible,
+.workspace-action:hover,
+.workspace-action:focus-within {
+  color: var(--color-text);
+}
+
+.workspace-action:focus-within {
+  border-radius: var(--space-half);
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
 }
 
 .results {

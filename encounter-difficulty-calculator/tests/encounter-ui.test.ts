@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { initializeEncounterBuilder } from "../src/encounter-ui";
+import { EncounterState } from "../src/workspace-state";
 
 class FakeElement {
     value = "";
@@ -196,4 +197,50 @@ test("keeps monster controls, validation, URLs, and identities encounter-specifi
     byClass(row, "remove-monster")[0].dispatch("click");
     assert.equal(byClass(encounter, "monster-row").length, 1);
     assert.equal(byClass(encounter, "add-monster")[0].focused, true);
+});
+
+test("hydrates ordered raw encounter state and publishes complete snapshots", () => {
+    const document = new FakeDocument();
+    const updates: EncounterState[][] = [];
+    const controller = initializeEncounterBuilder(
+        document as unknown as Document,
+        [
+            { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: null, url: "https://example.com/ogre" }] },
+            { name: "Empty", monsters: [] },
+        ],
+        (state) => updates.push(state),
+    );
+    assert.deepEqual(controller.getState(), [
+        { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: null, url: "https://example.com/ogre" }] },
+        { name: "Empty", monsters: [] },
+    ]);
+    const first = document.element("encounters").children[0];
+    const firstInputs = inputs(first);
+    assert.equal(firstInputs[2].value, "");
+    assert.equal(firstInputs[1].attributes.get("aria-invalid"), "true");
+    assert.equal(firstInputs[2].attributes.get("aria-invalid"), "true");
+    firstInputs[2].value = " ";
+    assert.equal(controller.getState()[0].monsters[0].quantity, null);
+    firstInputs[1].value = "450";
+    firstInputs[1].dispatch("input");
+    assert.equal(updates.length, 1);
+    assert.equal(updates[0][0].monsters[0].xp, 450);
+    assert.equal(updates[0][1].name, "Empty");
+
+    document.nextPrompt = "  Renamed  ";
+    byClass(first, "rename-encounter")[0].dispatch("click");
+    assert.equal(updates[1][0].name, "Renamed");
+
+    document.nextPrompt = "https://example.com/renamed";
+    byClass(first, "edit-statblock")[0].dispatch("click");
+    assert.equal(updates[2][0].monsters[0].url, "https://example.com/renamed");
+
+    byClass(first, "add-monster")[0].dispatch("click");
+    assert.equal(updates[3][0].monsters.length, 2);
+    byClass(first, "remove-monster")[1].dispatch("click");
+    assert.equal(updates[4][0].monsters.length, 1);
+
+    document.element("add-encounter").dispatch("click");
+    assert.equal(updates[5].length, 3);
+    assert.equal(updates[5][2].name, "Encounter 3");
 });
