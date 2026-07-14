@@ -178,7 +178,7 @@ test("hides removal for the final row and applies one shared modifier", () => {
     assert.equal(document.element("low-result").textContent, "2,200 XP");
 });
 
-test("hydrates raw party state and publishes ordered snapshots", () => {
+test("hydrates typed party state and publishes ordered snapshots", () => {
     const document = setup(() => undefined, false);
     const updates: PartyState[] = [];
     const getState = initializePartyCalculator(
@@ -186,28 +186,28 @@ test("hydrates raw party state and publishes ordered snapshots", () => {
         () => undefined,
         {
             groups: [
-                { playerCount: "", level: "21" },
-                { playerCount: "2", level: "7" },
+                { playerCount: null, level: 21 },
+                { playerCount: 2, level: 7 },
             ],
             modifierType: "flat",
-            modifierValue: "-10.5",
+            modifierValue: -10.5,
         },
         (state) => updates.push(state),
     );
     assert.deepEqual(getState(), {
         groups: [
-            { playerCount: "", level: "21" },
-            { playerCount: "2", level: "7" },
+            { playerCount: null, level: 21 },
+            { playerCount: 2, level: 7 },
         ],
         modifierType: "flat",
-        modifierValue: "-10.5",
+        modifierValue: -10.5,
     });
     assert.equal(document.element("low-result").textContent, "—");
     document.element("player-count-1").value = "3";
     document.element("player-count-1").dispatch("input");
     assert.equal(updates.length, 1);
-    assert.equal(updates[0].groups[0].playerCount, "3");
-    assert.equal(updates[0].groups[1].level, "7");
+    assert.equal(updates[0].groups[0].playerCount, 3);
+    assert.equal(updates[0].groups[1].level, 7);
 
     document.element("modifier-type").value = "percentage";
     document.element("modifier-type").dispatch("change");
@@ -215,10 +215,10 @@ test("hydrates raw party state and publishes ordered snapshots", () => {
 
     document.element("add-party-row").dispatch("click");
     assert.equal(updates[2].groups.length, 3);
-    assert.deepEqual(updates[2].groups[2], { playerCount: "1", level: "1" });
+    assert.deepEqual(updates[2].groups[2], { playerCount: 1, level: 1 });
 
     const removeButtons = document.element("party-rows").querySelectorAll<FakeElement>(".remove-party-row");
     removeButtons[1].dispatch("click");
     assert.equal(updates[3].groups.length, 2);
-    assert.equal(updates[3].groups[1].level, "1");
+    assert.equal(updates[3].groups[1].level, 1);
 });

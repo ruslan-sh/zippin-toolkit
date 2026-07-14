@@ -3,21 +3,23 @@ import { ModifierType } from "./party-calculator";
 
 export const WORKSPACE_VERSION = 1 as const;
 
+export type WorkspaceNumber = number | null;
+
 export interface PartyGroupState {
-    playerCount: string;
-    level: string;
+    playerCount: WorkspaceNumber;
+    level: WorkspaceNumber;
 }
 
 export interface PartyState {
     groups: PartyGroupState[];
     modifierType: ModifierType;
-    modifierValue: string;
+    modifierValue: WorkspaceNumber;
 }
 
 export interface MonsterState {
     name: string;
-    xp: string;
-    quantity: string;
+    xp: WorkspaceNumber;
+    quantity: WorkspaceNumber;
     url: string;
 }
 
@@ -35,13 +37,13 @@ export interface WorkspaceState {
 export const DEFAULT_WORKSPACE_STATE: WorkspaceState = {
     version: WORKSPACE_VERSION,
     party: {
-        groups: [{ playerCount: "4", level: "5" }],
+        groups: [{ playerCount: 4, level: 5 }],
         modifierType: "percentage",
-        modifierValue: "0",
+        modifierValue: 0,
     },
     encounters: [{
         name: "Encounter 1",
-        monsters: [{ name: "", xp: "", quantity: "1", url: "" }],
+        monsters: [{ name: "", xp: null, quantity: 1, url: "" }],
     }],
 };
 
@@ -59,21 +61,15 @@ function isString(value: unknown): value is string {
     return typeof value === "string";
 }
 
-// Match the HTML "valid floating-point number" syntax accepted by number
-// inputs, plus the empty value used for unfinished fields. Leading plus signs,
-// whitespace, non-finite values, and trailing decimal points are sanitized by
-// browsers and therefore cannot round-trip through the controls.
-const NUMBER_INPUT_VALUE = /^-?(?:\d+(?:\.\d+)?|\.\d+)(?:[eE][+-]?\d+)?$/;
-
-export function isNumberInputValue(value: unknown): value is string {
-    return value === "" || (isString(value) && NUMBER_INPUT_VALUE.test(value) && Number.isFinite(Number(value)));
+export function isWorkspaceNumber(value: unknown): value is WorkspaceNumber {
+    return value === null || (typeof value === "number" && Number.isFinite(value));
 }
 
 function isPartyGroupState(value: unknown): value is PartyGroupState {
     return isRecord(value)
         && hasExactKeys(value, ["playerCount", "level"])
-        && isNumberInputValue(value.playerCount)
-        && isNumberInputValue(value.level);
+        && isWorkspaceNumber(value.playerCount)
+        && isWorkspaceNumber(value.level);
 }
 
 function isPartyState(value: unknown): value is PartyState {
@@ -83,15 +79,15 @@ function isPartyState(value: unknown): value is PartyState {
         && value.groups.length > 0
         && value.groups.every(isPartyGroupState)
         && (value.modifierType === "percentage" || value.modifierType === "flat")
-        && isNumberInputValue(value.modifierValue);
+        && isWorkspaceNumber(value.modifierValue);
 }
 
 function isMonsterState(value: unknown): value is MonsterState {
     return isRecord(value)
         && hasExactKeys(value, ["name", "xp", "quantity", "url"])
         && isString(value.name)
-        && isNumberInputValue(value.xp)
-        && isNumberInputValue(value.quantity)
+        && isWorkspaceNumber(value.xp)
+        && isWorkspaceNumber(value.quantity)
         && isString(value.url)
         && (!value.url.trim() || safeStatblockUrl(value.url) !== null);
 }

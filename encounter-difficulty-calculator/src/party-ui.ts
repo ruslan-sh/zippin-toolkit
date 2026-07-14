@@ -9,7 +9,16 @@ function requiredElement<T extends HTMLElement>(document: Document, id: string):
     return element as T;
 }
 
-function createPartyRow(document: Document, id: number, state: PartyGroupState = { playerCount: "1", level: "1" }): HTMLElement {
+function inputValue(value: number | null): string {
+    return value === null ? "" : String(value);
+}
+
+function workspaceNumber(value: string): number | null {
+    const number = Number(value);
+    return value === "" || !Number.isFinite(number) ? null : number;
+}
+
+function createPartyRow(document: Document, id: number, state: PartyGroupState = { playerCount: 1, level: 1 }): HTMLElement {
     const row = document.createElement("div");
     row.className = "party-row";
     row.dataset.partyRow = String(id);
@@ -36,8 +45,8 @@ function createPartyRow(document: Document, id: number, state: PartyGroupState =
         controls.append(input);
     };
 
-    addInput("player-count", `Players in group ${id}`, state.playerCount);
-    addInput("party-level", `Level for group ${id}`, state.level);
+    addInput("player-count", `Players in group ${id}`, inputValue(state.playerCount));
+    addInput("party-level", `Level for group ${id}`, inputValue(state.level));
 
     const remove = document.createElement("button");
     remove.className = "remove-party-row";
@@ -80,7 +89,7 @@ export function initializePartyCalculator(
         hydratedRows.forEach((row) => rows.append(row));
         hydratedRows[hydratedRows.length - 1].querySelector(".party-row-controls")?.append(addButton);
         modifierType.value = initialState.modifierType;
-        modifierValue.value = initialState.modifierValue;
+        modifierValue.value = inputValue(initialState.modifierValue);
         nextRowId = initialState.groups.length + 1;
     }
 
@@ -88,12 +97,12 @@ export function initializePartyCalculator(
         groups: Array.from(rows.querySelectorAll<HTMLElement>("[data-party-row]"), (row) => {
             const id = row.dataset.partyRow;
             return {
-                playerCount: requiredElement<HTMLInputElement>(document, `player-count-${id}`).value,
-                level: requiredElement<HTMLInputElement>(document, `party-level-${id}`).value,
+                playerCount: workspaceNumber(requiredElement<HTMLInputElement>(document, `player-count-${id}`).value),
+                level: workspaceNumber(requiredElement<HTMLInputElement>(document, `party-level-${id}`).value),
             };
         }),
         modifierType: modifierType.value as ModifierType,
-        modifierValue: modifierValue.value,
+        modifierValue: workspaceNumber(modifierValue.value),
     });
 
     const setValidation = (input: HTMLElement, valid: boolean, message: string, errorId?: string): void => {

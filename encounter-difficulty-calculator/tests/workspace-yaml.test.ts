@@ -9,15 +9,15 @@ test("serializes workspace YAML deterministically and round-trips source state",
     const state: WorkspaceState = {
         version: 1,
         party: {
-            groups: [{ playerCount: "", level: "99" }, { playerCount: "2", level: "5" }],
+            groups: [{ playerCount: null, level: 99 }, { playerCount: 2, level: 5 }],
             modifierType: "flat",
-            modifierValue: "-25",
+            modifierValue: -25,
         },
         encounters: [{
             name: "Café: the #1 gate\n第二幕",
             monsters: [
-                { name: "Ogre: elite #2", xp: "450", quantity: "", url: "https://example.com/ogre?a=1&b=2" },
-                { name: "", xp: "", quantity: "1", url: "" },
+                { name: "Ogre: elite #2", xp: 450, quantity: null, url: "https://example.com/ogre?a=1&b=2" },
+                { name: "", xp: null, quantity: 1, url: "" },
             ],
         }],
     };
@@ -26,5 +26,8 @@ test("serializes workspace YAML deterministically and round-trips source state",
     assert.equal(serializeWorkspaceYaml(state), first);
     assert.deepEqual(parse(first), state);
     assert.match(first, /^version: 1\nparty:/);
+    assert.match(first, /playerCount: null/);
+    assert.match(first, /xp: 450/);
+    assert.doesNotMatch(first, /xp: ["']450["']/);
     assert.doesNotMatch(first, /total|rank|validation|focus|\bid:/i);
 });

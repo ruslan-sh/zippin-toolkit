@@ -205,13 +205,13 @@ test("hydrates ordered raw encounter state and publishes complete snapshots", ()
     const controller = initializeEncounterBuilder(
         document as unknown as Document,
         [
-            { name: "Unfinished", monsters: [{ name: "Ogre", xp: "", quantity: "0", url: "https://example.com/ogre" }] },
+            { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: 0, url: "https://example.com/ogre" }] },
             { name: "Empty", monsters: [] },
         ],
         (state) => updates.push(state),
     );
     assert.deepEqual(controller.getState(), [
-        { name: "Unfinished", monsters: [{ name: "Ogre", xp: "", quantity: "0", url: "https://example.com/ogre" }] },
+        { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: 0, url: "https://example.com/ogre" }] },
         { name: "Empty", monsters: [] },
     ]);
     const first = document.element("encounters").children[0];
@@ -221,7 +221,7 @@ test("hydrates ordered raw encounter state and publishes complete snapshots", ()
     firstInputs[1].value = "450";
     firstInputs[1].dispatch("input");
     assert.equal(updates.length, 1);
-    assert.equal(updates[0][0].monsters[0].xp, "450");
+    assert.equal(updates[0][0].monsters[0].xp, 450);
     assert.equal(updates[0][1].name, "Empty");
 
     document.nextPrompt = "  Renamed  ";

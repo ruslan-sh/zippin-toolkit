@@ -7,6 +7,15 @@ interface EncounterEntry {
     read: () => EncounterState;
 }
 
+function inputValue(value: number | null): string {
+    return value === null ? "" : String(value);
+}
+
+function workspaceNumber(value: string): number | null {
+    const number = Number(value);
+    return value === "" || !Number.isFinite(number) ? null : number;
+}
+
 export interface EncounterBuilderController {
     (thresholds: Thresholds | null): void;
     getState: () => EncounterState[];
@@ -133,11 +142,11 @@ export function initializeEncounterBuilder(
             const monsterName = makeInput("Monster Name", "text");
             monsterName.value = initialMonster?.name ?? "";
             const xp = makeInput("XP", "number", true);
-            xp.value = initialMonster?.xp ?? "";
+            xp.value = inputValue(initialMonster?.xp ?? null);
             xp.min = "0";
             xp.step = "1";
             const quantity = makeInput("Quantity", "number", true);
-            quantity.value = initialMonster?.quantity ?? "1";
+            quantity.value = inputValue(initialMonster?.quantity ?? 1);
             quantity.min = "1";
             quantity.step = "1";
             const statblock = document.createElement("div");
@@ -205,8 +214,8 @@ export function initializeEncounterBuilder(
             });
             const readState = (): MonsterState => ({
                 name: monsterName.value,
-                xp: xp.value,
-                quantity: quantity.value,
+                xp: workspaceNumber(xp.value),
+                quantity: workspaceNumber(quantity.value),
                 url: savedUrl,
             });
             const validate = (notify = false): void => {
@@ -286,7 +295,7 @@ export function initializeEncounterBuilder(
             }),
         });
         encountersElement.append(section);
-        (initialEncounter?.monsters ?? [{ name: "", xp: "", quantity: "1", url: "" }])
+        (initialEncounter?.monsters ?? [{ name: "", xp: null, quantity: 1, url: "" }])
             .forEach((monster, index) => addMonsterRow(focusNewEncounter && index === 0, monster, false));
         if (publish) publishState();
     };

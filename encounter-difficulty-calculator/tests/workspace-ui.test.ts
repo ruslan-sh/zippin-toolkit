@@ -150,13 +150,13 @@ test("publishes complete workspace snapshots for party and encounter edits", () 
     const initial: WorkspaceState = {
         version: 1,
         party: {
-            groups: [{ playerCount: "4", level: "5" }],
+            groups: [{ playerCount: 4, level: 5 }],
             modifierType: "percentage",
-            modifierValue: "0",
+            modifierValue: 0,
         },
         encounters: [{
             name: "Bridge",
-            monsters: [{ name: "Ogre", xp: "450", quantity: "1", url: "" }],
+            monsters: [{ name: "Ogre", xp: 450, quantity: 1, url: "" }],
         }],
     };
     const updates: WorkspaceState[] = [];
@@ -164,7 +164,7 @@ test("publishes complete workspace snapshots for party and encounter edits", () 
 
     document.element("modifier-value").value = "10";
     document.element("modifier-value").dispatch("input");
-    assert.equal(updates[0].party.modifierValue, "10");
+    assert.equal(updates[0].party.modifierValue, 10);
     assert.equal(updates[0].encounters[0].name, "Bridge");
 
     const encounter = document.element("encounters").children[0];
@@ -172,7 +172,7 @@ test("publishes complete workspace snapshots for party and encounter edits", () 
     assert.ok(monsterName);
     monsterName.value = "Troll";
     monsterName.dispatch("input");
-    assert.equal(updates[1].party.modifierValue, "10");
+    assert.equal(updates[1].party.modifierValue, 10);
     assert.equal(updates[1].encounters[0].monsters[0].name, "Troll");
     assert.deepEqual(getState(), updates[1]);
 });
@@ -183,15 +183,15 @@ test("restores persisted raw state and derives calculations and validation", () 
     const restored: WorkspaceState = {
         version: 1,
         party: {
-            groups: [{ playerCount: "4", level: "5" }, { playerCount: "", level: "99" }],
+            groups: [{ playerCount: 4, level: 5 }, { playerCount: null, level: 99 }],
             modifierType: "flat",
-            modifierValue: "25",
+            modifierValue: 25,
         },
         encounters: [{
             name: "Bridge",
             monsters: [
-                { name: "Ogre", xp: "450", quantity: "2", url: "https://example.com/ogre" },
-                { name: "Unknown", xp: "", quantity: "0", url: "" },
+                { name: "Ogre", xp: 450, quantity: 2, url: "https://example.com/ogre" },
+                { name: "Unknown", xp: null, quantity: 0, url: "" },
             ],
         }],
     };
@@ -218,7 +218,7 @@ test("autosaves complete party and encounter snapshots", () => {
     document.element("modifier-value").value = "10";
     document.element("modifier-value").dispatch("input");
     let saved = JSON.parse(storage.value ?? "") as WorkspaceState;
-    assert.equal(saved.party.modifierValue, "10");
+    assert.equal(saved.party.modifierValue, 10);
 
     const encounter = document.element("encounters").children[0];
     document.defaultView.prompt = () => "https://example.com/goblin";
@@ -226,7 +226,7 @@ test("autosaves complete party and encounter snapshots", () => {
     assert.ok(editStatblock);
     editStatblock.dispatch("click");
     saved = JSON.parse(storage.value ?? "") as WorkspaceState;
-    assert.equal(saved.party.modifierValue, "10");
+    assert.equal(saved.party.modifierValue, 10);
     assert.equal(saved.encounters[0].monsters[0].url, "https://example.com/goblin");
 
     document.element("add-encounter").dispatch("click");
@@ -275,7 +275,7 @@ test("exports the current in-memory workspace after a storage write failure", as
 
     assert.ok(exported);
     const yaml = await (exported as Blob).text();
-    assert.match(yaml, /modifierValue: "17"/);
+    assert.match(yaml, /modifierValue: 17/);
     assert.deepEqual(revoked, ["blob:workspace"]);
     assert.match(document.element("workspace-status").textContent, /could not be saved/);
 });
@@ -302,7 +302,7 @@ test("downloads a normally persisted workspace with the documented filename", as
     assert.equal(link.href, "blob:normal-workspace");
     assert.equal(link.clicked, true);
     assert.ok(exported);
-    assert.match(await (exported as Blob).text(), /modifierValue: "8"/);
+    assert.match(await (exported as Blob).text(), /modifierValue: 8/);
 });
 
 test("announces export setup and serialization failures without changing state", () => {

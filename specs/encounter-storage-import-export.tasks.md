@@ -148,7 +148,7 @@ Definition of done:
 
 ## Task 4: Use typed workspace numeric values
 
-Status: todo
+Status: done
 
 Summary: Store, restore, and export calculator numeric controls as finite
 numbers or `null` without changing calculator results or validation rules.

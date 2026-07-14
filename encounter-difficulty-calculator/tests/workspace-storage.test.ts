@@ -35,15 +35,15 @@ function unfinishedWorkspace(): WorkspaceState {
     return {
         version: 1,
         party: {
-            groups: [{ playerCount: "", level: "99" }, { playerCount: "2", level: "1" }],
+            groups: [{ playerCount: null, level: 99 }, { playerCount: 2, level: 1 }],
             modifierType: "flat",
-            modifierValue: "-25",
+            modifierValue: -25,
         },
         encounters: [{
             name: "Ruins",
             monsters: [
-                { name: "Ogre", xp: "450", quantity: "2", url: "https://example.com/ogre" },
-                { name: "Unknown", xp: "", quantity: "0", url: "" },
+                { name: "Ogre", xp: 450, quantity: 2, url: "https://example.com/ogre" },
+                { name: "Unknown", xp: null, quantity: 0, url: "" },
             ],
         }],
     };

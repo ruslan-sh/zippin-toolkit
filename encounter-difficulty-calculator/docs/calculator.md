@@ -62,8 +62,9 @@ for Deadly. Text remains the primary rank indicator.
 The calculator automatically stores one complete editable workspace in browser
 local storage under `zippin-toolkit.encounter-workspace.v1`. The stored JSON
 object has `version`, `party`, and ordered `encounters` fields. Party groups and
-monster rows are ordered arrays, and editable number inputs are stored as raw
-strings so empty and currently invalid values survive a refresh.
+monster rows are ordered arrays. Numeric controls are stored as finite JSON
+numbers or `null`; empty or unexpectedly nonnumeric controls become `null`,
+while out-of-range values remain numbers so validation can resume after refresh.
 
 On startup, a supported version-1 workspace is restored before the calculator
 renders, then thresholds, totals, ranks, and validation messages are derived
@@ -86,21 +87,22 @@ The YAML document uses the same stable version-1 source schema as storage:
 version: 1
 party:
   groups:
-    - playerCount: "4"
-      level: "5"
+    - playerCount: 4
+      level: 5
   modifierType: percentage
-  modifierValue: "0"
+  modifierValue: 0
 encounters:
   - name: Encounter 1
     monsters:
       - name: ""
-        xp: ""
-        quantity: "1"
+        xp: null
+        quantity: 1
         url: ""
 ```
 
-Array order is significant. Editable numeric fields remain strings so empty or
-temporarily invalid input can round-trip. Names and URLs are ordinary YAML
+Array order is significant. Numeric fields are unquoted YAML numbers or `null`;
+out-of-range numbers round-trip and `null` restores as an empty input. Names,
+modifier types, and URLs are ordinary YAML
 strings; let a YAML editor preserve or add quoting for characters such as `:`,
 `#`, line breaks, and non-ASCII text. Derived totals, ranks, validation markup,
 focus, and generated DOM identifiers are never exported.
