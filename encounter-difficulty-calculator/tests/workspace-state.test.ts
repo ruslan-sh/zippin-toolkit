@@ -64,6 +64,10 @@ test("rejects unsupported, ambiguous, and unsafe workspace structures", () => {
         monsters: [{ name: "", xp: 1, quantity: 1, url: "javascript:alert(1)" }],
     }] })), false);
     assert.equal(isWorkspaceState(workspace({ encounters: [{ name: " ", monsters: [] }] })), false);
+
+    const inheritedProperty = workspace();
+    Object.setPrototypeOf(inheritedProperty, { extra: true });
+    assert.equal(isWorkspaceState(inheritedProperty), false);
 });
 
 test("coordinates complete ordered state updates", () => {

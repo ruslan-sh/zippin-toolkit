@@ -48,7 +48,9 @@ export const DEFAULT_WORKSPACE_STATE: WorkspaceState = {
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
+    if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+    const prototype = Object.getPrototypeOf(value) as unknown;
+    return prototype === Object.prototype || prototype === null;
 }
 
 function hasExactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
