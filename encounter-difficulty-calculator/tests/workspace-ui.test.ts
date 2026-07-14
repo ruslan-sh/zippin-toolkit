@@ -149,6 +149,7 @@ function setup(): FakeDocument {
 class FakeStorage implements WorkspaceStorage {
     value: string | null = null;
     writeError = false;
+    writes = 0;
 
     getItem(key: string): string | null {
         assert.equal(key, WORKSPACE_STORAGE_KEY);
@@ -157,6 +158,7 @@ class FakeStorage implements WorkspaceStorage {
 
     setItem(key: string, value: string): void {
         assert.equal(key, WORKSPACE_STORAGE_KEY);
+        this.writes += 1;
         if (this.writeError) throw new Error("quota");
         this.value = value;
     }
@@ -403,31 +405,38 @@ test("restores persisted raw state and derives calculations and validation", () 
     assert.equal(document.element("workspace-status").textContent, "");
 });
 
-test("autosaves complete party and encounter snapshots", () => {
+test("batches autosaves while preserving complete party and encounter snapshots", async () => {
     const document = setup();
     const storage = new FakeStorage();
     initializePersistedWorkspace(document as unknown as Document, storage);
 
     document.element("modifier-value").value = "10";
     document.element("modifier-value").dispatch("input");
+    document.element("modifier-value").value = "11";
+    document.element("modifier-value").dispatch("input");
+    assert.equal(storage.writes, 0);
+    await Promise.resolve();
     let saved = JSON.parse(storage.value ?? "") as WorkspaceState;
-    assert.equal(saved.party.modifierValue, 10);
+    assert.equal(saved.party.modifierValue, 11);
+    assert.equal(storage.writes, 1);
 
     const encounter = document.element("encounters").children[0];
     document.defaultView.prompt = () => "https://example.com/goblin";
     const editStatblock = descendants(encounter).find((element) => element.className === "edit-statblock");
     assert.ok(editStatblock);
     editStatblock.dispatch("click");
+    await Promise.resolve();
     saved = JSON.parse(storage.value ?? "") as WorkspaceState;
-    assert.equal(saved.party.modifierValue, 10);
+    assert.equal(saved.party.modifierValue, 11);
     assert.equal(saved.encounters[0].monsters[0].url, "https://example.com/goblin");
 
     document.element("add-encounter").dispatch("click");
+    await Promise.resolve();
     saved = JSON.parse(storage.value ?? "") as WorkspaceState;
     assert.deepEqual(saved.encounters.map(({ name }) => name), ["Encounter 1", "Encounter 2"]);
 });
 
-test("preserves corrupt startup data and deduplicates save failure announcements", () => {
+test("preserves corrupt startup data and deduplicates save failure announcements", async () => {
     const document = setup();
     const storage = new FakeStorage();
     storage.value = "corrupt recovery data";
@@ -440,10 +449,12 @@ test("preserves corrupt startup data and deduplicates save failure announcements
     storage.writeError = true;
     document.element("modifier-value").value = "1";
     document.element("modifier-value").dispatch("input");
+    await Promise.resolve();
     const writesAfterFirstFailure = status.textContentWrites;
     assert.match(status.textContent, /could not be saved/);
     document.element("modifier-value").value = "2";
     document.element("modifier-value").dispatch("input");
+    await Promise.resolve();
     assert.equal(status.textContentWrites, writesAfterFirstFailure);
     assert.equal(storage.value, "corrupt recovery data");
 });

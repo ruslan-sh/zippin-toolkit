@@ -2,6 +2,7 @@ import { loadWorkspace, replaceWorkspace, saveWorkspace, WorkspaceStorage } from
 import { initializeWorkspaceExport, WorkspaceDownloadEnvironment } from "./workspace-export";
 import { initializeWorkspaceImport, WorkspaceImportEnvironment } from "./workspace-import";
 import { initializeWorkspace } from "./workspace-ui";
+import { WorkspaceState } from "./workspace-state";
 
 function browserStorage(): WorkspaceStorage | null {
     try {
@@ -28,9 +29,20 @@ export function initializePersistedWorkspace(
 
     const restored = loadWorkspace(storage);
     announce(restored.error);
-    const workspace = initializeWorkspace(document, restored.state, (state) => {
-        announce(saveWorkspace(storage, state));
-    });
+    let pendingSave: WorkspaceState | null = null;
+    let saveScheduled = false;
+    const scheduleSave = (state: WorkspaceState): void => {
+        pendingSave = state;
+        if (saveScheduled) return;
+        saveScheduled = true;
+        queueMicrotask(() => {
+            saveScheduled = false;
+            const nextState = pendingSave;
+            pendingSave = null;
+            if (nextState) announce(saveWorkspace(storage, nextState));
+        });
+    };
+    const workspace = initializeWorkspace(document, restored.state, scheduleSave);
     initializeWorkspaceExport(document, workspace, announce, downloadEnvironment);
     initializeWorkspaceImport(document, workspace, workspace.replaceState, (state) => replaceWorkspace(storage, state), importEnvironment);
 }

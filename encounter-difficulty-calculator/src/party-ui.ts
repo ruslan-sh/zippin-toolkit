@@ -1,5 +1,5 @@
 import { calculateMixedPartyThresholds, ModifierType, PartyGroup, Thresholds } from "./party-calculator";
-import { PartyGroupState, PartyState } from "./workspace-state";
+import { parseWorkspaceNumber, PartyGroupState, PartyState, workspaceInputValue } from "./workspace-state";
 
 const RESULT_IDS = ["low", "moderate", "high"] as const;
 
@@ -7,15 +7,6 @@ function requiredElement<T extends HTMLElement>(document: Document, id: string):
     const element = document.getElementById(id);
     if (!element) throw new Error(`Missing calculator element: ${id}`);
     return element as T;
-}
-
-function inputValue(value: number | null): string {
-    return value === null ? "" : String(value);
-}
-
-function workspaceNumber(value: string): number | null {
-    const number = Number(value);
-    return value.trim() === "" || !Number.isFinite(number) ? null : number;
 }
 
 function createPartyRow(document: Document, id: number, state: PartyGroupState = { playerCount: 1, level: 1 }): HTMLElement {
@@ -45,8 +36,8 @@ function createPartyRow(document: Document, id: number, state: PartyGroupState =
         controls.append(input);
     };
 
-    addInput("player-count", `Players in group ${id}`, inputValue(state.playerCount));
-    addInput("party-level", `Level for group ${id}`, inputValue(state.level));
+    addInput("player-count", `Players in group ${id}`, workspaceInputValue(state.playerCount));
+    addInput("party-level", `Level for group ${id}`, workspaceInputValue(state.level));
 
     const remove = document.createElement("button");
     remove.className = "remove-party-row";
@@ -89,7 +80,7 @@ export function initializePartyCalculator(
         hydratedRows.forEach((row) => rows.append(row));
         hydratedRows[hydratedRows.length - 1].querySelector(".party-row-controls")?.append(addButton);
         modifierType.value = state.modifierType;
-        modifierValue.value = inputValue(state.modifierValue);
+        modifierValue.value = workspaceInputValue(state.modifierValue);
         nextRowId = state.groups.length + 1;
     };
     if (initialState) hydrate(initialState);
@@ -98,12 +89,12 @@ export function initializePartyCalculator(
         groups: Array.from(rows.querySelectorAll<HTMLElement>("[data-party-row]"), (row) => {
             const id = row.dataset.partyRow;
             return {
-                playerCount: workspaceNumber(requiredElement<HTMLInputElement>(document, `player-count-${id}`).value),
-                level: workspaceNumber(requiredElement<HTMLInputElement>(document, `party-level-${id}`).value),
+                playerCount: parseWorkspaceNumber(requiredElement<HTMLInputElement>(document, `player-count-${id}`).value),
+                level: parseWorkspaceNumber(requiredElement<HTMLInputElement>(document, `party-level-${id}`).value),
             };
         }),
         modifierType: modifierType.value as ModifierType,
-        modifierValue: workspaceNumber(modifierValue.value),
+        modifierValue: parseWorkspaceNumber(modifierValue.value),
     });
 
     const setValidation = (input: HTMLElement, valid: boolean, message: string, errorId?: string): void => {

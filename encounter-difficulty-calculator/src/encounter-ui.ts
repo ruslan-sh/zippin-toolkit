@@ -1,19 +1,16 @@
 import { encounterTotal, MonsterInput, rankEncounter, safeStatblockUrl } from "./encounter-calculator";
 import { Thresholds } from "./party-calculator";
-import { DEFAULT_WORKSPACE_STATE, EncounterState, MonsterState } from "./workspace-state";
+import {
+    DEFAULT_WORKSPACE_STATE,
+    EncounterState,
+    MonsterState,
+    parseWorkspaceNumber,
+    workspaceInputValue,
+} from "./workspace-state";
 
 interface EncounterEntry {
     setThresholds: (thresholds: Thresholds | null) => void;
     read: () => EncounterState;
-}
-
-function inputValue(value: number | null): string {
-    return value === null ? "" : String(value);
-}
-
-function workspaceNumber(value: string): number | null {
-    const number = Number(value);
-    return value.trim() === "" || !Number.isFinite(number) ? null : number;
 }
 
 export interface EncounterBuilderController {
@@ -143,11 +140,11 @@ export function initializeEncounterBuilder(
             const monsterName = makeInput("Monster Name", "text");
             monsterName.value = initialMonster?.name ?? "";
             const xp = makeInput("XP", "number", true);
-            xp.value = inputValue(initialMonster?.xp ?? null);
+            xp.value = workspaceInputValue(initialMonster?.xp ?? null);
             xp.min = "0";
             xp.step = "1";
             const quantity = makeInput("Quantity", "number", true);
-            quantity.value = inputValue(initialMonster ? initialMonster.quantity : 1);
+            quantity.value = workspaceInputValue(initialMonster ? initialMonster.quantity : 1);
             quantity.min = "1";
             quantity.step = "1";
             const statblock = document.createElement("div");
@@ -215,8 +212,8 @@ export function initializeEncounterBuilder(
             });
             const readState = (): MonsterState => ({
                 name: monsterName.value,
-                xp: workspaceNumber(xp.value),
-                quantity: workspaceNumber(quantity.value),
+                xp: parseWorkspaceNumber(xp.value),
+                quantity: parseWorkspaceNumber(quantity.value),
                 url: savedUrl,
             });
             const validate = (notify = false): void => {

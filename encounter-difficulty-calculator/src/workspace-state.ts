@@ -5,6 +5,15 @@ export const WORKSPACE_VERSION = 1 as const;
 
 export type WorkspaceNumber = number | null;
 
+export function workspaceInputValue(value: WorkspaceNumber): string {
+    return value === null ? "" : String(value);
+}
+
+export function parseWorkspaceNumber(value: string): WorkspaceNumber {
+    const number = Number(value);
+    return value.trim() === "" || !Number.isFinite(number) ? null : number;
+}
+
 export interface PartyGroupState {
     playerCount: WorkspaceNumber;
     level: WorkspaceNumber;
