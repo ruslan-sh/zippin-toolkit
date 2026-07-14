@@ -147,7 +147,7 @@ export function initializeEncounterBuilder(
             xp.min = "0";
             xp.step = "1";
             const quantity = makeInput("Quantity", "number", true);
-            quantity.value = inputValue(initialMonster?.quantity ?? 1);
+            quantity.value = inputValue(initialMonster ? initialMonster.quantity : 1);
             quantity.min = "1";
             quantity.step = "1";
             const statblock = document.createElement("div");

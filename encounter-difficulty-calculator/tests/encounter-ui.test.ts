@@ -205,17 +205,18 @@ test("hydrates ordered raw encounter state and publishes complete snapshots", ()
     const controller = initializeEncounterBuilder(
         document as unknown as Document,
         [
-            { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: 0, url: "https://example.com/ogre" }] },
+            { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: null, url: "https://example.com/ogre" }] },
             { name: "Empty", monsters: [] },
         ],
         (state) => updates.push(state),
     );
     assert.deepEqual(controller.getState(), [
-        { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: 0, url: "https://example.com/ogre" }] },
+        { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: null, url: "https://example.com/ogre" }] },
         { name: "Empty", monsters: [] },
     ]);
     const first = document.element("encounters").children[0];
     const firstInputs = inputs(first);
+    assert.equal(firstInputs[2].value, "");
     assert.equal(firstInputs[1].attributes.get("aria-invalid"), "true");
     assert.equal(firstInputs[2].attributes.get("aria-invalid"), "true");
     firstInputs[1].value = "450";
