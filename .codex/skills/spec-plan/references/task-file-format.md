@@ -18,9 +18,8 @@ If split files are used, the first file should explain the sequence and list the
 
 ## Section Structure
 
-Each user-visible vertical delivery slice should be a `Task` section. Use one
-flat integer sequence across the whole file, including internal development
-tasks. For example:
+Each executable section should be either a user-visible `Task N` or an internal
+`Dev Task N`. Use one flat integer sequence across the whole file. For example:
 - `Dev Task 1`
 - `Task 2`
 - `Task 3`
@@ -43,7 +42,7 @@ Example shape:
 ```md
 # Tasks For <spec title>
 
-## Task 1: <user-visible outcome>
+## Task 2: <user-visible outcome enabled by Dev Task 1>
 Status: todo
 Summary: <one short paragraph>
 Scope:

@@ -43,14 +43,12 @@ In whole-feature mode, repeat this workflow task by task. Keep the repository wo
 
 ## Run the independent validation gate
 
-After finishing each task, run up to three validation iterations:
+After finishing each task, run this loop for at most three validation iterations:
 
-1. Spawn a fresh project custom agent named `spec_validator`, configured in `.codex/agents/spec-validator.toml` to use `gpt-5.6` with `model_reasoning_effort = "low"`. Give it the target spec and task scope, then instruct it to run `/spec-validate` against the current worktree. Do not give it prior validation conclusions or expected findings.
-2. Process the subagent's complete report. For every actionable finding attributable to the current task, inspect the cited evidence, fix the implementation or tracking as appropriate, and rerun the affected required checks.
-3. Spawn another fresh `spec_validator` agent and run `/spec-validate` again after the fixes. Never ask the previous subagent to merely recheck its own report.
-4. Pass the gate only when a validation iteration reports no actionable findings for the current task. Notes about later tasks, unrelated pre-existing issues, or intentionally out-of-scope work do not fail the gate; include them in the final report when relevant.
-
-Count every spawned `/spec-validate` review as one iteration, including a clean review. Stop after at most three iterations. If actionable findings remain after the third report, do not mark the task done and do not continue to another task. Report the unresolved findings, fixes attempted, and validation evidence, then wait for user guidance.
+1. Spawn a fresh project custom agent named `spec_validator`, configured in `.codex/agents/spec-validator.toml` to use `gpt-5.6` with `model_reasoning_effort = "low"`. Give it the target spec and task scope, then instruct it to run `/spec-validate` against the current worktree. Do not give it prior validation conclusions or expected findings. Each spawned review counts as one iteration.
+2. Process the subagent's complete report. If it has no actionable findings attributable to the current task, pass the gate and stop the loop. Notes about later tasks, unrelated pre-existing issues, or intentionally out-of-scope work do not fail the gate; include them in the final report when relevant.
+3. If actionable findings remain and this was iteration one or two, inspect the cited evidence, fix the implementation or tracking as appropriate, rerun the affected required checks, and return to step 1 with a fresh `spec_validator`. Never ask a previous subagent to recheck its own report.
+4. If actionable findings remain after iteration three, stop the loop without passing the gate. Do not mark the task done or continue to another task. Report the unresolved findings, fixes attempted, and validation evidence, then wait for user guidance.
 
 If the `spec_validator` custom agent or subagents themselves are unavailable, stop before marking the task done, report the unavailable gate, and wait for user guidance. Do not replace the configured custom agent with a generic subagent.
 
