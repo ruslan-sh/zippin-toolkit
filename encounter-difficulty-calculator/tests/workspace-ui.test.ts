@@ -12,6 +12,7 @@ class FakeElement {
     private content = "";
     textContentWrites = 0;
     hidden = false;
+    disabled = false;
     focused = false;
     href = "";
     download = "";
@@ -275,6 +276,38 @@ test("imports a validated backup after confirmation and persists the replacement
     assert.equal(refreshedDocument.element("modifier-value").value, "10");
     assert.equal(descendants(refreshedEncounter).find((element) => element.className === "encounter-total")?.textContent, importedTotal);
     assert.equal(descendants(refreshedEncounter).find((element) => element.className === "encounter-rank")?.textContent, importedRank);
+});
+
+test("ignores a second file selection while an import is pending", async () => {
+    const document = setup();
+    const storage = new FakeStorage();
+    const imported: WorkspaceState = {
+        ...DEFAULT_WORKSPACE_STATE,
+        party: { ...DEFAULT_WORKSPACE_STATE.party, modifierValue: 12 },
+    };
+    const yaml = (await import("../src/workspace-yaml")).serializeWorkspaceYaml(imported);
+    let finishRead: (source: string) => void = () => undefined;
+    let reads = 0;
+    initializePersistedWorkspace(document as unknown as Document, storage, undefined, {
+        confirm: () => true,
+        readFile: () => {
+            reads += 1;
+            return new Promise((resolve) => { finishRead = resolve; });
+        },
+    });
+    const input = document.element("import-workspace");
+    input.files = [{} as File];
+    input.dispatch("change");
+    assert.equal(input.disabled, true);
+
+    input.files = [{} as File];
+    input.dispatch("change");
+    assert.equal(reads, 1);
+
+    finishRead(yaml);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.equal(input.disabled, false);
+    assert.deepEqual(JSON.parse(storage.value ?? ""), imported);
 });
 
 test("imports null and out-of-range values and derives validation presentation", async () => {
