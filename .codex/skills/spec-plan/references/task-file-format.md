@@ -37,29 +37,6 @@ Never use decimal IDs such as `Dev Task 1.1` or parent/child task numbering.
 Do not add a development task when the user-visible slice is already a safe,
 reviewable increment.
 
-Example shape:
-
-```md
-# Tasks For <spec title>
-
-## Task 2: <user-visible outcome enabled by Dev Task 1>
-Status: todo
-Summary: <one short paragraph>
-Scope:
-- ...
-- ...
-Dependencies:
-- Depends on: none
-- Parallelizable: yes
-- Parallel with: Task 3
-Validation:
-- ...
-- ...
-Definition of done:
-- ...
-- ...
-```
-
 Development tasks use the same required fields and the same flat sequence:
 
 ```md
@@ -77,6 +54,29 @@ Validation:
 - ...
 Definition of done:
 - The repository remains working and this increment clearly advances Task 2.
+```
+
+User-visible task example:
+
+```md
+# Tasks For <spec title>
+
+## Task 2: <user-visible outcome enabled by Dev Task 1>
+Status: todo
+Summary: <one short paragraph>
+Scope:
+- ...
+- ...
+Dependencies:
+- Depends on: Dev Task 1
+- Parallelizable: yes
+- Parallel with: Task 3
+Validation:
+- ...
+- ...
+Definition of done:
+- ...
+- ...
 ```
 
 ## Required Fields
