@@ -37,12 +37,24 @@ Do not silently expand default mode into later tasks. Small prerequisite or inte
 4. Add or update tests with the behavior. Do not defer validation work assigned to the task.
 5. Run the task-specific checks plus all checks required by applicable `AGENTS.md` files. Use documented fallbacks when necessary.
 6. Fix failures caused by the implementation. Report pre-existing or environmental failures precisely.
+7. Run the independent validation gate below before marking the task done.
 
 In whole-feature mode, repeat this workflow task by task. Keep the repository working at each task boundary when practical.
 
+## Run the independent validation gate
+
+After finishing each task, run this loop for at most three validation iterations:
+
+1. Spawn a fresh project custom agent named `spec_validator`, configured in `.codex/agents/spec-validator.toml` to use `gpt-5.6` with `model_reasoning_effort = "low"`. Give it the target spec and task scope, then instruct it to run `$spec-validate` against the current worktree. Do not give it prior validation conclusions or expected findings. Each spawned review counts as one iteration.
+2. Process the subagent's complete report. If it has no actionable findings attributable to the current task, pass the gate and stop the loop. Notes about later tasks, unrelated pre-existing issues, or intentionally out-of-scope work do not fail the gate; include them in the final report when relevant.
+3. If actionable findings remain and this was iteration one or two, inspect the cited evidence, fix the implementation or tracking as appropriate, rerun the affected required checks, and return to step 1 with a fresh `spec_validator`. Never ask a previous subagent to recheck its own report.
+4. If actionable findings remain after iteration three, stop the loop without passing the gate. Do not mark the task done or continue to another task. Report the unresolved findings, fixes attempted, and validation evidence, then wait for user guidance.
+
+If the `spec_validator` custom agent or subagents themselves are unavailable, stop before marking the task done, report the unavailable gate, and wait for user guidance. Do not replace the configured custom agent with a generic subagent.
+
 ## Update tracking
 
-After implementation and required validation succeed, change the implemented task's status to `done`. Preserve task text and unrelated notes. Do not mark a task done when required behavior remains missing or a relevant failure is attributable to the change.
+After implementation, required local validation, and the independent validation gate succeed, change the implemented task's status to `done`. Preserve task text and unrelated notes. Do not mark a task done when required behavior remains missing, a relevant failure is attributable to the change, or the gate has not passed.
 
 In whole-feature mode, update each task only after its own completion. Do not archive the spec or update current-state documentation unless the user also requests the post-implementation documentation workflow.
 
