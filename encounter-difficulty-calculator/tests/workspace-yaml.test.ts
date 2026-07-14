@@ -52,4 +52,9 @@ test("safely parses only complete supported workspace documents", () => {
         "version: 1\nversion: 1\nparty: {}\nencounters: []\n",
         "version: &version 1\nparty: { groups: [{ playerCount: *version, level: 5 }], modifierType: flat, modifierValue: 0 }\nencounters: []\n",
     ].forEach((source) => assert.throws(() => parseWorkspaceYaml(source)));
+
+    assert.throws(
+        () => parseWorkspaceYaml("version: &version 1\nparty: { groups: [{ playerCount: *version, level: 5 }], modifierType: flat, modifierValue: 0 }\nencounters: []\n"),
+        /The backup is not valid YAML\./,
+    );
 });

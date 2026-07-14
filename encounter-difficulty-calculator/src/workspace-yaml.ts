@@ -14,7 +14,12 @@ export function serializeWorkspaceYaml(state: WorkspaceState): string {
 export function parseWorkspaceYaml(source: string): WorkspaceState {
     const document = parseDocument(source, { customTags: [], schema: "core", uniqueKeys: true });
     if (document.errors.length || document.warnings.length) throw new Error("The backup is not valid YAML.");
-    const candidate: unknown = document.toJS({ maxAliasCount: 0 });
+    let candidate: unknown;
+    try {
+        candidate = document.toJS({ maxAliasCount: 0 });
+    } catch {
+        throw new Error("The backup is not valid YAML.");
+    }
     if (!isWorkspaceState(candidate)) throw new Error("The backup does not use the supported workspace format.");
     return candidate;
 }

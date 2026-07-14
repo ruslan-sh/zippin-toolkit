@@ -31,9 +31,9 @@ export function initializeWorkspace(
             partyCalculator.replaceState(state.party);
             coordinator.replaceState(state);
         } catch (error) {
-            encounterBuilder.replaceState(previous.encounters);
-            partyCalculator.replaceState(previous.party);
-            coordinator.replaceState(previous);
+            try { encounterBuilder.replaceState(previous.encounters); } catch { /* Preserve the original render error. */ }
+            try { partyCalculator.replaceState(previous.party); } catch { /* Continue restoring the remaining state. */ }
+            try { coordinator.replaceState(previous); } catch { /* The coordinator currently cannot throw. */ }
             throw error;
         }
     };

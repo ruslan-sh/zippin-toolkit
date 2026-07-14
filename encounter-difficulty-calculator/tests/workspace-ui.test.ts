@@ -90,6 +90,7 @@ class FakeDocument {
     readonly elements = new Map<string, FakeElement>();
     readonly created: FakeElement[] = [];
     failNextCreate = false;
+    createErrors: string[] = [];
     readonly alerts: string[] = [];
     defaultView = {
         prompt: (): string | null => null,
@@ -98,6 +99,8 @@ class FakeDocument {
     };
 
     createElement(tag: string): FakeElement {
+        const createError = this.createErrors.shift();
+        if (createError) throw new Error(createError);
         if (this.failNextCreate) {
             this.failNextCreate = false;
             throw new Error("Simulated DOM rendering failure.");
@@ -221,6 +224,18 @@ test("rolls back a partial rendering failure before reporting the import error",
     assert.equal(descendants(encounter).find((element) => element.className === "encounter-total")?.textContent, "900 XP");
     assert.equal(storage.value, originalSerialized);
     assert.match(lastAlert(document), /not changed/);
+});
+
+test("preserves the original rendering error when rollback also fails", () => {
+    const document = setup();
+    const controller = initializeWorkspace(document as unknown as Document);
+    document.createErrors.push("Original rendering failure", "Rollback rendering failure");
+
+    assert.throws(() => controller.replaceState({
+        ...DEFAULT_WORKSPACE_STATE,
+        encounters: [{ name: "Imported", monsters: [] }],
+    }), /Original rendering failure/);
+    assert.deepEqual(controller(), DEFAULT_WORKSPACE_STATE);
 });
 
 test("imports a validated backup after confirmation and persists the replacement", async () => {
