@@ -1,4 +1,5 @@
 import { loadWorkspace, saveWorkspace, WorkspaceStorage } from "./workspace-storage";
+import { initializeWorkspaceExport, WorkspaceDownloadEnvironment } from "./workspace-export";
 import { initializeWorkspace } from "./workspace-ui";
 
 function browserStorage(): WorkspaceStorage | null {
@@ -12,6 +13,7 @@ function browserStorage(): WorkspaceStorage | null {
 export function initializePersistedWorkspace(
     document: Document,
     storage: WorkspaceStorage | null = browserStorage(),
+    downloadEnvironment?: WorkspaceDownloadEnvironment,
 ): void {
     const status = document.getElementById("workspace-status");
     let announced = "";
@@ -24,7 +26,8 @@ export function initializePersistedWorkspace(
 
     const restored = loadWorkspace(storage);
     announce(restored.error);
-    initializeWorkspace(document, restored.state, (state) => {
+    const getState = initializeWorkspace(document, restored.state, (state) => {
         announce(saveWorkspace(storage, state));
     });
+    initializeWorkspaceExport(document, getState, announce, downloadEnvironment);
 }

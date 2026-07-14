@@ -74,6 +74,37 @@ usable, leaves the unreadable value untouched, loads defaults, and reports the
 problem in an accessible status message. Save failures are likewise reported
 without interrupting in-memory editing.
 
+## YAML backup export
+
+The **Export YAML backup** button downloads the workspace currently visible in
+the calculator as `encounter-workspace.yml`. Export uses the in-memory state, so
+it includes the latest edits even if browser storage is unavailable or full.
+
+The YAML document uses the same stable version-1 source schema as storage:
+
+```yaml
+version: 1
+party:
+  groups:
+    - playerCount: "4"
+      level: "5"
+  modifierType: percentage
+  modifierValue: "0"
+encounters:
+  - name: Encounter 1
+    monsters:
+      - name: ""
+        xp: ""
+        quantity: "1"
+        url: ""
+```
+
+Array order is significant. Editable numeric fields remain strings so empty or
+temporarily invalid input can round-trip. Names and URLs are ordinary YAML
+strings; let a YAML editor preserve or add quoting for characters such as `:`,
+`#`, line breaks, and non-ASCII text. Derived totals, ranks, validation markup,
+focus, and generated DOM identifiers are never exported.
+
 ## Boundaries
 
 The tool does not import monster data, apply monster-count or party-size
@@ -90,3 +121,4 @@ multipliers, or share encounters.
 - `src/workspace-state.ts` defines and validates the versioned source state.
 - `src/workspace-storage.ts` loads and saves the state without depending on the
   DOM.
+- `src/workspace-yaml.ts` serializes the stable YAML backup representation.

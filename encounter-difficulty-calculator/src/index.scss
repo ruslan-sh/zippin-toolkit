@@ -33,6 +33,13 @@ main {
   padding: var(--space-2);
 }
 
+.page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1);
+  align-items: center;
+}
+
 .party-row-headers,
 .party-row-controls {
   display: grid;
@@ -187,6 +194,26 @@ main {
 
 .workspace-status:empty {
   display: none;
+}
+
+.workspace-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#export-workspace {
+  display: grid;
+  padding: 0;
+  place-items: center;
+  color: var(--color-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+#export-workspace:hover,
+#export-workspace:focus-visible {
+  color: var(--color-text);
 }
 
 .results {

@@ -101,7 +101,7 @@ Definition of done:
 
 ## Task 3: Download a human-editable YAML workspace backup
 
-Status: todo
+Status: done
 
 Summary: Users can download the complete workspace currently visible in the
 calculator as a stable, versioned YAML file, including unfinished edits even
@@ -146,7 +146,55 @@ Definition of done:
 - The YAML format is versioned, documented, and protected by round-trip tests.
 - The repository passes the required build, tests, and lint checks.
 
-## Task 4: Replace the workspace from a validated YAML backup
+## Task 4: Use typed workspace numeric values
+
+Status: todo
+
+Summary: Store, restore, and export calculator numeric controls as finite
+numbers or `null` without changing calculator results or validation rules.
+
+Scope:
+
+- Change player count, level, modifier value, monster XP, and quantity in the
+  workspace state boundary from raw strings to finite numbers or `null`.
+- Convert native numeric controls to typed state at the UI boundary: empty or
+  unexpectedly nonnumeric values become `null`, while out-of-range numbers stay
+  numeric so existing validation can report them.
+- Render `null` as an empty numeric input and render finite numbers using their
+  normal string representation.
+- Retain schema version 1 and the existing local-storage key.
+- Export version-1 YAML using unquoted YAML numbers and `null` for numeric
+  controls, while retaining strings for names, modifier type, and URLs.
+- Update workspace and YAML documentation to describe the typed version-1
+  contract.
+
+Dependencies:
+
+- Depends on: Task 3
+- Parallelizable: no
+- Parallel with: none
+
+Validation:
+
+- Unit-test strict version-1 state validation for finite numbers, nulls, wrong
+  scalar types, non-finite values, unsafe URLs, and unknown structure.
+- Unit-test version-1 storage load/save, corrupt storage preservation, write
+  failure, and unsupported versions.
+- Unit-test deterministic YAML output containing unquoted numbers and `null`,
+  plus arbitrary text, Unicode, ordered collections, and omitted derived state.
+- UI-test typed state publication and hydration, restored calculations and
+  validation, export after normal saves, and export after storage failure.
+- Run `npm run build`, `npm test`, `npm run lint`, and `npm run lint:styles`.
+
+Definition of done:
+
+- The in-memory workspace, local-storage snapshot, and YAML export all use the
+  version-1 numeric-or-null contract.
+- Calculations, validation, ordering, accessible status behavior, and all
+  nonnumeric source fields continue to work as before.
+- The repository passes the required build, tests, and lint checks.
+
+## Task 5: Replace the workspace from a validated YAML backup
 
 Status: todo
 
@@ -160,9 +208,8 @@ Scope:
 - Parse YAML safely without custom type construction and reject malformed
   documents, unsupported schema versions, missing or unknown structure,
   structurally invalid values, and unsafe statblock URLs.
-- Accept incomplete or domain-invalid editable strings that the calculator UI
-  can hold so unfinished exported work round-trips and is revalidated in the
-  UI.
+- Accept finite numeric values and `null` for numeric controls so empty and
+  out-of-range imported work is revalidated in the UI.
 - Validate the entire candidate before displaying a clear warning that import
   will permanently replace the current browser workspace.
 - On explicit confirmation, replace the visible workspace, recalculate derived
@@ -175,7 +222,7 @@ Scope:
 
 Dependencies:
 
-- Depends on: Task 3
+- Depends on: Task 4
 - Parallelizable: no
 - Parallel with: none
 
@@ -183,7 +230,7 @@ Validation:
 
 - Unit-test safe parsing and whole-document validation for valid backups,
   malformed YAML, unsupported versions, unknown or missing keys, wrong types,
-  unsafe URLs, UI-invalid editable strings, and YAML custom types.
+  unsafe URLs, null and out-of-range numeric values, and YAML custom types.
 - UI-test successful confirmed replacement, canceled confirmation, file-read
   failure, parse failure, validation failure, rendering failure, and storage
   failure.

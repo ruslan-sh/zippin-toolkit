@@ -12,14 +12,13 @@ The workspace is a single state snapshot, not a collection of named saves.
 ## Goals
 
 - Automatically save and restore all user-editable calculator state:
-  - party groups, including the text currently present in count and level
-    fields;
+  - party groups, including count and level values;
   - party modifier type and value;
   - encounters in display order, including their names;
   - monster rows in display order, including name, XP, quantity, and optional
     statblock URL.
-- Preserve incomplete and validation-error states exactly enough that a user
-  can refresh and continue editing without losing work.
+- Preserve empty numeric fields as `null` and out-of-range numeric values so a
+  user can refresh and continue editing without losing the workspace shape.
 - Export the complete workspace as a versioned YAML document.
 - Import a complete YAML workspace only after validating the entire document
   and warning that the current workspace will be replaced.
@@ -51,9 +50,14 @@ identifiers and calculated output. Calculated thresholds, encounter XP totals,
 difficulty ranks, validation messages, and focus state must not be persisted;
 they are derived again after restoration.
 
-Store raw editable field values where needed rather than only parsed numbers.
-For example, an empty XP field or an invalid party level must survive a refresh
-and render with the existing validation error. Preserve encounter and row order.
+Use typed numeric values throughout the workspace model. Player count, level,
+modifier value, monster XP, and quantity are finite numbers or `null`; an empty
+or unexpectedly nonnumeric numeric control becomes `null`. Text controls remain
+strings. Restoration renders `null` as an empty numeric input, and existing UI
+validation handles null and out-of-range values. Preserve encounter and row
+order.
+
+This typed numeric-or-null representation is workspace schema version 1.
 
 After every user action that changes persisted data, write the complete
 workspace to one namespaced, versioned local-storage entry. This includes text
@@ -84,6 +88,8 @@ The YAML document must:
 - contain an explicit schema version;
 - use stable, descriptive keys and preserve list order;
 - contain only workspace source data, not derived results or DOM identifiers;
+- represent numeric controls as YAML numbers or `null`, never quoted numeric
+  strings;
 - safely quote or encode arbitrary user-entered text; and
 - be readable and reasonably convenient to edit by hand.
 
@@ -100,10 +106,9 @@ document before asking to replace anything.
 Validation must reject the entire import when the YAML is malformed, the schema
 version is unsupported, required collections or fields are missing, field types
 are structurally invalid, an unsafe statblock URL is present, or any unrecognized
-structure would make restoration ambiguous. Editable values that the UI itself
-can temporarily hold, such as empty or out-of-range numeric-field strings, are
-valid workspace source data and must import successfully so exported unfinished
-work remains round-trippable. Existing UI validation must flag those values
+structure would make restoration ambiguous. Numeric fields must be finite YAML
+numbers or `null`; `null` renders as an empty control, and out-of-range numbers
+remain valid workspace source data so existing UI validation can flag them
 after restoration.
 
 If validation succeeds, warn clearly that importing will permanently replace
@@ -123,15 +128,15 @@ stack trace.
 
 - Refreshing restores every supported editable field and the order of all
   groups, encounters, and monsters.
-- Empty and otherwise invalid field text is restored and revalidated rather
-  than discarded or normalized.
+- Empty numeric controls restore from `null`, and out-of-range numeric values
+  are restored and revalidated.
 - Every supported edit triggers autosave, including renames and structural
   additions or removals.
 - A missing saved workspace starts with the current defaults.
 - Corrupt saved data and unavailable local storage do not make the calculator
   unusable and are communicated accessibly.
-- Exported YAML has an explicit version and round-trips the complete workspace
-  without data loss.
+- Exported YAML has an explicit version and uses numbers or `null` for every
+  numeric control.
 - Export does not include calculated thresholds, totals, ranks, transient IDs,
   focus, or validation presentation.
 - Import accepts both `.yml` and `.yaml`, fully validates before mutation, and
@@ -148,9 +153,9 @@ stack trace.
 
 ## Validation plan
 
-- Unit-test workspace schema validation, serialization, deserialization, schema
-  version handling, unsafe URL rejection, and round trips containing special
-  YAML characters and Unicode.
+- Unit-test typed workspace schema validation, serialization, deserialization,
+  schema version handling, unsafe URL rejection, and round trips containing
+  special YAML characters and Unicode.
 - Unit-test autosave and restore for valid, incomplete, and UI-invalid field
   states, as well as corrupt storage, unavailable storage, and write failures.
 - UI-test successful export, valid confirmed import, canceled replacement,
