@@ -71,9 +71,10 @@ renders, then thresholds, totals, ranks, and validation messages are derived
 again. Calculated results, validation presentation, focus, and generated DOM
 identifiers are not stored. Missing storage uses the normal defaults. If storage
 is unavailable, unreadable, malformed, or unsupported, the calculator remains
-usable, leaves the unreadable value untouched, loads defaults, and reports the
-problem in an accessible status message. Save failures are likewise reported
-without interrupting in-memory editing.
+usable, leaves the unreadable value untouched during loading, loads defaults,
+and reports the problem in an accessible status message. The next successful
+autosave after an edit replaces that value with the current workspace. Save
+failures are likewise reported without interrupting in-memory editing.
 
 ## YAML backup export
 
