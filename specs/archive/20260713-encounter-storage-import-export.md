@@ -1,3 +1,6 @@
+> Archived after implementation. The current behavior is documented in
+> `encounter-difficulty-calculator/docs/calculator.md`.
+
 # Encounter Workspace Storage and YAML Backup
 
 ## Summary

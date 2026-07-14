@@ -112,18 +112,10 @@ Prerequisite: none
 Add complete keyboard workflows for creating, editing, navigating, and removing
 monsters and statblock links without requiring pointer input.
 
-### `encounter-storage-import-export`
-
-Status: in-progress
-Prerequisite: none
-
-Store encounters locally and support portable import and export for backup,
-sharing, and restoration.
-
 ### `encounter-markdown-export`
 
 Status: planned
-Prerequisite: `encounter-storage-import-export`
+Prerequisite: none
 
 Export the current Encounter Difficulty Calculator workspace as readable
 Markdown for use in campaign notes, documents, and other text-based tools.
