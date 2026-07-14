@@ -219,6 +219,8 @@ test("hydrates ordered raw encounter state and publishes complete snapshots", ()
     assert.equal(firstInputs[2].value, "");
     assert.equal(firstInputs[1].attributes.get("aria-invalid"), "true");
     assert.equal(firstInputs[2].attributes.get("aria-invalid"), "true");
+    firstInputs[2].value = " ";
+    assert.equal(controller.getState()[0].monsters[0].quantity, null);
     firstInputs[1].value = "450";
     firstInputs[1].dispatch("input");
     assert.equal(updates.length, 1);

@@ -203,6 +203,8 @@ test("hydrates typed party state and publishes ordered snapshots", () => {
         modifierValue: -10.5,
     });
     assert.equal(document.element("low-result").textContent, "—");
+    document.element("player-count-1").value = " ";
+    assert.equal(getState().groups[0].playerCount, null);
     document.element("player-count-1").value = "3";
     document.element("player-count-1").dispatch("input");
     assert.equal(updates.length, 1);

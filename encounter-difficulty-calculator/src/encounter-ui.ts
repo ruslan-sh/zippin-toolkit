@@ -13,7 +13,7 @@ function inputValue(value: number | null): string {
 
 function workspaceNumber(value: string): number | null {
     const number = Number(value);
-    return value === "" || !Number.isFinite(number) ? null : number;
+    return value.trim() === "" || !Number.isFinite(number) ? null : number;
 }
 
 export interface EncounterBuilderController {
