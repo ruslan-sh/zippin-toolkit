@@ -57,11 +57,27 @@ the most severe matching rank wins. The displayed rank is also color-coded:
 gray for Trivial, green for Low, yellow for Moderate, orange for High, and red
 for Deadly. Text remains the primary rank indicator.
 
+## Workspace persistence
+
+The calculator automatically stores one complete editable workspace in browser
+local storage under `zippin-toolkit.encounter-workspace.v1`. The stored JSON
+object has `version`, `party`, and ordered `encounters` fields. Party groups and
+monster rows are ordered arrays, and editable number inputs are stored as raw
+strings so empty and currently invalid values survive a refresh.
+
+On startup, a supported version-1 workspace is restored before the calculator
+renders, then thresholds, totals, ranks, and validation messages are derived
+again. Calculated results, validation presentation, focus, and generated DOM
+identifiers are not stored. Missing storage uses the normal defaults. If storage
+is unavailable, unreadable, malformed, or unsupported, the calculator remains
+usable, leaves the unreadable value untouched, loads defaults, and reports the
+problem in an accessible status message. Save failures are likewise reported
+without interrupting in-memory editing.
+
 ## Boundaries
 
-Calculator state is transient and resets on refresh. The tool does not import
-monster data, apply monster-count or party-size multipliers, persist state, or
-share encounters.
+The tool does not import monster data, apply monster-count or party-size
+multipliers, or share encounters.
 
 ## Implementation
 
@@ -71,3 +87,6 @@ share encounters.
   encounters.
 - `src/encounter-ui.ts` manages independent encounter instances and distributes
   shared thresholds.
+- `src/workspace-state.ts` defines and validates the versioned source state.
+- `src/workspace-storage.ts` loads and saves the state without depending on the
+  DOM.

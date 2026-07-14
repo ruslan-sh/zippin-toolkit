@@ -1,4 +1,4 @@
 import "./index.scss";
-import { initializeWorkspace } from "./workspace-ui";
+import { initializePersistedWorkspace } from "./workspace-app";
 
-initializeWorkspace(document);
+initializePersistedWorkspace(document);

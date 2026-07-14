@@ -49,7 +49,7 @@ Definition of done:
 
 ## Task 2: Restore the complete workspace after refresh
 
-Status: todo
+Status: done
 
 Summary: Use the workspace boundary from Dev Task 1 to autosave every edit,
 restore on startup, and handle corrupt or unavailable storage without losing

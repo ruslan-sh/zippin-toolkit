@@ -180,6 +180,15 @@ main {
   display: none;
 }
 
+.workspace-status {
+  margin-block: var(--space-1);
+  color: var(--color-error);
+}
+
+.workspace-status:empty {
+  display: none;
+}
+
 .results {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
