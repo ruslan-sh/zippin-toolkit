@@ -469,6 +469,8 @@ test("exports the current in-memory workspace after a storage write failure", as
     assert.ok(exported);
     const yaml = await (exported as Blob).text();
     assert.match(yaml, /modifierValue: 17/);
+    assert.deepEqual(revoked, []);
+    await new Promise((resolve) => setTimeout(resolve, 0));
     assert.deepEqual(revoked, ["blob:workspace"]);
     assert.match(document.element("workspace-status").textContent, /could not be saved/);
 });

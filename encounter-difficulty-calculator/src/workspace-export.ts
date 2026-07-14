@@ -32,7 +32,12 @@ export function initializeWorkspaceExport(
         } catch {
             announce("The workspace backup could not be exported. Your workspace was not changed.");
         } finally {
-            if (url) environment.revokeObjectURL(url);
+            if (url) {
+                const objectUrl = url;
+                setTimeout(() => {
+                    try { environment.revokeObjectURL(objectUrl); } catch { /* Cleanup failures do not affect the download. */ }
+                }, 0);
+            }
         }
     });
 }
