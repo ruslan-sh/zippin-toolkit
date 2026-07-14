@@ -196,7 +196,7 @@ Definition of done:
 
 ## Task 5: Replace the workspace from a validated YAML backup
 
-Status: todo
+Status: done
 
 Summary: Users can select a YAML backup, validate it completely, review an
 explicit data-loss warning, and replace the current workspace atomically; any

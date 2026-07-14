@@ -107,6 +107,19 @@ strings; let a YAML editor preserve or add quoting for characters such as `:`,
 `#`, line breaks, and non-ASCII text. Derived totals, ranks, validation markup,
 focus, and generated DOM identifiers are never exported.
 
+## YAML backup import
+
+The **Import YAML backup** control accepts `.yml` and `.yaml` files using the
+documented version-1 schema. The complete document is safely parsed and
+validated before a permanent-replacement warning is shown. Unknown or missing
+fields, unsupported versions, wrong scalar types, non-finite numeric values,
+custom YAML tags, and non-HTTP(S) statblock URLs are rejected.
+
+After confirmation, the calculator replaces the visible workspace, derives
+totals, ranks, and validation messages again, and saves the imported snapshot.
+Canceling or encountering a read, parse, validation, rendering, or storage
+failure leaves the previous visible and stored workspace unchanged.
+
 ## Boundaries
 
 The tool does not import monster data, apply monster-count or party-size
@@ -124,3 +137,4 @@ multipliers, or share encounters.
 - `src/workspace-storage.ts` loads and saves the state without depending on the
   DOM.
 - `src/workspace-yaml.ts` serializes the stable YAML backup representation.
+- `src/workspace-import.ts` validates and transactionally applies YAML backups.

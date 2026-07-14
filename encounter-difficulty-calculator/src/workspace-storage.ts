@@ -9,6 +9,27 @@ export const WORKSPACE_STORAGE_KEY = "zippin-toolkit.encounter-workspace.v1";
 export interface WorkspaceStorage {
     getItem(key: string): string | null;
     setItem(key: string, value: string): void;
+    removeItem?: (key: string) => void;
+}
+
+export function replaceWorkspace(storage: WorkspaceStorage | null, state: WorkspaceState): string | null {
+    if (!storage) return "Browser storage is unavailable. The backup could not be saved.";
+    let previous: string | null;
+    try {
+        previous = storage.getItem(WORKSPACE_STORAGE_KEY);
+    } catch {
+        return "The existing browser workspace could not be read, so it was not replaced.";
+    }
+    try {
+        storage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(state));
+        return null;
+    } catch {
+        try {
+            if (previous === null) storage.removeItem?.(WORKSPACE_STORAGE_KEY);
+            else storage.setItem(WORKSPACE_STORAGE_KEY, previous);
+        } catch { /* The adapter cannot provide a stronger recovery guarantee. */ }
+        return "The imported workspace could not be saved to browser storage.";
+    }
 }
 
 export type WorkspaceLoadResult =

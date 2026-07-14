@@ -201,7 +201,8 @@ main {
   justify-content: flex-end;
 }
 
-#export-workspace {
+#export-workspace,
+.workspace-action {
   display: grid;
   padding: 0;
   place-items: center;
@@ -212,8 +213,16 @@ main {
 }
 
 #export-workspace:hover,
-#export-workspace:focus-visible {
+#export-workspace:focus-visible,
+.workspace-action:hover,
+.workspace-action:focus-within {
   color: var(--color-text);
+}
+
+.workspace-action:focus-within {
+  border-radius: var(--space-half);
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
 }
 
 .results {

@@ -10,18 +10,37 @@ export function initializeWorkspace(
     document: Document,
     initialState: WorkspaceState = DEFAULT_WORKSPACE_STATE,
     onStateChange: (state: WorkspaceState) => void = () => undefined,
-): () => WorkspaceState {
+): WorkspaceController {
     const coordinator = createWorkspaceStateCoordinator(initialState, onStateChange);
     const encounterBuilder = initializeEncounterBuilder(
         document,
         initialState.encounters,
         coordinator.updateEncounters,
     );
-    initializePartyCalculator(
+    const partyCalculator = initializePartyCalculator(
         document,
         encounterBuilder,
         initialState.party,
         coordinator.updateParty,
     );
-    return coordinator.getState;
+    const controller = coordinator.getState as WorkspaceController;
+    controller.replaceState = (state): void => {
+        const previous = coordinator.getState();
+        try {
+            encounterBuilder.replaceState(state.encounters);
+            partyCalculator.replaceState(state.party);
+            coordinator.replaceState(state);
+        } catch (error) {
+            encounterBuilder.replaceState(previous.encounters);
+            partyCalculator.replaceState(previous.party);
+            coordinator.replaceState(previous);
+            throw error;
+        }
+    };
+    return controller;
+}
+
+export interface WorkspaceController {
+    (): WorkspaceState;
+    replaceState: (state: WorkspaceState) => void;
 }

@@ -23,6 +23,7 @@ class FakeElement {
     step = "";
     className = "";
     target = "";
+    files: File[] | null = null;
     rel = "";
     parent: FakeElement | null = null;
     children: FakeElement[] = [];
@@ -74,6 +75,7 @@ class FakeElement {
         if (selector === "input") return this.tag === "input";
         if (selector === ".remove-party-row") return this.className === "remove-party-row";
         if (selector === ".party-row-controls") return this.className === "party-row-controls";
+        if (selector === ".encounter") return this.className === "encounter";
         if (selector === "[data-party-row]") return this.dataset.partyRow !== undefined;
         return false;
     }
@@ -87,12 +89,18 @@ class FakeElement {
 class FakeDocument {
     readonly elements = new Map<string, FakeElement>();
     readonly created: FakeElement[] = [];
+    failNextCreate = false;
     defaultView = {
         prompt: (): string | null => null,
         alert: (): void => undefined,
+        confirm: (): boolean => false,
     };
 
     createElement(tag: string): FakeElement {
+        if (this.failNextCreate) {
+            this.failNextCreate = false;
+            throw new Error("Simulated DOM rendering failure.");
+        }
         const element = new FakeElement(this, "", tag);
         this.created.push(element);
         return element;
@@ -126,6 +134,7 @@ function setup(): FakeDocument {
     document.make("add-encounter", "button");
     document.make("workspace-status");
     document.make("export-workspace", "button");
+    document.make("import-workspace", "input");
     return document;
 }
 
@@ -175,6 +184,170 @@ test("publishes complete workspace snapshots for party and encounter edits", () 
     assert.equal(updates[1].party.modifierValue, 10);
     assert.equal(updates[1].encounters[0].monsters[0].name, "Troll");
     assert.deepEqual(getState(), updates[1]);
+});
+
+test("rolls back a partial rendering failure before reporting the import error", async () => {
+    const document = setup();
+    const storage = new FakeStorage();
+    const original: WorkspaceState = {
+        ...DEFAULT_WORKSPACE_STATE,
+        party: { ...DEFAULT_WORKSPACE_STATE.party, modifierValue: 7 },
+        encounters: [{ name: "Original", monsters: [{ name: "Ogre", xp: 450, quantity: 2, url: "" }] }],
+    };
+    const originalSerialized = JSON.stringify(original);
+    storage.value = originalSerialized;
+    const candidate: WorkspaceState = {
+        ...original,
+        party: { ...original.party, modifierValue: 99 },
+    };
+    const yaml = (await import("../src/workspace-yaml")).serializeWorkspaceYaml(candidate);
+    initializePersistedWorkspace(document as unknown as Document, storage, undefined, {
+        confirm: () => true,
+        readFile: async () => yaml,
+    });
+    document.failNextCreate = true;
+    const input = document.element("import-workspace");
+    input.files = [{} as File];
+    input.dispatch("change");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    assert.equal(document.element("modifier-value").value, "7");
+    const encounter = document.element("encounters").children[0];
+    assert.equal(descendants(encounter).find((element) => element.className === "encounter-total")?.textContent, "900 XP");
+    assert.equal(storage.value, originalSerialized);
+    assert.match(document.element("workspace-status").textContent, /not changed/);
+});
+
+test("imports a validated backup after confirmation and persists the replacement", async () => {
+    const storage = new FakeStorage();
+    const imported: WorkspaceState = {
+        version: 1,
+        party: { groups: [{ playerCount: 2, level: 20 }], modifierType: "flat", modifierValue: 10 },
+        encounters: [{ name: "Finale", monsters: [{ name: "Dragon", xp: 22000, quantity: 1, url: "" }] }],
+    };
+    let warning = "";
+    const yaml = (await import("../src/workspace-yaml")).serializeWorkspaceYaml(imported);
+    const successDocument = setup();
+    initializePersistedWorkspace(successDocument as unknown as Document, storage, undefined, {
+        confirm: (message) => { warning = message; return true; },
+        readFile: async () => yaml,
+    });
+    const successInput = successDocument.element("import-workspace");
+    successInput.files = [{} as File];
+    successInput.dispatch("change");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    assert.match(warning, /permanently replace/);
+    assert.equal(successDocument.element("modifier-value").value, "10");
+    const importedEncounter = successDocument.element("encounters").children[0];
+    const importedTotal = descendants(importedEncounter).find((element) => element.className === "encounter-total")?.textContent;
+    const importedRank = descendants(importedEncounter).find((element) => element.className === "encounter-rank")?.textContent;
+    assert.equal(importedTotal, "22,000 XP");
+    assert.notEqual(importedRank, "");
+    assert.deepEqual(JSON.parse(storage.value ?? ""), imported);
+    assert.match(successDocument.element("workspace-status").textContent, /successfully/);
+
+    const refreshedDocument = setup();
+    initializePersistedWorkspace(refreshedDocument as unknown as Document, storage);
+    const refreshedEncounter = refreshedDocument.element("encounters").children[0];
+    assert.equal(refreshedDocument.element("modifier-value").value, "10");
+    assert.equal(descendants(refreshedEncounter).find((element) => element.className === "encounter-total")?.textContent, importedTotal);
+    assert.equal(descendants(refreshedEncounter).find((element) => element.className === "encounter-rank")?.textContent, importedRank);
+});
+
+test("imports null and out-of-range values and derives validation presentation", async () => {
+    const document = setup();
+    const storage = new FakeStorage();
+    const imported: WorkspaceState = {
+        version: 1,
+        party: { groups: [{ playerCount: null, level: 99 }], modifierType: "percentage", modifierValue: 0 },
+        encounters: [{ name: "Invalid draft", monsters: [{ name: "Unknown", xp: null, quantity: 0, url: "" }] }],
+    };
+    const yaml = (await import("../src/workspace-yaml")).serializeWorkspaceYaml(imported);
+    initializePersistedWorkspace(document as unknown as Document, storage, undefined, {
+        confirm: () => true,
+        readFile: async () => yaml,
+    });
+    const input = document.element("import-workspace");
+    input.files = [{} as File];
+    input.dispatch("change");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    assert.equal(document.element("player-count-1").value, "");
+    assert.equal(document.element("player-count-1").attributes.get("aria-invalid"), "true");
+    assert.equal(document.element("party-level-1").attributes.get("aria-invalid"), "true");
+    assert.equal(document.element("low-result").textContent, "—");
+    const encounter = document.element("encounters").children[0];
+    const xp = descendants(encounter).find((element) => element.placeholder === "XP");
+    const quantity = descendants(encounter).find((element) => element.placeholder === "Quantity");
+    assert.equal(xp?.attributes.get("aria-invalid"), "true");
+    assert.equal(quantity?.attributes.get("aria-invalid"), "true");
+    assert.equal(descendants(encounter).find((element) => element.className === "encounter-total")?.textContent, "0 XP");
+    assert.deepEqual(JSON.parse(storage.value ?? ""), imported);
+});
+
+test("canceled and failed imports preserve visible and stored state", async () => {
+    const original: WorkspaceState = {
+        version: 1,
+        party: { groups: [{ playerCount: 4, level: 5 }], modifierType: "percentage", modifierValue: 7 },
+        encounters: [{ name: "Original", monsters: [] }],
+    };
+    const candidate: WorkspaceState = {
+        version: 1,
+        party: { groups: [{ playerCount: 1, level: 20 }], modifierType: "flat", modifierValue: null },
+        encounters: [{ name: "Replacement", monsters: [] }],
+    };
+    const yaml = (await import("../src/workspace-yaml")).serializeWorkspaceYaml(candidate);
+
+    for (const scenario of ["cancel", "read", "save"] as const) {
+        const document = setup();
+        const storage = new FakeStorage();
+        storage.value = JSON.stringify(original);
+        if (scenario === "save") storage.writeError = true;
+        initializePersistedWorkspace(document as unknown as Document, storage, undefined, {
+            confirm: () => scenario !== "cancel",
+            readFile: async () => {
+                if (scenario === "read") throw new Error("The selected backup could not be read.");
+                return yaml;
+            },
+        });
+        const input = document.element("import-workspace");
+        input.files = [{} as File];
+        input.dispatch("change");
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        assert.equal(document.element("modifier-value").value, "7", scenario);
+        assert.equal(storage.value, JSON.stringify(original), scenario);
+        assert.match(document.element("workspace-status").textContent, /not changed|could not be read/, scenario);
+    }
+});
+
+test("parse and structural validation failures do not confirm or mutate workspace", async () => {
+    const original: WorkspaceState = {
+        version: 1,
+        party: { groups: [{ playerCount: 4, level: 5 }], modifierType: "flat", modifierValue: 13 },
+        encounters: [{ name: "Original", monsters: [] }],
+    };
+    for (const source of ["version: [", "version: 1\nparty: {}\nencounters: []\n"]) {
+        const document = setup();
+        const storage = new FakeStorage();
+        const originalSerialized = JSON.stringify(original);
+        storage.value = originalSerialized;
+        let confirmations = 0;
+        initializePersistedWorkspace(document as unknown as Document, storage, undefined, {
+            confirm: () => { confirmations += 1; return true; },
+            readFile: async () => source,
+        });
+        const input = document.element("import-workspace");
+        input.files = [{} as File];
+        input.dispatch("change");
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        assert.equal(confirmations, 0);
+        assert.equal(document.element("modifier-value").value, "13");
+        assert.equal(storage.value, originalSerialized);
+        assert.match(document.element("workspace-status").textContent, /not valid YAML|supported workspace format/);
+    }
 });
 
 test("restores persisted raw state and derives calculations and validation", () => {

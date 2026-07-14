@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
     loadWorkspace,
+    replaceWorkspace,
     saveWorkspace,
     WORKSPACE_STORAGE_KEY,
     WorkspaceStorage,
@@ -15,6 +16,7 @@ class FakeStorage implements WorkspaceStorage {
     writes = 0;
     readError = false;
     writeError = false;
+    removals = 0;
 
     getItem(key: string): string | null {
         assert.equal(key, WORKSPACE_STORAGE_KEY);
@@ -28,6 +30,12 @@ class FakeStorage implements WorkspaceStorage {
         this.writes += 1;
         if (this.writeError) throw new Error("quota");
         this.value = value;
+    }
+
+    removeItem(key: string): void {
+        assert.equal(key, WORKSPACE_STORAGE_KEY);
+        this.removals += 1;
+        this.value = null;
     }
 }
 
@@ -58,6 +66,18 @@ test("uses defaults when storage is empty or unavailable", () => {
     const unreadable = loadWorkspace(empty);
     assert.deepEqual(unreadable.state, DEFAULT_WORKSPACE_STATE);
     assert.match(unreadable.error ?? "", /could not be read/);
+});
+
+test("transactional replacement does not mutate storage when the previous snapshot cannot be read", () => {
+    const storage = new FakeStorage();
+    const original = JSON.stringify(unfinishedWorkspace());
+    storage.value = original;
+    storage.readError = true;
+
+    assert.match(replaceWorkspace(storage, DEFAULT_WORKSPACE_STATE) ?? "", /not replaced/);
+    assert.equal(storage.value, original);
+    assert.equal(storage.writes, 0);
+    assert.equal(storage.removals, 0);
 });
 
 test("restores valid ordered state including unfinished and UI-invalid values", () => {

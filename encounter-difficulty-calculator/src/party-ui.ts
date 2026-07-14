@@ -76,22 +76,23 @@ export function initializePartyCalculator(
     updateEncounter: (thresholds: Thresholds | null) => void = () => undefined,
     initialState?: PartyState,
     onStateChange: (state: PartyState) => void = () => undefined,
-): () => PartyState {
+): PartyCalculatorController {
     const rows = requiredElement<HTMLElement>(document, "party-rows");
     const addButton = requiredElement<HTMLButtonElement>(document, "add-party-row");
     const modifierType = requiredElement<HTMLSelectElement>(document, "modifier-type");
     const modifierValue = requiredElement<HTMLInputElement>(document, "modifier-value");
     let nextRowId = 2;
 
-    if (initialState) {
+    const hydrate = (state: PartyState): void => {
         rows.querySelectorAll<HTMLElement>("[data-party-row]").forEach((row) => row.remove());
-        const hydratedRows = initialState.groups.map((group, index) => createPartyRow(document, index + 1, group));
+        const hydratedRows = state.groups.map((group, index) => createPartyRow(document, index + 1, group));
         hydratedRows.forEach((row) => rows.append(row));
         hydratedRows[hydratedRows.length - 1].querySelector(".party-row-controls")?.append(addButton);
-        modifierType.value = initialState.modifierType;
-        modifierValue.value = inputValue(initialState.modifierValue);
-        nextRowId = initialState.groups.length + 1;
-    }
+        modifierType.value = state.modifierType;
+        modifierValue.value = inputValue(state.modifierValue);
+        nextRowId = state.groups.length + 1;
+    };
+    if (initialState) hydrate(initialState);
 
     const getState = (): PartyState => ({
         groups: Array.from(rows.querySelectorAll<HTMLElement>("[data-party-row]"), (row) => {
@@ -189,7 +190,19 @@ export function initializePartyCalculator(
         requiredElement<HTMLInputElement>(document, `player-count-${id}`).focus();
     });
 
+    const controller = getState as PartyCalculatorController;
+    controller.replaceState = (state): void => {
+        hydrate(state);
+        rows.querySelectorAll<HTMLElement>("[data-party-row]").forEach(bindRow);
+        updateRemoveButtons();
+        update();
+    };
     updateRemoveButtons();
     update();
-    return getState;
+    return controller;
+}
+
+export interface PartyCalculatorController {
+    (): PartyState;
+    replaceState: (state: PartyState) => void;
 }

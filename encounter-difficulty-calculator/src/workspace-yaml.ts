@@ -1,6 +1,6 @@
-import { stringify } from "yaml";
+import { parseDocument, stringify } from "yaml";
 
-import { WorkspaceState } from "./workspace-state";
+import { isWorkspaceState, WorkspaceState } from "./workspace-state";
 
 export const WORKSPACE_EXPORT_FILENAME = "encounter-workspace.yml";
 
@@ -9,4 +9,12 @@ export function serializeWorkspaceYaml(state: WorkspaceState): string {
         lineWidth: 0,
         sortMapEntries: false,
     });
+}
+
+export function parseWorkspaceYaml(source: string): WorkspaceState {
+    const document = parseDocument(source, { customTags: [], schema: "core", uniqueKeys: true });
+    if (document.errors.length || document.warnings.length) throw new Error("The backup is not valid YAML.");
+    const candidate: unknown = document.toJS({ maxAliasCount: 0 });
+    if (!isWorkspaceState(candidate)) throw new Error("The backup does not use the supported workspace format.");
+    return candidate;
 }

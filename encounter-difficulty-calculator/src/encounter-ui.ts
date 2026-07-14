@@ -19,6 +19,7 @@ function workspaceNumber(value: string): number | null {
 export interface EncounterBuilderController {
     (thresholds: Thresholds | null): void;
     getState: () => EncounterState[];
+    replaceState: (state: EncounterState[]) => void;
 }
 
 export function initializeEncounterBuilder(
@@ -307,5 +308,12 @@ export function initializeEncounterBuilder(
         encounters.forEach((encounter) => encounter.setThresholds(thresholds));
     }) as EncounterBuilderController;
     controller.getState = getState;
+    controller.replaceState = (state): void => {
+        encounters.clear();
+        encountersElement.querySelectorAll(".encounter").forEach((encounter) => encounter.remove());
+        nextEncounterId = 1;
+        state.forEach((encounter) => addEncounter(false, encounter, false));
+        encounters.forEach((encounter) => encounter.setThresholds(sharedThresholds));
+    };
     return controller;
 }

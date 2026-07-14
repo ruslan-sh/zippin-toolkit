@@ -112,6 +112,7 @@ export function isWorkspaceState(value: unknown): value is WorkspaceState {
 
 export interface WorkspaceStateCoordinator {
     getState: () => WorkspaceState;
+    replaceState: (state: WorkspaceState) => void;
     updateParty: (party: PartyState) => void;
     updateEncounters: (encounters: EncounterState[]) => void;
 }
@@ -127,6 +128,7 @@ export function createWorkspaceStateCoordinator(
     };
     return {
         getState: () => state,
+        replaceState: (nextState) => { state = nextState; },
         updateParty: (party) => publish({ ...state, party }),
         updateEncounters: (encounters) => publish({ ...state, encounters }),
     };
