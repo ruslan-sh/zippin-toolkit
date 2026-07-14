@@ -32,5 +32,5 @@ export function initializePersistedWorkspace(
         announce(saveWorkspace(storage, state));
     });
     initializeWorkspaceExport(document, workspace, announce, downloadEnvironment);
-    initializeWorkspaceImport(document, workspace, workspace.replaceState, (state) => replaceWorkspace(storage, state), announce, importEnvironment);
+    initializeWorkspaceImport(document, workspace, workspace.replaceState, (state) => replaceWorkspace(storage, state), importEnvironment);
 }

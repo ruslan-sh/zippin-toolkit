@@ -90,9 +90,10 @@ class FakeDocument {
     readonly elements = new Map<string, FakeElement>();
     readonly created: FakeElement[] = [];
     failNextCreate = false;
+    readonly alerts: string[] = [];
     defaultView = {
         prompt: (): string | null => null,
-        alert: (): void => undefined,
+        alert: (message: string): void => { this.alerts.push(message); },
         confirm: (): boolean => false,
     };
 
@@ -117,6 +118,10 @@ class FakeDocument {
 
 function descendants(element: FakeElement): FakeElement[] {
     return element.children.flatMap((child) => [child, ...descendants(child)]);
+}
+
+function lastAlert(document: FakeDocument): string {
+    return document.alerts[document.alerts.length - 1] ?? "";
 }
 
 function setup(): FakeDocument {
@@ -215,7 +220,7 @@ test("rolls back a partial rendering failure before reporting the import error",
     const encounter = document.element("encounters").children[0];
     assert.equal(descendants(encounter).find((element) => element.className === "encounter-total")?.textContent, "900 XP");
     assert.equal(storage.value, originalSerialized);
-    assert.match(document.element("workspace-status").textContent, /not changed/);
+    assert.match(lastAlert(document), /not changed/);
 });
 
 test("imports a validated backup after confirmation and persists the replacement", async () => {
@@ -245,7 +250,7 @@ test("imports a validated backup after confirmation and persists the replacement
     assert.equal(importedTotal, "22,000 XP");
     assert.notEqual(importedRank, "");
     assert.deepEqual(JSON.parse(storage.value ?? ""), imported);
-    assert.match(successDocument.element("workspace-status").textContent, /successfully/);
+    assert.match(lastAlert(successDocument), /successfully/);
 
     const refreshedDocument = setup();
     initializePersistedWorkspace(refreshedDocument as unknown as Document, storage);
@@ -318,7 +323,7 @@ test("canceled and failed imports preserve visible and stored state", async () =
 
         assert.equal(document.element("modifier-value").value, "7", scenario);
         assert.equal(storage.value, JSON.stringify(original), scenario);
-        assert.match(document.element("workspace-status").textContent, /not changed|could not be read/, scenario);
+        assert.match(lastAlert(document), /not changed|could not be read/, scenario);
     }
 });
 
@@ -346,7 +351,7 @@ test("parse and structural validation failures do not confirm or mutate workspac
         assert.equal(confirmations, 0);
         assert.equal(document.element("modifier-value").value, "13");
         assert.equal(storage.value, originalSerialized);
-        assert.match(document.element("workspace-status").textContent, /not valid YAML|supported workspace format/);
+        assert.match(lastAlert(document), /not valid YAML|supported workspace format/);
     }
 });
 
