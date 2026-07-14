@@ -13,7 +13,7 @@ export interface WorkspaceStorage {
 }
 
 export function replaceWorkspace(storage: WorkspaceStorage | null, state: WorkspaceState): string | null {
-    if (!storage) return "Browser storage is unavailable. The backup could not be saved.";
+    if (!storage) return "Browser storage is unavailable. The imported workspace could not be saved.";
     let previous: string | null;
     try {
         previous = storage.getItem(WORKSPACE_STORAGE_KEY);

@@ -69,6 +69,8 @@ test("uses defaults when storage is empty or unavailable", () => {
 });
 
 test("transactional replacement does not mutate storage when the previous snapshot cannot be read", () => {
+    assert.match(replaceWorkspace(null, DEFAULT_WORKSPACE_STATE) ?? "", /imported workspace could not be saved/);
+
     const storage = new FakeStorage();
     const original = JSON.stringify(unfinishedWorkspace());
     storage.value = original;
