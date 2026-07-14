@@ -1,13 +1,11 @@
 ---
 name: spec-validate
-description: Validate repository implementation against a spec in `specs/*.md` and its sibling `*.tasks.md`, then perform a focused general code review when no major spec gaps block it. Use when the user asks whether current code matches the spec, whether completed tasks really satisfy the spec, whether the spec/tasks file need updates, or wants a combined spec-alignment and code-quality review after implementation work.
+description: Validate repository implementation against a spec in `specs/*.md` and its sibling `*.tasks.md`. Use when the user asks whether current code matches the spec, whether completed tasks really satisfy the spec, or whether the spec/tasks file need updates after implementation work.
 ---
 
 # Spec Validate
 
-Validate spec alignment first. When the requested implementation has no major
-spec misses, follow it with a focused general code review of the same change
-set and return one combined report.
+Use this skill when the user wants a spec-alignment review for the repo's `spec.md` + `spec.tasks.md` workflow.
 
 Read the target spec first. If the user gives only the spec path, derive the sibling tasks file by replacing `.md` with `.tasks.md`. Read the tasks file if it exists.
 
@@ -47,26 +45,9 @@ keep the roadmap read-only during validation.
 - run the relevant checks named in the spec or `AGENTS.md` when they are needed to confirm behavior or buildability;
 - if a command is known to hang in WSL for this repo, use the documented fallback and say so.
 
-5. Decide whether to continue to general code review:
-
-- Treat a missing core behavior, violated safety or transactional guarantee,
-  substantially incomplete requested scope, or unjustified completed task as a
-  major spec miss.
-- If a major spec miss exists, prioritize reporting it and do not broaden the
-  review. State that general code review was deferred because the implementation
-  is not sufficiently spec-complete.
-- Otherwise, review the changed implementation and its direct callers and tests
-  for correctness, regressions, security, reliability, data integrity,
-  accessibility, performance, maintainability, and meaningful test gaps.
-- Keep the general review focused on actionable defects. Do not report cosmetic
-  preferences or unrelated pre-existing issues.
-
 ## Review Rules
 
 - Default to code-review mode: findings first, ordered by severity.
-- Complete the spec-alignment pass before beginning the general code-review pass.
-- Label each finding as `Spec alignment` or `General code review`; merge
-  duplicate findings rather than reporting the same defect twice.
 - Focus on bugs, missing behavior, task-status drift, validation gaps, and document/code mismatches.
 - Distinguish clearly between:
   - "the implementation is not finished yet";
@@ -85,16 +66,13 @@ Use this structure:
 
 **Findings**
 
-- One severity-ordered list combining spec-alignment and general code-review
-  findings, with a lens label, file references, and concise impact.
+- Ordered list with file references and concise impact.
 - If there are no findings, say so explicitly.
 
 **Assessment**
 
 - State whether the implementation is correct for the requested scope or task.
 - State whether the full spec is satisfied yet.
-- State whether general code review was completed or deferred due to major spec
-  misses.
 
 **Spec Update**
 

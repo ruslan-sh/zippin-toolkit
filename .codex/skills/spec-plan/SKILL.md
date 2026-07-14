@@ -30,14 +30,9 @@ Use it for both:
 
 ## Core Rules
 
-- Label user-visible vertical slices `Task N` and internal enabling increments
-  `Dev Task N`.
+- Make each primary task a vertical slice that adds observable, user-testable value.
 - Order slices so the earliest useful behavior can be exercised as soon as practical.
-- If a vertical slice is too large for a digestible PR, split it into ordinary,
-  executable tasks in one shared integer sequence. Use `Dev Task N` for a
-  necessary non-user-visible increment and `Task N` for a user-visible result.
-  Never use decimal sub-numbering such as `1.1`, and do not create a tracked
-  umbrella alongside its executable tasks.
+- If a vertical slice is too large for a digestible PR, split it into explicitly labeled development tasks that converge on that slice.
 - Each slice and development task should leave the repo in a working state with build and relevant tests passing.
 - If keeping the repo green requires a slightly larger task, prefer the green boundary over an artificially tiny task.
 - Represent both execution order and dependency/parallelism explicitly.
@@ -74,11 +69,7 @@ Create tasks that are:
 - explicit about whether they depend on earlier tasks;
 - explicit about whether they can be done in parallel.
 
-Prefer fewer, cleaner vertical slices over many technical-layer tasks. When a
-slice needs a non-user-visible prerequisite, give that increment the next flat
-`Dev Task N` identifier and give the resulting user-visible slice a later flat
-`Task N` identifier. Express their relationship through dependencies; do not
-create parent/child numbering or an additional umbrella record.
+Prefer fewer, cleaner vertical slices over many technical-layer tasks. When a slice is too large, keep it as the stated delivery outcome and add the minimum development tasks needed to implement it safely. Development tasks may deliver internal value, but must have a concrete outcome, validation, and a clear relationship to their parent slice.
 
 ### 3. Preserve existing tracking on updates
 
@@ -112,16 +103,12 @@ Good primary tasks usually align to boundaries like:
 - complete one end-to-end interaction and its validation;
 - add one usable workflow while preserving existing behavior.
 
-Split an oversized or risky vertical slice into sequential numbered tasks. Good
-boundaries include:
+Use development tasks only when a vertical slice would otherwise be too large or risky. Good development-task boundaries include:
 - establish a tested domain or data boundary needed by the slice;
 - integrate one prerequisite while keeping the repository green;
 - complete a substantial interaction subset that the final slice will expose.
 
-Use one shared integer sequence across `Task` and `Dev Task` entries. Do not
-create a status-bearing umbrella or decimal development-task identifiers. Do
-not split implementation and tests unless keeping them together is genuinely
-impractical.
+Do not create development tasks by default. Do not split implementation and tests unless keeping them together is genuinely impractical.
 
 Avoid tasks like:
 - "update some imports"

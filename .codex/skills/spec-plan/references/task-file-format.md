@@ -18,32 +18,23 @@ If split files are used, the first file should explain the sequence and list the
 
 ## Section Structure
 
-Each user-visible vertical delivery slice should be a `Task` section. Use one
-flat integer sequence across the whole file, including internal development
-tasks. For example:
-- `Dev Task 1`
+Each vertical delivery slice should be a separate primary task section. Task IDs may be simple and local to the file, such as:
+- `Task 1`
 - `Task 2`
 - `Task 3`
 
-The label communicates the outcome type:
-- `Task N` delivers observable, user-testable behavior.
-- `Dev Task N` is a necessary green implementation increment that enables a
-  later user-visible task.
+If a slice is too large for one safe, reviewable increment, add development-task sections immediately after its primary task using IDs such as:
+- `Dev Task 2.1`
+- `Dev Task 2.2`
 
-If a slice is too large for one safe, reviewable increment, prefer flattening
-its implementation increments into sections with consecutive integer IDs.
-Do not emit a status-bearing umbrella task in addition to the tasks an agent
-should execute, because both can be mistaken for executable work.
-Never use decimal IDs such as `Dev Task 1.1` or parent/child task numbering.
-Do not add a development task when the user-visible slice is already a safe,
-reviewable increment.
+The primary task describes the user-testable delivery outcome. Its development tasks describe the implementation increments required to reach it. Do not add development tasks to a manageable slice.
 
 Example shape:
 
 ```md
 # Tasks For <spec title>
 
-## Task 1: <user-visible outcome>
+## Task 1: <short title>
 Status: todo
 Summary: <one short paragraph>
 Scope:
@@ -61,16 +52,16 @@ Definition of done:
 - ...
 ```
 
-Development tasks use the same required fields and the same flat sequence:
+Development tasks use the same required fields:
 
 ```md
-## Dev Task 1: <short technical increment>
+## Dev Task 2.1: <short technical increment>
 Status: todo
 Summary: <concrete contribution to Task 2>
 Scope:
 - ...
 Dependencies:
-- Enables: Task 2
+- Parent slice: Task 2
 - Depends on: ...
 - Parallelizable: no
 - Parallel with: none
@@ -90,12 +81,10 @@ Every task must include:
 - `Validation`
 - `Definition of done`
 
-Every development task must also identify the later user-visible task it
-`Enables` under `Dependencies`.
+Every development task must also identify its `Parent slice` under `Dependencies`.
 
 Recommended dependency metadata inside `Dependencies`:
 - `Depends on:`
-- `Enables:` for development tasks
 - `Parallelizable:`
 - `Parallel with:`
 
