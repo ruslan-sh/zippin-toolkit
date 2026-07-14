@@ -1,11 +1,22 @@
 import { encounterTotal, MonsterInput, rankEncounter, safeStatblockUrl } from "./encounter-calculator";
 import { Thresholds } from "./party-calculator";
+import { DEFAULT_WORKSPACE_STATE, EncounterState, MonsterState } from "./workspace-state";
 
 interface EncounterEntry {
     setThresholds: (thresholds: Thresholds | null) => void;
+    read: () => EncounterState;
 }
 
-export function initializeEncounterBuilder(document: Document): (thresholds: Thresholds | null) => void {
+export interface EncounterBuilderController {
+    (thresholds: Thresholds | null): void;
+    getState: () => EncounterState[];
+}
+
+export function initializeEncounterBuilder(
+    document: Document,
+    initialState: EncounterState[] = DEFAULT_WORKSPACE_STATE.encounters,
+    onStateChange: (state: EncounterState[]) => void = () => undefined,
+): EncounterBuilderController {
     const encountersElement = document.getElementById("encounters");
     const addEncounterButton = document.getElementById("add-encounter");
     if (!encountersElement || !addEncounterButton) throw new Error("Missing encounter coordinator element.");
@@ -13,10 +24,12 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
     let nextEncounterId = 1;
     let sharedThresholds: Thresholds | null = null;
     const encounters = new Map<number, EncounterEntry>();
+    const getState = (): EncounterState[] => Array.from(encounters.values(), (encounter) => encounter.read());
+    const publishState = (): void => onStateChange(getState());
 
-    const addEncounter = (focusNewEncounter: boolean): void => {
+    const addEncounter = (focusNewEncounter: boolean, initialEncounter?: EncounterState, publish = true): void => {
         const encounterId = nextEncounterId++;
-        const defaultName = `Encounter ${encounters.size + 1}`;
+        const defaultName = initialEncounter?.name ?? `Encounter ${encounters.size + 1}`;
         const section = document.createElement("section");
         section.className = "encounter";
         section.setAttribute("aria-labelledby", `encounter-${encounterId}-name`);
@@ -85,7 +98,7 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
 
         let nextMonsterId = 1;
         let thresholds = sharedThresholds;
-        const monsters = new Map<number, { read: () => MonsterInput; refreshLabels: () => void }>();
+        const monsters = new Map<number, { read: () => MonsterInput; readState: () => MonsterState; refreshLabels: () => void }>();
         const update = (): void => {
             const xpTotal = encounterTotal(Array.from(monsters.values(), (entry) => entry.read()));
             total.textContent = `${xpTotal.toLocaleString()} XP`;
@@ -94,7 +107,7 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
             summarySeparator.textContent = rank.textContent ? " — " : "";
         };
 
-        const addMonsterRow = (focusNewMonster: boolean): void => {
+        const addMonsterRow = (focusNewMonster: boolean, initialMonster?: MonsterState, publish = true): void => {
             const monsterId = nextMonsterId++;
             const fieldset = document.createElement("fieldset");
             fieldset.className = "monster-row";
@@ -118,11 +131,13 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
                 return input;
             };
             const monsterName = makeInput("Monster Name", "text");
+            monsterName.value = initialMonster?.name ?? "";
             const xp = makeInput("XP", "number", true);
+            xp.value = initialMonster?.xp ?? "";
             xp.min = "0";
             xp.step = "1";
             const quantity = makeInput("Quantity", "number", true);
-            quantity.value = "1";
+            quantity.value = initialMonster?.quantity ?? "1";
             quantity.min = "1";
             quantity.step = "1";
             const statblock = document.createElement("div");
@@ -169,7 +184,7 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
             actions.append(editStatblock, remove);
             fieldset.append(actions);
 
-            let savedUrl = "";
+            let savedUrl = initialMonster?.url ?? "";
             const refreshLabels = (): void => {
                 const encounterName = name.textContent ?? "";
                 legend.textContent = `${encounterName}, monster ${monsterId}`;
@@ -188,7 +203,13 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
                 xp: xp.value === "" ? Number.NaN : Number(xp.value),
                 url: savedUrl,
             });
-            const validate = (): void => {
+            const readState = (): MonsterState => ({
+                name: monsterName.value,
+                xp: xp.value,
+                quantity: quantity.value,
+                url: savedUrl,
+            });
+            const validate = (notify = false): void => {
                 const quantityInvalid = quantity.value === "" || !Number.isInteger(Number(quantity.value)) || Number(quantity.value) < 1;
                 const xpInvalid = xp.value === "" || !Number.isInteger(Number(xp.value)) || Number(xp.value) < 0;
                 quantity.setAttribute("aria-invalid", String(quantityInvalid));
@@ -210,8 +231,9 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
                     editStatblock.title = "Add statblock";
                 }
                 update();
+                if (notify) publishState();
             };
-            [monsterName, quantity, xp].forEach((input) => input.addEventListener("input", validate));
+            [monsterName, quantity, xp].forEach((input) => input.addEventListener("input", () => validate(true)));
             editStatblock.addEventListener("click", () => {
                 const enteredUrl = document.defaultView?.prompt("Statblock URL", savedUrl);
                 if (enteredUrl === null || enteredUrl === undefined) return;
@@ -221,17 +243,19 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
                     return;
                 }
                 savedUrl = safeUrl ?? "";
-                validate();
+                validate(true);
             });
             remove.addEventListener("click", () => {
                 monsters.delete(monsterId);
                 fieldset.remove();
                 update();
+                publishState();
                 addMonster.focus();
             });
-            monsters.set(monsterId, { read, refreshLabels });
+            monsters.set(monsterId, { read, readState, refreshLabels });
             rows.append(fieldset);
             validate();
+            if (publish) publishState();
             if (focusNewMonster) monsterName.focus();
         };
 
@@ -245,24 +269,34 @@ export function initializeEncounterBuilder(document: Document): (thresholds: Thr
             removeEncounter.setAttribute("aria-label", `Delete ${trimmedName}`);
             addMonster.setAttribute("aria-label", `Add monster to ${trimmedName}`);
             monsters.forEach((monster) => monster.refreshLabels());
+            publishState();
         });
         removeEncounter.addEventListener("click", () => {
             encounters.delete(encounterId);
             section.remove();
+            publishState();
             addEncounterButton.focus();
         });
         addMonster.addEventListener("click", () => addMonsterRow(true));
         encounters.set(encounterId, {
             setThresholds: (nextThresholds) => { thresholds = nextThresholds; update(); },
+            read: () => ({
+                name: name.textContent ?? "",
+                monsters: Array.from(monsters.values(), (monster) => monster.readState()),
+            }),
         });
         encountersElement.append(section);
-        addMonsterRow(focusNewEncounter);
+        (initialEncounter?.monsters ?? [{ name: "", xp: "", quantity: "1", url: "" }])
+            .forEach((monster, index) => addMonsterRow(focusNewEncounter && index === 0, monster, false));
+        if (publish) publishState();
     };
 
     addEncounterButton.addEventListener("click", () => addEncounter(true));
-    addEncounter(false);
-    return (thresholds: Thresholds | null): void => {
+    initialState.forEach((encounter) => addEncounter(false, encounter, false));
+    const controller = ((thresholds: Thresholds | null): void => {
         sharedThresholds = thresholds;
         encounters.forEach((encounter) => encounter.setThresholds(thresholds));
-    };
+    }) as EncounterBuilderController;
+    controller.getState = getState;
+    return controller;
 }

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { initializePartyCalculator } from "../src/party-ui";
+import { PartyState } from "../src/workspace-state";
 
 class FakeElement {
     value = "";
@@ -44,6 +45,7 @@ class FakeElement {
     matches(selector: string): boolean {
         if (selector === "input") return this.tag === "input";
         if (selector === ".remove-party-row") return this.className === "remove-party-row";
+        if (selector === ".party-row-controls") return this.className === "party-row-controls";
         if (selector === "[data-party-row]") return this.dataset.partyRow !== undefined;
         return false;
     }
@@ -71,7 +73,10 @@ class FakeDocument {
     }
 }
 
-function setup(updateEncounter: (value: unknown) => void = () => undefined): FakeDocument {
+function setup(
+    updateEncounter: (value: unknown) => void = () => undefined,
+    initialize = true,
+): FakeDocument {
     const document = new FakeDocument();
     const rows = document.make("party-rows");
     const row = document.make("");
@@ -92,7 +97,7 @@ function setup(updateEncounter: (value: unknown) => void = () => undefined): Fak
     document.make("modifier-value", "input", "0");
     document.make("modifier-value-error");
     ["low", "moderate", "high"].forEach((name) => document.make(`${name}-result`));
-    initializePartyCalculator(document as unknown as Document, updateEncounter as never);
+    if (initialize) initializePartyCalculator(document as unknown as Document, updateEncounter as never);
     return document;
 }
 
@@ -118,6 +123,7 @@ test("invalidates the whole party and recovers after removing the bad row", () =
     document.element("player-count-2").value = "0";
     document.element("player-count-2").dispatch("input");
     assert.equal(document.element("low-result").textContent, "—");
+    assert.equal(document.element("add-party-row").parent?.className, "party-row-controls");
     assert.equal(document.element("player-count-2").attributes.get("aria-invalid"), "true");
     assert.equal(document.element("player-count-2").attributes.get("title"), "Party group 2: enter a positive whole number of players.");
     assert.equal(document.element("player-count-2").attributes.get("aria-describedby"), "player-count-2-error");
@@ -170,4 +176,49 @@ test("hides removal for the final row and applies one shared modifier", () => {
     document.element("modifier-value").value = "10";
     document.element("modifier-value").dispatch("input");
     assert.equal(document.element("low-result").textContent, "2,200 XP");
+});
+
+test("hydrates raw party state and publishes ordered snapshots", () => {
+    const document = setup(() => undefined, false);
+    const updates: PartyState[] = [];
+    const getState = initializePartyCalculator(
+        document as unknown as Document,
+        () => undefined,
+        {
+            groups: [
+                { playerCount: "", level: "21" },
+                { playerCount: "2", level: "7" },
+            ],
+            modifierType: "flat",
+            modifierValue: "-10.5",
+        },
+        (state) => updates.push(state),
+    );
+    assert.deepEqual(getState(), {
+        groups: [
+            { playerCount: "", level: "21" },
+            { playerCount: "2", level: "7" },
+        ],
+        modifierType: "flat",
+        modifierValue: "-10.5",
+    });
+    assert.equal(document.element("low-result").textContent, "—");
+    document.element("player-count-1").value = "3";
+    document.element("player-count-1").dispatch("input");
+    assert.equal(updates.length, 1);
+    assert.equal(updates[0].groups[0].playerCount, "3");
+    assert.equal(updates[0].groups[1].level, "7");
+
+    document.element("modifier-type").value = "percentage";
+    document.element("modifier-type").dispatch("change");
+    assert.equal(updates[1].modifierType, "percentage");
+
+    document.element("add-party-row").dispatch("click");
+    assert.equal(updates[2].groups.length, 3);
+    assert.deepEqual(updates[2].groups[2], { playerCount: "1", level: "1" });
+
+    const removeButtons = document.element("party-rows").querySelectorAll<FakeElement>(".remove-party-row");
+    removeButtons[1].dispatch("click");
+    assert.equal(updates[3].groups.length, 2);
+    assert.equal(updates[3].groups[1].level, "1");
 });

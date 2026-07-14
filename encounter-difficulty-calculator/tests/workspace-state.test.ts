@@ -1,0 +1,84 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import {
+    createWorkspaceStateCoordinator,
+    DEFAULT_WORKSPACE_STATE,
+    isNumberInputValue,
+    isWorkspaceState,
+    WorkspaceState,
+} from "../src/workspace-state";
+
+function workspace(overrides: Partial<WorkspaceState> = {}): WorkspaceState {
+    return {
+        ...DEFAULT_WORKSPACE_STATE,
+        party: {
+            ...DEFAULT_WORKSPACE_STATE.party,
+            groups: DEFAULT_WORKSPACE_STATE.party.groups.map((group) => ({ ...group })),
+        },
+        encounters: DEFAULT_WORKSPACE_STATE.encounters.map((encounter) => ({
+            ...encounter,
+            monsters: encounter.monsters.map((monster) => ({ ...monster })),
+        })),
+        ...overrides,
+    };
+}
+
+test("accepts the versioned workspace shape and UI-invalid raw values", () => {
+    const value = workspace({
+        party: {
+            groups: [{ playerCount: "", level: "21" }],
+            modifierType: "flat",
+            modifierValue: "-10.5",
+        },
+        encounters: [{
+            name: "Boss: finale",
+            monsters: [{ name: "Ogre", xp: "-1", quantity: "1.5", url: "https://example.com/ogre" }],
+        }],
+    });
+    assert.equal(isWorkspaceState(value), true);
+});
+
+test("accepts only raw values that native number inputs can preserve", () => {
+    ["", "0", "-1", "21", "1.5", ".5", "1e3", "1E-3"].forEach((value) => {
+        assert.equal(isNumberInputValue(value), true, value);
+    });
+    ["not-finished", "many", " ", "+1", "1.", "NaN", "Infinity", "1,000"].forEach((value) => {
+        assert.equal(isNumberInputValue(value), false, value);
+    });
+});
+
+test("rejects unsupported, ambiguous, and unsafe workspace structures", () => {
+    assert.equal(isWorkspaceState({ ...workspace(), version: 2 }), false);
+    assert.equal(isWorkspaceState({ ...workspace(), extra: true }), false);
+    assert.equal(isWorkspaceState(workspace({ party: { ...DEFAULT_WORKSPACE_STATE.party, groups: [] } })), false);
+    assert.equal(isWorkspaceState(workspace({
+        party: { ...DEFAULT_WORKSPACE_STATE.party, modifierValue: "not-finished" },
+    })), false);
+    assert.equal(isWorkspaceState(workspace({ encounters: [{
+        name: "Sanitized",
+        monsters: [{ name: "", xp: "many", quantity: "1", url: "" }],
+    }] })), false);
+    assert.equal(isWorkspaceState(workspace({ encounters: [{
+        name: "Unsafe",
+        monsters: [{ name: "", xp: "1", quantity: "1", url: "javascript:alert(1)" }],
+    }] })), false);
+    assert.equal(isWorkspaceState(workspace({ encounters: [{ name: " ", monsters: [] }] })), false);
+});
+
+test("coordinates complete ordered state updates", () => {
+    const updates: WorkspaceState[] = [];
+    const coordinator = createWorkspaceStateCoordinator(workspace(), (state) => updates.push(state));
+    coordinator.updateParty({
+        groups: [{ playerCount: "2", level: "3" }],
+        modifierType: "percentage",
+        modifierValue: "10",
+    });
+    coordinator.updateEncounters([
+        { name: "Second", monsters: [] },
+        { name: "First", monsters: [{ name: "Goblin", xp: "50", quantity: "2", url: "" }] },
+    ]);
+    assert.deepEqual(coordinator.getState(), updates[1]);
+    assert.equal(updates[1].party.modifierValue, "10");
+    assert.deepEqual(updates[1].encounters.map((encounter) => encounter.name), ["Second", "First"]);
+});

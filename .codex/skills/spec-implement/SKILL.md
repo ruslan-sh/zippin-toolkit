@@ -37,12 +37,26 @@ Do not silently expand default mode into later tasks. Small prerequisite or inte
 4. Add or update tests with the behavior. Do not defer validation work assigned to the task.
 5. Run the task-specific checks plus all checks required by applicable `AGENTS.md` files. Use documented fallbacks when necessary.
 6. Fix failures caused by the implementation. Report pre-existing or environmental failures precisely.
+7. Run the independent validation gate below before marking the task done.
 
 In whole-feature mode, repeat this workflow task by task. Keep the repository working at each task boundary when practical.
 
+## Run the independent validation gate
+
+After finishing each task, run up to three validation iterations:
+
+1. Spawn a fresh subagent using the **5.6 Sol light** model. Give it the target spec and task scope, then instruct it to run `/spec-validate` against the current worktree. Do not give it prior validation conclusions or expected findings.
+2. Process the subagent's complete report. For every actionable finding attributable to the current task, inspect the cited evidence, fix the implementation or tracking as appropriate, and rerun the affected required checks.
+3. Spawn another fresh **5.6 Sol light** subagent and run `/spec-validate` again after the fixes. Never ask the previous subagent to merely recheck its own report.
+4. Pass the gate only when a validation iteration reports no actionable findings for the current task. Notes about later tasks, unrelated pre-existing issues, or intentionally out-of-scope work do not fail the gate; include them in the final report when relevant.
+
+Count every spawned `/spec-validate` review as one iteration, including a clean review. Stop after at most three iterations. If actionable findings remain after the third report, do not mark the task done and do not continue to another task. Report the unresolved findings, fixes attempted, and validation evidence, then wait for user guidance.
+
+If the required model or subagent capability is unavailable, stop before marking the task done, report the unavailable gate, and wait for user guidance.
+
 ## Update tracking
 
-After implementation and required validation succeed, change the implemented task's status to `done`. Preserve task text and unrelated notes. Do not mark a task done when required behavior remains missing or a relevant failure is attributable to the change.
+After implementation, required local validation, and the independent validation gate succeed, change the implemented task's status to `done`. Preserve task text and unrelated notes. Do not mark a task done when required behavior remains missing, a relevant failure is attributable to the change, or the gate has not passed.
 
 In whole-feature mode, update each task only after its own completion. Do not archive the spec or update current-state documentation unless the user also requests the post-implementation documentation workflow.
 

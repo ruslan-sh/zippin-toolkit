@@ -2,7 +2,7 @@
 
 ## Dev Task 1: Establish a versioned workspace state boundary
 
-Status: todo
+Status: done
 
 Summary: Create a tested, serializable workspace model and adapt the existing
 party and encounter UI boundaries so callers can initialize them from state and

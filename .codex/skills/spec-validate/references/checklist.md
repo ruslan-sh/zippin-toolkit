@@ -26,6 +26,16 @@ Use this checklist while reviewing:
 - Which are not implemented?
 - Are there behavior-preserving temporary choices that the spec already allows?
 
+## General code review gate
+
+- Is any core behavior, safety guarantee, or substantial requested scope missing?
+- Is a completed task unjustified strongly enough that broader review should be deferred?
+- If there are no major spec misses, inspect the same change set and direct
+  callers/tests for correctness, regressions, security, reliability, data
+  integrity, accessibility, performance, maintainability, and meaningful test gaps.
+- Exclude cosmetic preferences and unrelated pre-existing issues.
+- Label findings by review lens and merge duplicates.
+
 ## Task tracker comparison
 
 - Are `done` tasks actually complete in code?

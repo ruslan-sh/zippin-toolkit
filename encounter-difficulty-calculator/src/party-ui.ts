@@ -1,4 +1,5 @@
 import { calculateMixedPartyThresholds, ModifierType, PartyGroup, Thresholds } from "./party-calculator";
+import { PartyGroupState, PartyState } from "./workspace-state";
 
 const RESULT_IDS = ["low", "moderate", "high"] as const;
 
@@ -8,7 +9,7 @@ function requiredElement<T extends HTMLElement>(document: Document, id: string):
     return element as T;
 }
 
-function createPartyRow(document: Document, id: number): HTMLElement {
+function createPartyRow(document: Document, id: number, state: PartyGroupState = { playerCount: "1", level: "1" }): HTMLElement {
     const row = document.createElement("div");
     row.className = "party-row";
     row.dataset.partyRow = String(id);
@@ -16,7 +17,7 @@ function createPartyRow(document: Document, id: number): HTMLElement {
     const controls = document.createElement("div");
     controls.className = "party-row-controls";
 
-    const addInput = (kind: "player-count" | "party-level", labelText: string): void => {
+    const addInput = (kind: "player-count" | "party-level", labelText: string, value: string): void => {
         const inputId = `${kind}-${id}`;
         const label = document.createElement("label");
         label.className = "visually-hidden";
@@ -28,15 +29,15 @@ function createPartyRow(document: Document, id: number): HTMLElement {
         input.type = "number";
         input.min = "1";
         input.step = "1";
-        input.value = "1";
+        input.value = value;
         input.setAttribute("aria-describedby", `${inputId}-error`);
         if (kind === "party-level") input.max = "20";
         controls.append(label);
         controls.append(input);
     };
 
-    addInput("player-count", `Players in group ${id}`);
-    addInput("party-level", `Level for group ${id}`);
+    addInput("player-count", `Players in group ${id}`, state.playerCount);
+    addInput("party-level", `Level for group ${id}`, state.level);
 
     const remove = document.createElement("button");
     remove.className = "remove-party-row";
@@ -64,12 +65,36 @@ function createPartyRow(document: Document, id: number): HTMLElement {
 export function initializePartyCalculator(
     document: Document,
     updateEncounter: (thresholds: Thresholds | null) => void = () => undefined,
-): void {
+    initialState?: PartyState,
+    onStateChange: (state: PartyState) => void = () => undefined,
+): () => PartyState {
     const rows = requiredElement<HTMLElement>(document, "party-rows");
     const addButton = requiredElement<HTMLButtonElement>(document, "add-party-row");
     const modifierType = requiredElement<HTMLSelectElement>(document, "modifier-type");
     const modifierValue = requiredElement<HTMLInputElement>(document, "modifier-value");
     let nextRowId = 2;
+
+    if (initialState) {
+        rows.querySelectorAll<HTMLElement>("[data-party-row]").forEach((row) => row.remove());
+        const hydratedRows = initialState.groups.map((group, index) => createPartyRow(document, index + 1, group));
+        hydratedRows.forEach((row) => rows.append(row));
+        hydratedRows[hydratedRows.length - 1].querySelector(".party-row-controls")?.append(addButton);
+        modifierType.value = initialState.modifierType;
+        modifierValue.value = initialState.modifierValue;
+        nextRowId = initialState.groups.length + 1;
+    }
+
+    const getState = (): PartyState => ({
+        groups: Array.from(rows.querySelectorAll<HTMLElement>("[data-party-row]"), (row) => {
+            const id = row.dataset.partyRow;
+            return {
+                playerCount: requiredElement<HTMLInputElement>(document, `player-count-${id}`).value,
+                level: requiredElement<HTMLInputElement>(document, `party-level-${id}`).value,
+            };
+        }),
+        modifierType: modifierType.value as ModifierType,
+        modifierValue: modifierValue.value,
+    });
 
     const setValidation = (input: HTMLElement, valid: boolean, message: string, errorId?: string): void => {
         input.setAttribute("aria-invalid", String(!valid));
@@ -84,7 +109,7 @@ export function initializePartyCalculator(
         buttons.forEach((button) => { button.hidden = partyRows.length === 1; });
     };
 
-    const update = (): void => {
+    const update = (publishState = false): void => {
         const groups: PartyGroup[] = [];
         let rowsValid = true;
         rows.querySelectorAll<HTMLElement>("[data-party-row]").forEach((row) => {
@@ -107,6 +132,7 @@ export function initializePartyCalculator(
         if (!rowsValid || !modifierValid) {
             RESULT_IDS.forEach((difficulty) => { requiredElement(document, `${difficulty}-result`).textContent = "—"; });
             updateEncounter(null);
+            if (publishState) onStateChange(getState());
             return;
         }
 
@@ -115,12 +141,13 @@ export function initializePartyCalculator(
             requiredElement(document, `${difficulty}-result`).textContent = `${thresholds[difficulty].toLocaleString()} XP`;
         });
         updateEncounter(thresholds);
+        if (publishState) onStateChange(getState());
     };
 
     const bindRow = (row: HTMLElement): void => {
         row.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
-            input.addEventListener("input", update);
-            input.addEventListener("change", update);
+            input.addEventListener("input", () => update(true));
+            input.addEventListener("change", () => update(true));
         });
         const remove = row.querySelector<HTMLButtonElement>(".remove-party-row");
         if (!remove) throw new Error("Missing party row remove button.");
@@ -130,7 +157,7 @@ export function initializePartyCalculator(
             const index = currentRows.indexOf(row);
             row.remove();
             updateRemoveButtons();
-            update();
+            update(true);
             const remaining = rows.querySelectorAll<HTMLElement>("[data-party-row]");
             remaining[remaining.length - 1]?.querySelector(".party-row-controls")?.append(addButton);
             remaining[Math.min(index, remaining.length - 1)]?.querySelector<HTMLInputElement>("input")?.focus();
@@ -139,8 +166,8 @@ export function initializePartyCalculator(
 
     rows.querySelectorAll<HTMLElement>("[data-party-row]").forEach(bindRow);
     [modifierType, modifierValue].forEach((control) => {
-        control.addEventListener("input", update);
-        control.addEventListener("change", update);
+        control.addEventListener("input", () => update(true));
+        control.addEventListener("change", () => update(true));
     });
     addButton.addEventListener("click", () => {
         const id = nextRowId++;
@@ -149,10 +176,11 @@ export function initializePartyCalculator(
         row.querySelector(".party-row-controls")?.append(addButton);
         bindRow(row);
         updateRemoveButtons();
-        update();
+        update(true);
         requiredElement<HTMLInputElement>(document, `player-count-${id}`).focus();
     });
 
     updateRemoveButtons();
     update();
+    return getState;
 }

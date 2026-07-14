@@ -1,5 +1,4 @@
 import "./index.scss";
-import { initializeEncounterBuilder } from "./encounter-ui";
-import { initializePartyCalculator } from "./party-ui";
+import { initializeWorkspace } from "./workspace-ui";
 
-initializePartyCalculator(document, initializeEncounterBuilder(document));
+initializeWorkspace(document);
