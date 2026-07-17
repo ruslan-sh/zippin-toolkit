@@ -4,24 +4,6 @@ This file applies to changes inside `fantasy-calendar/`. Preserve Fantasy
 Calendar behavior and keep implementation, tests, and documentation
 self-contained within this project folder.
 
-# Project Layout
-
-- `src/index.ts`: calendar entry point.
-- `src/index.ejs`: HTML template used by webpack.
-- `src/ts/calendar.ts`: calendar logic and state transitions.
-- `src/ts/moon.ts`: moon-phase calculations and state helpers.
-- `src/ts/render.ts`: DOM rendering and UI updates.
-- `src/ts/url-utils.ts`: URL helper utilities.
-- `src/scss/index.scss`: SCSS entry point.
-- `src/scss/abstracts/_variables.scss`: shared style variables.
-- `src/scss/base/_base.scss`: base and global styles.
-- `src/scss/components/`: component-level styles.
-- `src/scss/layout/_calendar.scss`: calendar layout styles.
-- `tests/`: calendar unit and rendering tests.
-- `docs/`: current calendar design documentation.
-- `specs/archive/`: archived calendar specifications.
-- `../specs/roadmap.md`: repository follow-up roadmap, including calendar work.
-
 # Module Boundaries
 
 - Keep date and calendar calculations in `src/ts/calendar.ts`.

@@ -118,9 +118,12 @@ custom YAML tags, and non-HTTP(S) statblock URLs are rejected.
 
 After confirmation, the calculator replaces the visible workspace, derives
 totals, ranks, and validation messages again, and saves the imported snapshot.
-Canceling or encountering a read, parse, validation, rendering, or storage
-failure leaves the previous visible and stored workspace unchanged. Import
-successes, cancellations, and failures are reported in alert dialogs.
+Canceling or encountering a read, parse, or validation failure leaves the
+previous visible and stored workspace unchanged. If rendering or storage fails
+after replacement begins, the calculator makes a best-effort attempt to restore
+the previous visible and stored workspace. A browser or storage adapter that
+also rejects that restoration cannot provide a complete rollback guarantee.
+Import successes, cancellations, and failures are reported in alert dialogs.
 
 ## Boundaries
 

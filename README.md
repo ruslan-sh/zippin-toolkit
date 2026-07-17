@@ -11,6 +11,8 @@ tabletop role-playing games.
 
 - [Fantasy Calendar](fantasy-calendar/) —
   [open app](https://ruslan-sh.github.io/zippin-toolkit/fantasy-calendar/)
+- [Encounter Difficulty Calculator](encounter-difficulty-calculator/) —
+  [open app](https://ruslan-sh.github.io/zippin-toolkit/encounter-difficulty-calculator/)
 
 ## Development
 
@@ -27,22 +29,14 @@ All dependencies and commands are managed from the repository root. The build
 produces one deployable `dist/` artifact containing the landing page and every
 tool.
 
-## Project Layout
-
-- `app/src/`: Zippin's Toolkit landing page.
-- `fantasy-calendar/`: Fantasy Calendar tool and its project documentation.
-- `specs/`: active repository-wide specifications and task trackers.
-- `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
-
 Generated files in `dist/` should not be edited directly.
 
 ## Documentation
 
 - [Project structure and deployment](docs/project-structure.md)
+- [Contribution, branch, and commit conventions](docs/contributing.md)
 
 ## Deployment
 
-GitHub Pages publishes `dist/` with these routes:
-
-- `/zippin-toolkit/` — landing page.
-- `/zippin-toolkit/fantasy-calendar/` — Fantasy Calendar.
+GitHub Pages publishes the production `dist/` artifact. Use the links under
+**Tools** to open each deployed page.
