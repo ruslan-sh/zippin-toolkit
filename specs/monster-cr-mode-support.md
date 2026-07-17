@@ -27,8 +27,6 @@ the table. Encounter totals and difficulty ranks continue to use XP only.
 - Looking up monsters by name or providing a monster library.
 - Applying encounter multipliers, party-size multipliers, or automatic
   quantity changes.
-- Using the source table's “Minions per Standard” reference column in any
-  calculation or UI behavior.
 - Changing encounter ranking boundaries or party threshold calculations.
 
 ## Current behavior
@@ -64,7 +62,7 @@ XP value. Changing CR does not require confirmation and does not preserve a
 manual XP override. If Minion is off, use the standard table. If Minion is on,
 use the Minion table.
 
-The standard mapping is:
+The standard mapping follows the standard D&D 5.5 CR-to-XP rules:
 
 | CR | XP |
 |---:|---:|
@@ -106,7 +104,7 @@ The standard mapping is:
 CR 0 uses 10 XP by default. The user may directly edit it to 0 XP for
 creatures that award no XP.
 
-The Minion mapping is:
+The Minion mapping is taken from MCDM's *Flee, Mortals!*:
 
 | CR | XP |
 |---:|---:|
@@ -184,8 +182,9 @@ structures are rejected according to the existing workspace import contract.
 
 Update `encounter-difficulty-calculator/docs/calculator.md` to document CR and
 Minion controls, conversion behavior, defaults, direct XP overrides, version-2
-workspace fields, version-1 migration, and the fact that “Minions per
-Standard” is not used by this calculator.
+workspace fields, and version-1 migration. The documentation must identify the
+standard CR-to-XP mapping as following D&D 5.5 rules and attribute the Minion
+mapping to MCDM's *Flee, Mortals!*.
 
 ## Acceptance criteria
 
@@ -209,8 +208,8 @@ Standard” is not used by this calculator.
   and Minion state and reject unsupported CR values or malformed structures.
 - Existing storage/import transaction guarantees remain intact when migration,
   rendering, or saving fails.
-- Documentation describes the new behavior and the unchanged calculation
-  boundaries.
+- Documentation describes the new behavior, the unchanged calculation
+  boundaries, and the sources of the standard and Minion XP mappings.
 
 ## Validation plan
 
