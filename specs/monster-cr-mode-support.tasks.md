@@ -3,7 +3,7 @@
 Plan update: The former combined Task 3 is now a CR-only slice followed by a separate Minion slice. Documentation moved to Task 5; all existing statuses remain `todo`.
 
 ## Dev Task 1: Add the canonical standard CR-to-XP domain model
-Status: todo
+Status: done
 Summary: Introduce one pure, typed source of truth for supported Challenge Ratings and their standard XP mapping so validation and the initial CR workflow can share the same rules.
 Scope:
 - Add a calculator module that exposes the blank-independent canonical CR values (`0`, the fractional CRs, and whole numbers through `30`).
