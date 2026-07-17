@@ -131,7 +131,7 @@ compare.
 
 ### `monster-cr-mode-support`
 
-Status: planned
+Status: in-progress
 Prerequisite: none
 
 Allow monsters to be added by Challenge Rating instead of by XP value, with
