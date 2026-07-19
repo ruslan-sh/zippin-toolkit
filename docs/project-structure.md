@@ -8,27 +8,12 @@ at its own subpath.
 
 ## Repository Structure
 
-```text
-app/
-  src/
-fantasy-calendar/
-  src/
-  tests/
-  docs/
-  specs/archive/
-  AGENTS.md
-  README.md
-docs/
-specs/
-package.json
-package-lock.json
-webpack.*.js
-tsconfig*.json
-```
-
 - `app/` owns the landing page.
+- `encounter-difficulty-calculator/` is self-contained for implementation,
+  tests, documentation, and contributor guidance.
 - `fantasy-calendar/` is self-contained for implementation, tests,
   documentation, archived planning, and contributor guidance.
+- `shared/` contains theme source consumed by the landing page and both tools.
 - `docs/` contains current repository-wide documentation.
 - `specs/` contains active repository-wide plans; implemented plans are moved
   to `specs/archive/`.
@@ -49,46 +34,21 @@ The root `package.json` provides the common workflow:
 - `npm run lint` checks TypeScript and JavaScript across projects.
 - `npm run lint:styles` checks SCSS across projects.
 
-Webpack uses separate entry points for `app/src/index.ts` and
-`fantasy-calendar/src/index.ts`. Each page receives only its own generated
-JavaScript and CSS assets.
+Webpack uses a separate entry point for the landing page and each tool. Each
+page receives only its own generated JavaScript and CSS assets.
 
 ## Build Output
 
-The production build creates:
+The production build creates one deployable `dist/` directory containing the
+landing page and a subdirectory for each tool. Generated output is disposable
+and should not be edited or committed.
 
-```text
-dist/
-  index.html
-  app/
-    app.bundle.js
-    app.css
-  fantasy-calendar/
-    index.html
-    fantasy-calendar.bundle.js
-    fantasy-calendar.css
-```
+## Routing
 
-Generated output is disposable and should not be edited or committed.
-
-## Routes and URL State
-
-GitHub Pages publishes the `dist/` directory at these routes:
-
-- `/zippin-toolkit/` — Zippin's Toolkit landing page.
-- `/zippin-toolkit/fantasy-calendar/` — Fantasy Calendar.
-
-The landing page uses the relative link `fantasy-calendar/`, which works in
-local development and beneath the GitHub Pages repository path.
-
-Fantasy Calendar stores its selected date in the hash while preserving its
-nested pathname. A direct date URL has this form:
-
-```text
-/zippin-toolkit/fantasy-calendar/#1504/Hammer/1
-```
-
-The calendar can be opened directly without first visiting the landing page.
+GitHub Pages serves the landing page at the repository root and each tool from
+its own subpath. The landing page uses relative links so navigation works in
+local development and beneath the GitHub Pages repository path. Tool-specific
+URL state is documented with the applicable tool.
 
 ## Deployment
 

@@ -7,7 +7,10 @@ unless a task explicitly requires structural changes.
 # Project Layout
 
 - `app/src/`: Zippin's Toolkit landing page source and styles.
+- `encounter-difficulty-calculator/`: Encounter Difficulty Calculator; see its
+  scoped `AGENTS.md`.
 - `fantasy-calendar/`: Fantasy Calendar tool; see its scoped `AGENTS.md`.
+- `shared/`: shared theme source used by the landing page and tools.
 - `specs/`: active repository-wide specifications, task trackers, and the
   follow-up roadmap.
 - `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
@@ -49,6 +52,16 @@ Validation policy for substantive changes:
 2. Implement the smallest viable change.
 3. Run the required build, tests, and relevant lint checks.
 4. Summarize behavior, files changed, verification, assumptions, and edge cases.
+
+# Branches and Commits
+
+- Follow `docs/contributing.md` for branch and commit naming.
+- Use a typed, lowercase kebab-case branch such as
+  `feat/monster-cr-mode-support`. Coding tools follow the same convention as
+  every other contributor; do not substitute a tool name for the branch type.
+- Use Conventional Commit subjects such as
+  `feat(encounter): support monster challenge ratings`.
+- Do not rewrite existing history solely to apply the convention.
 
 # Specs and Roadmap
 
