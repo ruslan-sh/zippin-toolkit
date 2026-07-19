@@ -226,6 +226,7 @@ test("rolls back a partial rendering failure before reporting the import error",
 
     assert.equal(document.element("modifier-value").value, "7");
     const encounter = document.element("encounters").children[0];
+    assert.equal(descendants(encounter).find((element) => element.className === "monster-cr")?.value, "2");
     assert.equal(descendants(encounter).find((element) => element.className === "encounter-total")?.textContent, "900 XP");
     assert.equal(storage.value, originalSerialized);
     assert.match(lastAlert(document), /not changed/);
@@ -481,6 +482,16 @@ test("batches autosaves while preserving complete party and encounter snapshots"
     assert.equal(storage.writes, 1);
 
     const encounter = document.element("encounters").children[0];
+    const cr = descendants(encounter).find((element) => element.className === "monster-cr");
+    assert.ok(cr);
+    cr.value = "4";
+    cr.dispatch("change");
+    await Promise.resolve();
+    saved = JSON.parse(storage.value ?? "") as WorkspaceState;
+    assert.equal(saved.encounters[0].monsters[0].cr, "4");
+    assert.equal(saved.encounters[0].monsters[0].xp, 1100);
+    assert.equal(saved.encounters[0].monsters[0].minion, false);
+
     document.defaultView.prompt = () => "https://example.com/goblin";
     const editStatblock = descendants(encounter).find((element) => element.className === "edit-statblock");
     assert.ok(editStatblock);

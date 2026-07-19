@@ -48,7 +48,7 @@ Definition of done:
 - Invalid version-2 data cannot partially replace the visible or stored workspace.
 
 ## Task 3: Build encounters with standard CR controls
-Status: todo
+Status: done
 Summary: Let users choose a monster CR to calculate standard XP and still edit that XP directly while all totals and difficulty ranks continue to use the current XP value.
 Scope:
 - Add a blank-capable Challenge Rating control to every new and restored monster row, with encounter-specific accessible labels and usable responsive styling.

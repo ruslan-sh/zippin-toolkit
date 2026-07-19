@@ -76,6 +76,10 @@ function inputs(element: FakeElement): FakeElement[] {
     return descendants(element).filter((child) => child.type === "text" || child.type === "number");
 }
 
+function crControl(element: FakeElement): FakeElement {
+    return byClass(element, "monster-cr")[0];
+}
+
 test("creates isolated encounters and distributes shared thresholds", () => {
     const document = new FakeDocument();
     const setThresholds = initializeEncounterBuilder(document as unknown as Document);
@@ -215,6 +219,7 @@ test("hydrates ordered raw encounter state and publishes complete snapshots", ()
         { name: "Empty", monsters: [] },
     ]);
     const first = document.element("encounters").children[0];
+    assert.equal(crControl(first).value, "2");
     const firstInputs = inputs(first);
     assert.equal(firstInputs[2].value, "");
     assert.equal(firstInputs[1].attributes.get("aria-invalid"), "true");
@@ -243,4 +248,54 @@ test("hydrates ordered raw encounter state and publishes complete snapshots", ()
     document.element("add-encounter").dispatch("click");
     assert.equal(updates[5].length, 3);
     assert.equal(updates[5][2].name, "Encounter 3");
+});
+
+test("calculates standard XP from CR while preserving direct overrides and blank CR", () => {
+    const document = new FakeDocument();
+    const updates: EncounterState[][] = [];
+    const controller = initializeEncounterBuilder(
+        document as unknown as Document,
+        undefined,
+        (state) => updates.push(state),
+    );
+    const encounter = document.element("encounters").children[0];
+    const cr = crControl(encounter);
+    const xp = inputs(encounter)[1];
+
+    assert.equal(cr.value, "");
+    assert.equal(xp.value, "");
+    assert.deepEqual(cr.children.map((option) => option.value), ["", "0", "1/8", "1/4", "1/2", ...Array.from({ length: 30 }, (_, index) => String(index + 1))]);
+
+    cr.value = "0";
+    cr.dispatch("change");
+    assert.equal(xp.value, "10");
+    assert.equal(controller.getState()[0].monsters[0].cr, "0");
+    assert.equal(updates[updates.length - 1][0].monsters[0].xp, 10);
+
+    cr.value = "30";
+    cr.dispatch("change");
+    assert.equal(xp.value, "155000");
+    xp.value = "7";
+    xp.dispatch("input");
+    assert.equal(controller.getState()[0].monsters[0].cr, "30");
+    assert.equal(controller.getState()[0].monsters[0].xp, 7);
+    assert.equal(byClass(encounter, "encounter-total")[0].textContent, "7 XP");
+
+    cr.value = "";
+    cr.dispatch("change");
+    assert.equal(xp.value, "7");
+    assert.equal(controller.getState()[0].monsters[0].cr, null);
+});
+
+test("keeps CR labels encounter-specific after rename", () => {
+    const document = new FakeDocument();
+    initializeEncounterBuilder(document as unknown as Document);
+    const encounter = document.element("encounters").children[0];
+    const cr = crControl(encounter);
+    const label = descendants(encounter).find((element) => element.htmlFor === cr.id);
+    assert.equal(label?.textContent, "Challenge Rating for Encounter 1, monster 1");
+
+    document.nextPrompt = "Boss fight";
+    byClass(encounter, "rename-encounter")[0].dispatch("click");
+    assert.equal(label?.textContent, "Challenge Rating for Boss fight, monster 1");
 });
