@@ -24,7 +24,7 @@ Definition of done:
 - Existing XP-based monster validation, totals, and ranking behavior remain unchanged.
 
 ## Dev Task 2: Add strict version-2 workspace compatibility
-Status: todo
+Status: done
 Summary: Upgrade persisted and exported monster state to carry CR and Minion fields while explicitly migrating version-1 browser and YAML workspaces without changing their saved XP.
 Scope:
 - Change the source workspace contract to version 2 and add `cr` and `minion` to every `MonsterState`, including default and in-progress rows.

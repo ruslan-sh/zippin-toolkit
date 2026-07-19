@@ -212,9 +212,11 @@ export function initializeEncounterBuilder(
             });
             const readState = (): MonsterState => ({
                 name: monsterName.value,
+                cr: initialMonster?.cr ?? null,
                 xp: parseWorkspaceNumber(xp.value),
                 quantity: parseWorkspaceNumber(quantity.value),
                 url: savedUrl,
+                minion: initialMonster?.minion ?? false,
             });
             const validate = (notify = false): void => {
                 const quantityInvalid = quantity.value === "" || !Number.isInteger(Number(quantity.value)) || Number(quantity.value) < 1;
@@ -293,7 +295,7 @@ export function initializeEncounterBuilder(
             }),
         });
         encountersElement.append(section);
-        (initialEncounter?.monsters ?? [{ name: "", xp: null, quantity: 1, url: "" }])
+        (initialEncounter?.monsters ?? [{ name: "", cr: null, xp: null, quantity: 1, url: "", minion: false }])
             .forEach((monster, index) => addMonsterRow(focusNewEncounter && index === 0, monster, false));
         if (publish) publishState();
     };

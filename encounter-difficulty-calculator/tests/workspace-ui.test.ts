@@ -168,7 +168,7 @@ class FakeStorage implements WorkspaceStorage {
 test("publishes complete workspace snapshots for party and encounter edits", () => {
     const document = setup();
     const initial: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: {
             groups: [{ playerCount: 4, level: 5 }],
             modifierType: "percentage",
@@ -176,7 +176,7 @@ test("publishes complete workspace snapshots for party and encounter edits", () 
         },
         encounters: [{
             name: "Bridge",
-            monsters: [{ name: "Ogre", xp: 450, quantity: 1, url: "" }],
+            monsters: [{ name: "Ogre", cr: "2", xp: 450, quantity: 1, url: "", minion: true }],
         }],
     };
     const updates: WorkspaceState[] = [];
@@ -194,6 +194,8 @@ test("publishes complete workspace snapshots for party and encounter edits", () 
     monsterName.dispatch("input");
     assert.equal(updates[1].party.modifierValue, 10);
     assert.equal(updates[1].encounters[0].monsters[0].name, "Troll");
+    assert.equal(updates[1].encounters[0].monsters[0].cr, "2");
+    assert.equal(updates[1].encounters[0].monsters[0].minion, true);
     assert.deepEqual(getState(), updates[1]);
 });
 
@@ -203,7 +205,7 @@ test("rolls back a partial rendering failure before reporting the import error",
     const original: WorkspaceState = {
         ...DEFAULT_WORKSPACE_STATE,
         party: { ...DEFAULT_WORKSPACE_STATE.party, modifierValue: 7 },
-        encounters: [{ name: "Original", monsters: [{ name: "Ogre", xp: 450, quantity: 2, url: "" }] }],
+        encounters: [{ name: "Original", monsters: [{ name: "Ogre", cr: "2", xp: 450, quantity: 2, url: "", minion: false }] }],
     };
     const originalSerialized = JSON.stringify(original);
     storage.value = originalSerialized;
@@ -244,9 +246,9 @@ test("preserves the original rendering error when rollback also fails", () => {
 test("imports a validated backup after confirmation and persists the replacement", async () => {
     const storage = new FakeStorage();
     const imported: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: { groups: [{ playerCount: 2, level: 20 }], modifierType: "flat", modifierValue: 10 },
-        encounters: [{ name: "Finale", monsters: [{ name: "Dragon", xp: 22000, quantity: 1, url: "" }] }],
+        encounters: [{ name: "Finale", monsters: [{ name: "Dragon", cr: "19", xp: 22000, quantity: 1, url: "", minion: false }] }],
     };
     let warning = "";
     const yaml = (await import("../src/workspace-yaml")).serializeWorkspaceYaml(imported);
@@ -314,9 +316,9 @@ test("imports null and out-of-range values and derives validation presentation",
     const document = setup();
     const storage = new FakeStorage();
     const imported: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: { groups: [{ playerCount: null, level: 99 }], modifierType: "percentage", modifierValue: 0 },
-        encounters: [{ name: "Invalid draft", monsters: [{ name: "Unknown", xp: null, quantity: 0, url: "" }] }],
+        encounters: [{ name: "Invalid draft", monsters: [{ name: "Unknown", cr: null, xp: null, quantity: 0, url: "", minion: true }] }],
     };
     const yaml = (await import("../src/workspace-yaml")).serializeWorkspaceYaml(imported);
     initializePersistedWorkspace(document as unknown as Document, storage, undefined, {
@@ -343,12 +345,12 @@ test("imports null and out-of-range values and derives validation presentation",
 
 test("canceled and failed imports preserve visible and stored state", async () => {
     const original: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: { groups: [{ playerCount: 4, level: 5 }], modifierType: "percentage", modifierValue: 7 },
         encounters: [{ name: "Original", monsters: [] }],
     };
     const candidate: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: { groups: [{ playerCount: 1, level: 20 }], modifierType: "flat", modifierValue: null },
         encounters: [{ name: "Replacement", monsters: [] }],
     };
@@ -379,7 +381,7 @@ test("canceled and failed imports preserve visible and stored state", async () =
 
 test("parse and structural validation failures do not confirm or mutate workspace", async () => {
     const original: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: { groups: [{ playerCount: 4, level: 5 }], modifierType: "flat", modifierValue: 13 },
         encounters: [{ name: "Original", monsters: [] }],
     };
@@ -409,7 +411,7 @@ test("restores persisted raw state and derives calculations and validation", () 
     const document = setup();
     const storage = new FakeStorage();
     const restored: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: {
             groups: [{ playerCount: 4, level: 5 }, { playerCount: null, level: 99 }],
             modifierType: "flat",
@@ -418,8 +420,8 @@ test("restores persisted raw state and derives calculations and validation", () 
         encounters: [{
             name: "Bridge",
             monsters: [
-                { name: "Ogre", xp: 450, quantity: 2, url: "https://example.com/ogre" },
-                { name: "Unknown", xp: null, quantity: 0, url: "" },
+                { name: "Ogre", cr: "2", xp: 450, quantity: 2, url: "https://example.com/ogre", minion: false },
+                { name: "Unknown", cr: null, xp: null, quantity: 0, url: "", minion: true },
             ],
         }],
     };
@@ -438,6 +440,28 @@ test("restores persisted raw state and derives calculations and validation", () 
     assert.equal(document.element("workspace-status").textContent, "");
 });
 
+test("migrates a version-1 browser workspace and saves later edits as version 2", async () => {
+    const document = setup();
+    const storage = new FakeStorage();
+    storage.value = JSON.stringify({
+        version: 1,
+        party: { groups: [{ playerCount: 4, level: 5 }], modifierType: "flat", modifierValue: 0 },
+        encounters: [{ name: "Legacy", monsters: [{ name: "Ogre", xp: 450, quantity: 2, url: "" }] }],
+    });
+
+    initializePersistedWorkspace(document as unknown as Document, storage);
+    assert.equal(descendants(document.element("encounters")).find((element) => element.className === "encounter-total")?.textContent, "900 XP");
+    document.element("modifier-value").value = "5";
+    document.element("modifier-value").dispatch("input");
+    await Promise.resolve();
+
+    const saved = JSON.parse(storage.value ?? "") as WorkspaceState;
+    assert.equal(saved.version, 2);
+    assert.deepEqual(saved.encounters[0].monsters[0], {
+        name: "Ogre", xp: 450, quantity: 2, url: "", cr: null, minion: false,
+    });
+});
+
 test("batches autosaves while preserving complete party and encounter snapshots", async () => {
     const document = setup();
     const storage = new FakeStorage();
@@ -450,7 +474,10 @@ test("batches autosaves while preserving complete party and encounter snapshots"
     assert.equal(storage.writes, 0);
     await Promise.resolve();
     let saved = JSON.parse(storage.value ?? "") as WorkspaceState;
+    assert.equal(saved.version, 2);
     assert.equal(saved.party.modifierValue, 11);
+    assert.equal(saved.encounters[0].monsters[0].cr, null);
+    assert.equal(saved.encounters[0].monsters[0].minion, false);
     assert.equal(storage.writes, 1);
 
     const encounter = document.element("encounters").children[0];

@@ -205,13 +205,13 @@ test("hydrates ordered raw encounter state and publishes complete snapshots", ()
     const controller = initializeEncounterBuilder(
         document as unknown as Document,
         [
-            { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: null, url: "https://example.com/ogre" }] },
+            { name: "Unfinished", monsters: [{ name: "Ogre", cr: "2", xp: null, quantity: null, url: "https://example.com/ogre", minion: true }] },
             { name: "Empty", monsters: [] },
         ],
         (state) => updates.push(state),
     );
     assert.deepEqual(controller.getState(), [
-        { name: "Unfinished", monsters: [{ name: "Ogre", xp: null, quantity: null, url: "https://example.com/ogre" }] },
+        { name: "Unfinished", monsters: [{ name: "Ogre", cr: "2", xp: null, quantity: null, url: "https://example.com/ogre", minion: true }] },
         { name: "Empty", monsters: [] },
     ]);
     const first = document.element("encounters").children[0];

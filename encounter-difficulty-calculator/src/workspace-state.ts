@@ -1,7 +1,8 @@
 import { safeStatblockUrl } from "./encounter-calculator";
+import { ChallengeRating, isChallengeRating } from "./challenge-rating-calculator";
 import { ModifierType } from "./party-calculator";
 
-export const WORKSPACE_VERSION = 1 as const;
+export const WORKSPACE_VERSION = 2 as const;
 
 export type WorkspaceNumber = number | null;
 
@@ -27,9 +28,11 @@ export interface PartyState {
 
 export interface MonsterState {
     name: string;
+    cr: ChallengeRating | null;
     xp: WorkspaceNumber;
     quantity: WorkspaceNumber;
     url: string;
+    minion: boolean;
 }
 
 export interface EncounterState {
@@ -52,7 +55,7 @@ export const DEFAULT_WORKSPACE_STATE: WorkspaceState = {
     },
     encounters: [{
         name: "Encounter 1",
-        monsters: [{ name: "", xp: null, quantity: 1, url: "" }],
+        monsters: [{ name: "", cr: null, xp: null, quantity: 1, url: "", minion: false }],
     }],
 };
 
@@ -95,12 +98,55 @@ function isPartyState(value: unknown): value is PartyState {
 
 function isMonsterState(value: unknown): value is MonsterState {
     return isRecord(value)
+        && hasExactKeys(value, ["name", "cr", "xp", "quantity", "url", "minion"])
+        && isString(value.name)
+        && (value.cr === null || isChallengeRating(value.cr))
+        && isWorkspaceNumber(value.xp)
+        && isWorkspaceNumber(value.quantity)
+        && isString(value.url)
+        && (!value.url.trim() || safeStatblockUrl(value.url) !== null)
+        && typeof value.minion === "boolean";
+}
+
+type VersionOneMonsterState = Omit<MonsterState, "cr" | "minion">;
+
+interface VersionOneEncounterState {
+    name: string;
+    monsters: VersionOneMonsterState[];
+}
+
+interface VersionOneWorkspaceState {
+    version: 1;
+    party: PartyState;
+    encounters: VersionOneEncounterState[];
+}
+
+function isVersionOneMonsterState(value: unknown): value is VersionOneMonsterState {
+    return isRecord(value)
         && hasExactKeys(value, ["name", "xp", "quantity", "url"])
         && isString(value.name)
         && isWorkspaceNumber(value.xp)
         && isWorkspaceNumber(value.quantity)
         && isString(value.url)
         && (!value.url.trim() || safeStatblockUrl(value.url) !== null);
+}
+
+function isVersionOneEncounterState(value: unknown): value is VersionOneEncounterState {
+    return isRecord(value)
+        && hasExactKeys(value, ["name", "monsters"])
+        && isString(value.name)
+        && value.name.trim().length > 0
+        && Array.isArray(value.monsters)
+        && value.monsters.every(isVersionOneMonsterState);
+}
+
+function isVersionOneWorkspaceState(value: unknown): value is VersionOneWorkspaceState {
+    return isRecord(value)
+        && hasExactKeys(value, ["version", "party", "encounters"])
+        && value.version === 1
+        && isPartyState(value.party)
+        && Array.isArray(value.encounters)
+        && value.encounters.every(isVersionOneEncounterState);
 }
 
 function isEncounterState(value: unknown): value is EncounterState {
@@ -119,6 +165,24 @@ export function isWorkspaceState(value: unknown): value is WorkspaceState {
         && isPartyState(value.party)
         && Array.isArray(value.encounters)
         && value.encounters.every(isEncounterState);
+}
+
+export function migrateWorkspaceState(value: unknown): WorkspaceState | null {
+    if (isWorkspaceState(value)) return value;
+    if (!isVersionOneWorkspaceState(value)) return null;
+
+    return {
+        version: WORKSPACE_VERSION,
+        party: value.party,
+        encounters: value.encounters.map((encounter) => ({
+            name: encounter.name,
+            monsters: encounter.monsters.map((monster) => ({
+                ...monster,
+                cr: null,
+                minion: false,
+            })),
+        })),
+    };
 }
 
 export interface WorkspaceStateCoordinator {

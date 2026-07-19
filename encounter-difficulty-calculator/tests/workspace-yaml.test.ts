@@ -7,7 +7,7 @@ import { parseWorkspaceYaml, serializeWorkspaceYaml } from "../src/workspace-yam
 
 test("serializes workspace YAML deterministically and round-trips source state", () => {
     const state: WorkspaceState = {
-        version: 1,
+        version: 2,
         party: {
             groups: [{ playerCount: null, level: 99 }, { playerCount: 2, level: 5 }],
             modifierType: "flat",
@@ -16,8 +16,8 @@ test("serializes workspace YAML deterministically and round-trips source state",
         encounters: [{
             name: "Café: the #1 gate\n第二幕",
             monsters: [
-                { name: "Ogre: elite #2", xp: 450, quantity: null, url: "https://example.com/ogre?a=1&b=2" },
-                { name: "", xp: null, quantity: 1, url: "" },
+                { name: "Ogre: elite #2", cr: "2", xp: 450, quantity: null, url: "https://example.com/ogre?a=1&b=2", minion: false },
+                { name: "", cr: null, xp: null, quantity: 1, url: "", minion: true },
             ],
         }],
     };
@@ -25,7 +25,7 @@ test("serializes workspace YAML deterministically and round-trips source state",
     const first = serializeWorkspaceYaml(state);
     assert.equal(serializeWorkspaceYaml(state), first);
     assert.deepEqual(parse(first), state);
-    assert.match(first, /^version: 1\nparty:/);
+    assert.match(first, /^version: 2\nparty:/);
     assert.match(first, /playerCount: null/);
     assert.match(first, /xp: 450/);
     assert.doesNotMatch(first, /xp: ["']450["']/);
@@ -34,14 +34,14 @@ test("serializes workspace YAML deterministically and round-trips source state",
 
 test("safely parses only complete supported workspace documents", () => {
     const valid = serializeWorkspaceYaml({
-        version: 1,
+        version: 2,
         party: { groups: [{ playerCount: null, level: 99 }], modifierType: "flat", modifierValue: -2 },
-        encounters: [{ name: "Imported", monsters: [{ name: "Ogre", xp: 450, quantity: 0, url: "https://example.com/ogre" }] }],
+        encounters: [{ name: "Imported", monsters: [{ name: "Ogre", cr: "2", xp: 450, quantity: 0, url: "https://example.com/ogre", minion: false }] }],
     });
     assert.deepEqual(parseWorkspaceYaml(valid).party.groups[0], { playerCount: null, level: 99 });
 
     [
-        "version: 2\nparty: {}\nencounters: []\n",
+        "version: 3\nparty: {}\nencounters: []\n",
         "version: 1\nparty: { groups: [], modifierType: flat, modifierValue: 0 }\nencounters: []\n",
         "version: 1\nparty: { groups: [{ playerCount: 4, level: 5 }], modifierType: flat, modifierValue: 0 }\nencounters: [{ name: Bad, monsters: [{ name: x, xp: 1, quantity: 1, url: 'javascript:alert(1)' }] }]\n",
         "version: !custom 1\nparty: {}\nencounters: []\n",
@@ -57,4 +57,20 @@ test("safely parses only complete supported workspace documents", () => {
         () => parseWorkspaceYaml("version: &version 1\nparty: { groups: [{ playerCount: *version, level: 5 }], modifierType: flat, modifierValue: 0 }\nencounters: []\n"),
         /The backup is not valid YAML\./,
     );
+});
+
+test("migrates version-1 YAML and rejects invalid version-2 CR and Minion fields", () => {
+    const legacy = "version: 1\nparty: { groups: [{ playerCount: 4, level: 5 }], modifierType: flat, modifierValue: 0 }\nencounters: [{ name: Legacy, monsters: [{ name: Ogre, xp: 450, quantity: 1, url: '' }] }]\n";
+    const migrated = parseWorkspaceYaml(legacy);
+    assert.equal(migrated.version, 2);
+    assert.deepEqual(migrated.encounters[0].monsters[0], {
+        name: "Ogre", xp: 450, quantity: 1, url: "", cr: null, minion: false,
+    });
+
+    const base = "version: 2\nparty: { groups: [{ playerCount: 4, level: 5 }], modifierType: flat, modifierValue: 0 }\n";
+    [
+        `${base}encounters: [{ name: Bad, monsters: [{ name: Ogre, cr: '1.5', xp: 450, quantity: 1, url: '', minion: false }] }]\n`,
+        `${base}encounters: [{ name: Bad, monsters: [{ name: Ogre, cr: '2', xp: 450, quantity: 1, url: '', minion: 'false' }] }]\n`,
+        `${base}encounters: [{ name: Bad, monsters: [{ name: Ogre, cr: '2', xp: 450, quantity: 1, url: '', minion: false, extra: true }] }]\n`,
+    ].forEach((source) => assert.throws(() => parseWorkspaceYaml(source), /supported workspace format/));
 });

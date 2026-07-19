@@ -41,7 +41,7 @@ class FakeStorage implements WorkspaceStorage {
 
 function unfinishedWorkspace(): WorkspaceState {
     return {
-        version: 1,
+        version: 2,
         party: {
             groups: [{ playerCount: null, level: 99 }, { playerCount: 2, level: 1 }],
             modifierType: "flat",
@@ -50,8 +50,8 @@ function unfinishedWorkspace(): WorkspaceState {
         encounters: [{
             name: "Ruins",
             monsters: [
-                { name: "Ogre", xp: 450, quantity: 2, url: "https://example.com/ogre" },
-                { name: "Unknown", xp: null, quantity: 0, url: "" },
+                { name: "Ogre", cr: "2", xp: 450, quantity: 2, url: "https://example.com/ogre", minion: false },
+                { name: "Unknown", cr: null, xp: null, quantity: 0, url: "", minion: true },
             ],
         }],
     };
@@ -90,8 +90,26 @@ test("restores valid ordered state including unfinished and UI-invalid values", 
     assert.deepEqual(loadWorkspace(storage), { state, error: null });
 });
 
+test("migrates version-1 storage while preserving the recoverable original snapshot", () => {
+    const storage = new FakeStorage();
+    const original = {
+        version: 1,
+        party: unfinishedWorkspace().party,
+        encounters: [{ name: "Legacy", monsters: [{ name: "Ogre", xp: 450, quantity: 2, url: "" }] }],
+    };
+    storage.value = JSON.stringify(original);
+
+    const result = loadWorkspace(storage);
+    assert.equal(result.error, null);
+    assert.deepEqual(result.state.encounters[0].monsters[0], {
+        name: "Ogre", xp: 450, quantity: 2, url: "", cr: null, minion: false,
+    });
+    assert.equal(storage.value, JSON.stringify(original));
+    assert.equal(storage.writes, 0);
+});
+
 test("preserves malformed and unsupported stored values while falling back", () => {
-    for (const original of ["not json", JSON.stringify({ ...unfinishedWorkspace(), version: 2 })]) {
+    for (const original of ["not json", JSON.stringify({ ...unfinishedWorkspace(), version: 3 })]) {
         const storage = new FakeStorage();
         storage.value = original;
         const result = loadWorkspace(storage);
