@@ -1,5 +1,10 @@
 import { encounterTotal, MonsterInput, rankEncounter, safeStatblockUrl } from "./encounter-calculator";
-import { CHALLENGE_RATINGS, isChallengeRating, standardXpForChallengeRating } from "./challenge-rating-calculator";
+import {
+    CHALLENGE_RATINGS,
+    isChallengeRating,
+    minionXpForChallengeRating,
+    standardXpForChallengeRating,
+} from "./challenge-rating-calculator";
 import { Thresholds } from "./party-calculator";
 import {
     DEFAULT_WORKSPACE_STATE,
@@ -83,7 +88,7 @@ export function initializeEncounterBuilder(
         const headers = document.createElement("div");
         headers.className = "monster-headers";
         headers.setAttribute("aria-hidden", "true");
-        ["Monster Name", "CR", "XP", "Quantity", ""].forEach((text) => {
+        ["Monster Name", "Minion", "CR", "XP", "Quantity", ""].forEach((text) => {
             const header = document.createElement("span");
             header.textContent = text;
             headers.append(header);
@@ -140,6 +145,15 @@ export function initializeEncounterBuilder(
             };
             const monsterName = makeInput("Monster Name", "text");
             monsterName.value = initialMonster?.name ?? "";
+            const minionLabel = document.createElement("label");
+            minionLabel.className = "minion-control";
+            const minion = document.createElement("input");
+            minion.type = "checkbox";
+            minion.checked = initialMonster?.minion ?? false;
+            const minionText = document.createElement("span");
+            minionText.textContent = "Minion";
+            minionLabel.append(minion, minionText);
+            fieldset.append(minionLabel);
             const crLabel = document.createElement("label");
             crLabel.textContent = `Challenge Rating for ${name.textContent}, monster ${monsterId}`;
             crLabel.className = "visually-hidden";
@@ -219,6 +233,7 @@ export function initializeEncounterBuilder(
                 inputLabels.forEach(({ element, text }) => {
                     element.textContent = `${text} for ${encounterName}, monster ${monsterId}`;
                 });
+                minion.setAttribute("aria-label", `Minion for ${encounterName}, monster ${monsterId}`);
                 remove.setAttribute("aria-label", `Remove monster ${monsterId} from ${encounterName}`);
                 editStatblock.setAttribute(
                     "aria-label",
@@ -237,7 +252,7 @@ export function initializeEncounterBuilder(
                 xp: parseWorkspaceNumber(xp.value),
                 quantity: parseWorkspaceNumber(quantity.value),
                 url: savedUrl,
-                minion: initialMonster?.minion ?? false,
+                minion: minion.checked,
             });
             const validate = (notify = false): void => {
                 const quantityInvalid = quantity.value === "" || !Number.isInteger(Number(quantity.value)) || Number(quantity.value) < 1;
@@ -265,7 +280,16 @@ export function initializeEncounterBuilder(
             };
             [monsterName, quantity, xp].forEach((input) => input.addEventListener("input", () => validate(true)));
             cr.addEventListener("change", () => {
-                const mappedXp = standardXpForChallengeRating(cr.value);
+                const mappedXp = minion.checked
+                    ? minionXpForChallengeRating(cr.value)
+                    : standardXpForChallengeRating(cr.value);
+                if (mappedXp !== null) xp.value = String(mappedXp);
+                validate(true);
+            });
+            minion.addEventListener("change", () => {
+                const mappedXp = minion.checked
+                    ? minionXpForChallengeRating(cr.value)
+                    : standardXpForChallengeRating(cr.value);
                 if (mappedXp !== null) xp.value = String(mappedXp);
                 validate(true);
             });
@@ -289,6 +313,7 @@ export function initializeEncounterBuilder(
             });
             monsters.set(monsterId, { read, readState, refreshLabels });
             rows.append(fieldset);
+            refreshLabels();
             validate();
             if (publish) publishState();
             if (focusNewMonster) monsterName.focus();

@@ -75,7 +75,7 @@ Definition of done:
 - CR edits survive autosave, refresh, export, and import through the version-2 workspace contract, and the not-yet-exposed Minion source value is not lost.
 
 ## Task 4: Add Minion XP mode to monster rows
-Status: todo
+Status: done
 Summary: Let users mark a monster as a Minion so its selected CR uses the MCDM Minion XP table while preserving the direct-XP override workflow.
 Scope:
 - Add the Minion XP mapping to the pure CR calculator module and cover every supported CR, including Minion CR 0 = 2 XP.

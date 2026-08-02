@@ -344,7 +344,7 @@ main {
 .monster-headers,
 .monster-row {
   display: grid;
-  grid-template-columns: minmax(10rem, 1fr) 4rem 5rem 4rem 3.5rem;
+  grid-template-columns: minmax(10rem, 1fr) 4rem 3.25rem 5rem 4rem 3.5rem;
   column-gap: var(--space-1);
 }
 
@@ -380,6 +380,22 @@ main {
   box-shadow: inset 0 0 0 1px rgb(190 40 40 / 60%);
 }
 
+.minion-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.monster-row .minion-control input {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+}
+
+.minion-control span {
+  display: none;
+}
+
 .party-row-controls input:not([aria-invalid="true"]):focus-visible,
 .modifier-controls input:not([aria-invalid="true"]):focus-visible,
 .modifier-controls select:focus-visible,
@@ -396,6 +412,10 @@ main {
   text-align: right;
 }
 
+.monster-row .monster-cr {
+  padding-inline: var(--space-half);
+}
+
 .monster-row input[type="number"]::-webkit-outer-spin-button,
 .monster-row input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
@@ -404,7 +424,7 @@ main {
 
 .monster-actions {
   display: flex;
-  grid-column: 5;
+  grid-column: 6;
   grid-row: 1;
   justify-content: flex-end;
   gap: var(--space-half);
@@ -497,6 +517,15 @@ main {
     grid-column: 1;
     grid-row: auto;
     justify-content: flex-start;
+  }
+
+  .minion-control {
+    justify-content: flex-start;
+    gap: var(--space-half);
+  }
+
+  .minion-control span {
+    display: inline;
   }
 
   .monster-headers {

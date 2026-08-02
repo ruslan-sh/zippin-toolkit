@@ -8,6 +8,7 @@ class FakeElement {
     value = "";
     textContent = "";
     hidden = false;
+    checked = false;
     focused = false;
     href = "";
     type = "";
@@ -78,6 +79,10 @@ function inputs(element: FakeElement): FakeElement[] {
 
 function crControl(element: FakeElement): FakeElement {
     return byClass(element, "monster-cr")[0];
+}
+
+function minionControl(element: FakeElement): FakeElement {
+    return descendants(element).find((child) => child.type === "checkbox") as FakeElement;
 }
 
 test("creates isolated encounters and distributes shared thresholds", () => {
@@ -298,4 +303,62 @@ test("keeps CR labels encounter-specific after rename", () => {
     document.nextPrompt = "Boss fight";
     byClass(encounter, "rename-encounter")[0].dispatch("click");
     assert.equal(label?.textContent, "Challenge Rating for Boss fight, monster 1");
+});
+
+test("switches selected CR between standard and Minion XP while preserving overrides", () => {
+    const document = new FakeDocument();
+    const updates: EncounterState[][] = [];
+    const controller = initializeEncounterBuilder(
+        document as unknown as Document,
+        undefined,
+        (state) => updates.push(state),
+    );
+    const encounter = document.element("encounters").children[0];
+    const cr = crControl(encounter);
+    const minion = minionControl(encounter);
+    const xp = inputs(encounter)[1];
+
+    assert.equal(minion.checked, false);
+    cr.value = "0";
+    cr.dispatch("change");
+    assert.equal(xp.value, "10");
+    minion.checked = true;
+    minion.dispatch("change");
+    assert.equal(xp.value, "2");
+    assert.equal(controller.getState()[0].monsters[0].minion, true);
+
+    xp.value = "7";
+    xp.dispatch("input");
+    assert.equal(cr.value, "0");
+    assert.equal(minion.checked, true);
+    cr.value = "4";
+    cr.dispatch("change");
+    assert.equal(xp.value, "220");
+
+    minion.checked = false;
+    minion.dispatch("change");
+    assert.equal(xp.value, "1100");
+    cr.value = "";
+    cr.dispatch("change");
+    minion.checked = true;
+    minion.dispatch("change");
+    assert.equal(xp.value, "1100");
+    assert.equal(updates[updates.length - 1][0].monsters[0].minion, true);
+});
+
+test("restores Minion state and keeps its accessible label encounter-specific", () => {
+    const document = new FakeDocument();
+    const controller = initializeEncounterBuilder(document as unknown as Document, [{
+        name: "Ambush",
+        monsters: [{ name: "Goblin", cr: "1/4", xp: 10, quantity: 4, url: "", minion: true }],
+    }]);
+    const encounter = document.element("encounters").children[0];
+    const minion = minionControl(encounter);
+    assert.equal(minion.checked, true);
+    assert.equal(minion.attributes.get("aria-label"), "Minion for Ambush, monster 1");
+    assert.equal(controller.getState()[0].monsters[0].minion, true);
+
+    document.nextPrompt = "Street fight";
+    byClass(encounter, "rename-encounter")[0].dispatch("click");
+    assert.equal(minion.attributes.get("aria-label"), "Minion for Street fight, monster 1");
 });

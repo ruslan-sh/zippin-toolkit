@@ -44,10 +44,51 @@ const STANDARD_XP_BY_CR: Readonly<Record<ChallengeRating, number>> = {
     "30": 155000,
 };
 
+const MINION_XP_BY_CR: Readonly<Record<ChallengeRating, number>> = {
+    "0": 2,
+    "1/8": 5,
+    "1/4": 10,
+    "1/2": 20,
+    "1": 40,
+    "2": 90,
+    "3": 140,
+    "4": 220,
+    "5": 225,
+    "6": 285,
+    "7": 360,
+    "8": 485,
+    "9": 500,
+    "10": 590,
+    "11": 720,
+    "12": 840,
+    "13": 1000,
+    "14": 1150,
+    "15": 1300,
+    "16": 1500,
+    "17": 1800,
+    "18": 2000,
+    "19": 2200,
+    "20": 2500,
+    "21": 3300,
+    "22": 4100,
+    "23": 5000,
+    "24": 6200,
+    "25": 7500,
+    "26": 9000,
+    "27": 10500,
+    "28": 12000,
+    "29": 13500,
+    "30": 15500,
+};
+
 export function isChallengeRating(value: unknown): value is ChallengeRating {
     return typeof value === "string" && (CHALLENGE_RATINGS as readonly string[]).indexOf(value) !== -1;
 }
 
 export function standardXpForChallengeRating(value: unknown): number | null {
     return isChallengeRating(value) ? STANDARD_XP_BY_CR[value] : null;
+}
+
+export function minionXpForChallengeRating(value: unknown): number | null {
+    return isChallengeRating(value) ? MINION_XP_BY_CR[value] : null;
 }
