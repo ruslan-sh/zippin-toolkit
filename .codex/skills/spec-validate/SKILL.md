@@ -13,6 +13,23 @@ Read the target spec first. If the user gives only the spec path, derive the sib
 
 Read [`references/checklist.md`](./references/checklist.md) before writing the review.
 
+## Validation context
+
+When the parent identifies the review as the `spec-implement` pre-completion
+gate, expect the selected task to be `in-progress`. Do not report that status
+as drift or require it to be `done` before the gate can pass. Instead, decide
+whether the implementation, tests, and available validation evidence justify
+the implementer changing it to `done` after a clean report. Report `todo` as
+workflow drift in this context because active work should already be claimed.
+Accept fresh raw command outcomes supplied by the implementer as validation
+evidence. Do not rerun a passing check merely to duplicate it; run a focused
+check only when evidence is absent, stale relative to subsequent edits, failed,
+or insufficient to resolve a concrete review question.
+
+For a standalone validation request, continue to verify that existing `done`
+statuses are justified and report implementation/task-status mismatches
+normally.
+
 ## Workflow
 
 1. Read the spec and extract:
@@ -45,6 +62,8 @@ keep the roadmap read-only during validation.
 - cite concrete file references and line numbers;
 - use `git diff`, `git status`, or focused diffs for touched files when that helps identify the intended implementation slice;
 - run the relevant checks named in the spec or `AGENTS.md` when they are needed to confirm behavior or buildability;
+- during a pre-completion gate, avoid rerunning checks already covered by fresh
+  raw evidence from the implementer;
 - if a command is known to hang in WSL for this repo, use the documented fallback and say so.
 
 5. Decide whether to continue to general code review:
@@ -72,6 +91,9 @@ keep the roadmap read-only during validation.
   - "the implementation is not finished yet";
   - "the spec is wrong/outdated";
   - "the task tracker is inaccurate".
+- During a pre-completion gate, treat `in-progress` as accurate for the selected
+  task and state whether it is ready for the implementer to mark `done`; do not
+  make that expected post-gate transition a finding.
 - Do not ask to update the spec just because later tasks are still open.
 - Treat the spec as the intended end state unless the implementation proves the spec is internally inconsistent or materially outdated.
 - If task boundaries are blurred but still coherent, call that out as a note, not a defect.
@@ -104,6 +126,9 @@ Use this structure:
   - spec should be updated;
   - both should be updated.
 - Briefly justify the conclusion.
+- For a clean pre-completion gate, say the tasks file needs no corrective
+  update and that the implementer may perform the expected `in-progress` to
+  `done` transition after the gate.
 
 **Validation**
 

@@ -101,9 +101,10 @@ Recommended dependency metadata inside `Dependencies`:
 ## Supported Statuses
 
 Use only:
-- `todo`
-- `in-progress`
-- `done`
-- `blocked`
+- `todo`: available to be claimed when its dependencies are satisfied.
+- `in-progress`: currently owned implementation work; other agents must not
+  select it unless they are resuming the same conversation's claim.
+- `done`: implementation and its pre-completion validation gate passed.
+- `blocked`: the task itself cannot progress until its blocker is resolved.
 
 Keep the format stable so later updates can preserve status cleanly.

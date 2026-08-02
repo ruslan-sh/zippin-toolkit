@@ -21,6 +21,12 @@ an override while the roadmap dependency remains. A missing matching entry or
 
 Treat statuses other than `done` or equivalent checked completion as unfinished. Respect dependencies and select the earliest actionable unfinished task, including an unfinished development subtask when the tracker uses them.
 
+Treat `in-progress` as an ownership claim. Do not start a task already marked
+`in-progress` unless the current conversation previously claimed that exact
+task and is now resuming it. Otherwise report that another implementation may
+be active and select a different actionable task only when the requested scope
+allows it.
+
 ## Select the scope
 
 - Default mode: implement only the next actionable unfinished task.
@@ -28,6 +34,17 @@ Treat statuses other than `done` or equivalent checked completion as unfinished.
 - If the user names a particular task, implement that task if its dependencies are satisfied. Otherwise explain the unmet dependency and implement it only if the user's requested scope includes it.
 
 Do not silently expand default mode into later tasks. Small prerequisite or integration edits required to leave the selected task working are within scope.
+
+## Claim the task
+
+Before editing implementation files, change the selected task's status from
+`todo` to `in-progress`. Re-check the tracker immediately before this edit; if
+it is no longer `todo`, apply the ownership rule above. This status is the
+coordination signal that prevents another agent from selecting the same work.
+
+Leave the task `in-progress` while implementing, validating, or waiting on a
+recoverable blocker. Use `blocked` only when the task itself is blocked rather
+than when a validation command or agent is temporarily unavailable.
 
 ## Implement
 
@@ -45,7 +62,7 @@ In whole-feature mode, repeat this workflow task by task. Keep the repository wo
 
 After finishing each task, run this loop for at most three validation iterations:
 
-1. Spawn a fresh project custom agent named `spec_validator`, configured in `.codex/agents/spec-validator.toml` to use `gpt-5.6` with `model_reasoning_effort = "low"`. Give it the target spec and task scope, then instruct it to run `$spec-validate` against the current worktree. Do not give it prior validation conclusions or expected findings. Each spawned review counts as one iteration.
+1. Spawn a fresh project custom agent named `spec_validator`, configured in `.codex/agents/spec-validator.toml` to use `gpt-5.6-sol` with `model_reasoning_effort = "low"`. Give it the target spec and task scope, identify the review as the pre-completion gate, include the exact commands and raw outcomes from the implementer's fresh validation, then instruct it to run `$spec-validate` against the current worktree. Do not give it prior review conclusions or expected findings. Each spawned review counts as one iteration. The task must still be `in-progress`; the validator should decide whether the implementation is ready to be marked `done`, not require that transition before passing the gate.
 2. Process the subagent's complete report. If it has no actionable findings attributable to the current task, pass the gate and stop the loop. Notes about later tasks, unrelated pre-existing issues, or intentionally out-of-scope work do not fail the gate; include them in the final report when relevant.
 3. If actionable findings remain and this was iteration one or two, inspect the cited evidence, fix the implementation or tracking as appropriate, rerun the affected required checks, and return to step 1 with a fresh `spec_validator`. Never ask a previous subagent to recheck its own report.
 4. If actionable findings remain after iteration three, stop the loop without passing the gate. Do not mark the task done or continue to another task. Report the unresolved findings, fixes attempted, and validation evidence, then wait for user guidance.
@@ -54,7 +71,7 @@ If the `spec_validator` custom agent or subagents themselves are unavailable, st
 
 ## Update tracking
 
-After implementation, required local validation, and the independent validation gate succeed, change the implemented task's status to `done`. Preserve task text and unrelated notes. Do not mark a task done when required behavior remains missing, a relevant failure is attributable to the change, or the gate has not passed.
+After implementation, required local validation, and the independent validation gate succeed, change the implemented task's status from `in-progress` to `done`. Preserve task text and unrelated notes. This post-gate status-only transition does not require another validation iteration. Do not mark a task done when required behavior remains missing, a relevant failure is attributable to the change, or the gate has not passed.
 
 In whole-feature mode, update each task only after its own completion. Do not archive the spec or update current-state documentation unless the user also requests the post-implementation documentation workflow.
 
