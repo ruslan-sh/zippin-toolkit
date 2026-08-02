@@ -3,7 +3,7 @@
 # Convert `logic.ts` To `Calendar` Class
 
 ## Summary
-Refactor [`src/ts/logic.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/logic.ts) from a free-function module that reads global `props` into a dedicated `Calendar` class instantiated with an explicit props interface. The refactor should fully migrate existing callers to the class API, align the module shape with [`src/ts/moon.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/moon.ts), and collapse the current split between `*InCalendar` helpers and props-based wrappers into a single instance API. Renaming the file as part of this refactor is allowed.
+Refactor the former `src/ts/logic.ts` from a free-function module that reads global `props` into a dedicated `Calendar` class instantiated with an explicit props interface. The refactor should fully migrate existing callers to the class API, align the module shape with `src/ts/moon.ts`, and collapse the current split between `*InCalendar` helpers and props-based wrappers into a single instance API. Renaming the file as part of this refactor is allowed.
 
 ## Goals
 - Replace the current `logic.ts` free-function API with a single exported `Calendar` class.
@@ -23,7 +23,7 @@ Refactor [`src/ts/logic.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/log
 - No manual edits to generated output in `dist/`.
 
 ## Current Behavior
-[`src/ts/logic.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/logic.ts) exports a mix of:
+The former `src/ts/logic.ts` exports a mix of:
 - Calendar-agnostic helpers that accept explicit calendar/leap-year arguments, such as:
   - `getMonthByNameInCalendar`
   - `isLeapYearForCalendar`
@@ -31,7 +31,7 @@ Refactor [`src/ts/logic.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/log
   - `getDaysSinceYearStartInCalendar`
   - `countLeapYearsBetweenInCalendar`
   - `getDayOfYearInCalendar`
-- `props`-dependent wrappers that read from the global [`props.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/props.ts), such as:
+- `props`-dependent wrappers that read from the global `props.ts`, such as:
   - `getMonthByName`
   - `isLeapYear`
   - `getMonthDaysInYear`
@@ -41,14 +41,14 @@ Refactor [`src/ts/logic.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/log
 - A `calculateDate()` function that uses both calendar and astronomical config through global props.
 
 Current call sites:
-- [`src/ts/render.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/render.ts) imports `calculateDate` and `isLeapYear`.
-- [`src/ts/moon.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/moon.ts) imports `countLeapYearsBetweenInCalendar`, `getDayOfYearInCalendar`, `getMonthByNameInCalendar`, and `getMonthDaysInCalendarYear`.
+- `src/ts/render.ts` imports `calculateDate` and `isLeapYear`.
+- `src/ts/moon.ts` imports `countLeapYearsBetweenInCalendar`, `getDayOfYearInCalendar`, `getMonthByNameInCalendar`, and `getMonthDaysInCalendarYear`.
 
 The target refactor should remove this dual surface rather than preserve it under a class wrapper.
 
 ## Proposed Design
 ### `Calendar` class
-Introduce a single exported `Calendar` class from the current logic module. Renaming [`src/ts/logic.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/logic.ts) to a file such as `calendar.ts` is allowed in this case.
+Introduce a single exported `Calendar` class from the current logic module. Renaming the former `src/ts/logic.ts` to a file such as `calendar.ts` is allowed in this case.
 
 Constructor contract:
 
@@ -107,11 +107,11 @@ This refactor should target full migration of existing application callers.
 
 Expected integration direction:
 - Instantiate `Calendar` once where it is sufficient for current app wiring.
-- Based on current structure, creating the instance in [`src/ts/render.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/render.ts) is acceptable for now.
-- A higher-level owner such as [`src/index.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/index.ts) is not required unless implementation pressure makes it clearly cleaner.
+- Based on current structure, creating the instance in `src/ts/render.ts` is acceptable for now.
+- A higher-level owner such as `src/index.ts` is not required unless implementation pressure makes it clearly cleaner.
 
 ### Render integration
-Replace direct free-function imports in [`src/ts/render.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/render.ts) with calls on a shared `Calendar` instance.
+Replace direct free-function imports in `src/ts/render.ts` with calls on a shared `Calendar` instance.
 
 Current behavior to preserve:
 - Leap-year checks used when rendering festivals.
@@ -184,13 +184,13 @@ Temporary compatibility shims are acceptable only if implementation needs them b
 
 ## Acceptance Criteria
 - The refactored module exports a `Calendar` class as the primary API.
-- `Calendar` no longer imports global [`props.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/props.ts).
+- `Calendar` no longer imports global `props.ts`.
 - `Calendar` is instantiated with an injected props subset covering `calendar` and `astronomical`.
 - All existing logic behavior from the current module is represented through the `Calendar` instance API.
 - The old `*InCalendar` helper variants are removed from the public API.
 - Existing callers are fully migrated away from direct free-function use.
-- [`src/ts/render.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/render.ts) uses a `Calendar` instance instead of importing `calculateDate` / `isLeapYear` as free functions.
-- [`src/ts/moon.ts`](/mnt/c/github/ruslan-sh/fantasy-calendar/src/ts/moon.ts) depends on `Calendar` rather than importing loose helper functions from the old logic module.
+- `src/ts/render.ts` uses a `Calendar` instance instead of importing `calculateDate` / `isLeapYear` as free functions.
+- `src/ts/moon.ts` depends on `Calendar` rather than importing loose helper functions from the old logic module.
 - Runtime behavior remains unchanged for existing calendar calculations and moon-phase generation.
 - No broader app architecture changes are introduced beyond what is necessary for this migration.
 

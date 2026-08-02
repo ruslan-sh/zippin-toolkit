@@ -7,7 +7,10 @@ unless a task explicitly requires structural changes.
 # Project Layout
 
 - `app/src/`: Zippin's Toolkit landing page source and styles.
+- `encounter-difficulty-calculator/`: Encounter Difficulty Calculator; see its
+  scoped `AGENTS.md`.
 - `fantasy-calendar/`: Fantasy Calendar tool; see its scoped `AGENTS.md`.
+- `shared/`: shared theme source used by the landing page and tools.
 - `specs/`: active repository-wide specifications, task trackers, and the
   follow-up roadmap.
 - `webpack.*.js`, `tsconfig*.json`: shared build and TypeScript configuration.
@@ -23,6 +26,13 @@ Core commands:
 - `npm test`
 - `npm run lint`
 - `npm run lint:styles`
+
+On Windows, do not probe for `npm` on `PATH`. Invoke
+`C:\nvm4w\nodejs\npm.cmd` directly for every npm command, and use
+`C:\nvm4w\nodejs\npx.cmd` for npx commands. If the managed sandbox reports
+`Access is denied`, request escalation for that same command. Do not switch
+package managers, reinstall dependencies, or run dependency reconciliation as
+a workaround.
 
 Validation policy for substantive changes:
 
@@ -46,9 +56,24 @@ Validation policy for substantive changes:
 # Change Workflow
 
 1. Identify the affected project and shared integration points.
-2. Implement the smallest viable change.
-3. Run the required build, tests, and relevant lint checks.
-4. Summarize behavior, files changed, verification, assumptions, and edge cases.
+2. Before implementation, mark the selected spec task `in-progress`; treat that
+   status as an ownership claim and do not start work another agent has claimed.
+3. Implement the smallest viable change.
+4. Run the required build, tests, and relevant lint checks.
+5. Run the pre-completion validation gate while the task remains `in-progress`.
+6. After a clean gate, mark the task `done` without rerunning validation solely
+   for that status change.
+7. Summarize behavior, files changed, verification, assumptions, and edge cases.
+
+# Branches and Commits
+
+- Follow `docs/contributing.md` for branch and commit naming.
+- Use a typed, lowercase kebab-case branch such as
+  `feat/monster-cr-mode-support`. Coding tools follow the same convention as
+  every other contributor; do not substitute a tool name for the branch type.
+- Use Conventional Commit subjects such as
+  `feat(encounter): support monster challenge ratings`.
+- Do not rewrite existing history solely to apply the convention.
 
 # Specs and Roadmap
 

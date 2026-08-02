@@ -11,6 +11,16 @@ unblocked. Archiving a prerequisite removes its slug from dependent entries.
 
 The following items apply across the Toolkit landing page and tools.
 
+### `migrate-agentic-flow-to-open-spec`
+
+Status: planned
+Prerequisite: none
+
+Migrate the repository's agentic specification workflow to `open-spec`,
+including the contributor instructions, agent configuration, and supporting
+skills that guide spec creation, planning, implementation, validation, and
+finalization.
+
 ### `standardize-ui-library`
 
 Status: planned
