@@ -27,6 +27,13 @@ Core commands:
 - `npm run lint`
 - `npm run lint:styles`
 
+On Windows, do not probe for `npm` on `PATH`. Invoke
+`C:\nvm4w\nodejs\npm.cmd` directly for every npm command, and use
+`C:\nvm4w\nodejs\npx.cmd` for npx commands. If the managed sandbox reports
+`Access is denied`, request escalation for that same command. Do not switch
+package managers, reinstall dependencies, or run dependency reconciliation as
+a workaround.
+
 Validation policy for substantive changes:
 
 - Run `npm run build`.
@@ -49,9 +56,14 @@ Validation policy for substantive changes:
 # Change Workflow
 
 1. Identify the affected project and shared integration points.
-2. Implement the smallest viable change.
-3. Run the required build, tests, and relevant lint checks.
-4. Summarize behavior, files changed, verification, assumptions, and edge cases.
+2. Before implementation, mark the selected spec task `in-progress`; treat that
+   status as an ownership claim and do not start work another agent has claimed.
+3. Implement the smallest viable change.
+4. Run the required build, tests, and relevant lint checks.
+5. Run the pre-completion validation gate while the task remains `in-progress`.
+6. After a clean gate, mark the task `done` without rerunning validation solely
+   for that status change.
+7. Summarize behavior, files changed, verification, assumptions, and edge cases.
 
 # Branches and Commits
 
