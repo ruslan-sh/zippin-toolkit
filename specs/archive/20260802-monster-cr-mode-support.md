@@ -1,3 +1,5 @@
+# Archived on 2026-08-02 after implementation. Current behavior is documented in [Encounter Difficulty Calculator](../../encounter-difficulty-calculator/docs/calculator.md).
+
 # Monster Challenge Rating and Minion Support
 
 ## Summary

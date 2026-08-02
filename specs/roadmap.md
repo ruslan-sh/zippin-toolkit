@@ -139,15 +139,6 @@ Let users reorder and duplicate encounters, and color-code each encounter by
 its calculated difficulty so multiple encounters are easier to organize and
 compare.
 
-### `monster-cr-mode-support`
-
-Status: in-progress
-Prerequisite: none
-
-Allow monsters to be added by Challenge Rating instead of by XP value, with
-automatic CR-to-XP conversion, so that users can build encounters directly
-from stat blocks.
-
 ### `encounter-generation`
 
 Status: planned
