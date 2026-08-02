@@ -13,13 +13,49 @@ The following items apply across the Toolkit landing page and tools.
 
 ### `migrate-agentic-flow-to-open-spec`
 
-Status: planned
+Status: in-progress
 Prerequisite: none
 
 Migrate the repository's agentic specification workflow to `open-spec`,
 including the contributor instructions, agent configuration, and supporting
 skills that guide spec creation, planning, implementation, validation, and
 finalization.
+
+### `add-pr-quality-gate`
+
+Status: planned
+Prerequisite: `migrate-agentic-flow-to-open-spec`
+
+Add a pull-request and main-branch quality workflow that installs from the
+lockfile and runs the repository test, lint, style-lint, build, roadmap, and
+agentic-workflow validation suites before merge.
+
+### `adopt-openspec-for-other-agents`
+
+Status: planned
+Prerequisite: `migrate-agentic-flow-to-open-spec`
+
+Extend the repository-managed OpenSpec regeneration process to supported
+non-Codex agents such as Claude Code and Cursor while preserving equivalent
+roadmap lifecycle, verification, and archive guarantees across integrations.
+
+### `enable-advanced-openspec-workflows`
+
+Status: planned
+Prerequisite: `migrate-agentic-flow-to-open-spec`
+
+Enable OpenSpec's `bulk-archive` and `onboard` workflows after integrating them
+with roadmap selection, explicit non-roadmap confirmation, per-change
+verification receipts, and safe archive behavior.
+
+### `remove-legacy-spec-workflow`
+
+Status: planned
+Prerequisite: `migrate-agentic-flow-to-open-spec`
+
+Remove the legacy `$spec-*` skills, custom validator agent, and bootstrap-only
+contributor guidance after the OpenSpec migration has used them to complete its
+own implementation, validation, finalization, and archival.
 
 ### `standardize-ui-library`
 
