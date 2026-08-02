@@ -100,7 +100,7 @@ Definition of done:
 - Toggling Minion with blank CR preserves XP, direct overrides remain valid, and Minion state survives autosave, refresh, export, and import.
 
 ## Task 5: Document CR, Minion, and workspace version 2
-Status: todo
+Status: done
 Summary: Update the calculator documentation so users can understand calculated XP, manual overrides, persistence compatibility, and the source of both mappings.
 Scope:
 - Document the CR and Minion controls, supported values, new-row defaults, immediate recalculation rules, direct XP overrides, and CR-clearing behavior.

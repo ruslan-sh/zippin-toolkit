@@ -31,11 +31,26 @@ final encounter. New default names use the collection size at creation time,
 so duplicate names are allowed and deleting an encounter does not renumber the
 others.
 
-Each encounter contains any number of monster rows. A complete row requires a
-positive whole-number quantity and non-negative whole-number XP value; its
-contribution is `quantity × XP`. A monster name and HTTP or HTTPS statblock URL
-are optional. Invalid or incomplete rows show validation and do not contribute
-to the total.
+Each encounter contains any number of monster rows. New rows start with a blank
+Challenge Rating (CR), blank XP, quantity `1`, and Minion off. The CR control
+supports a blank value, `0`, `1/8`, `1/4`, `1/2`, and whole numbers from `1`
+through `30`.
+
+Selecting or changing CR immediately replaces XP using the standard D&D 5.5
+CR-to-XP mapping. Turning on Minion uses the Minion mapping from MCDM's *Flee,
+Mortals!* instead; toggling Minion immediately replaces XP when CR is selected.
+Standard CR 0 defaults to 10 XP, while Minion CR 0 defaults to 2 XP.
+
+XP remains directly editable. A manual XP edit does not change CR or Minion and
+is authoritative until CR or Minion changes again. Clearing CR preserves the
+current XP, and toggling Minion while CR is blank also preserves XP. This makes
+it possible to enter exceptions such as a CR 0 creature worth 0 XP.
+
+A complete row requires a positive whole-number quantity and non-negative
+whole-number XP value; its contribution is `quantity × XP`. CR and Minion do
+not affect row completeness. A monster name and HTTP or HTTPS statblock URL are
+optional. Invalid or incomplete rows show validation and do not contribute to
+the total.
 
 Each encounter maintains its own monster rows, total, and rank. Party or
 modifier changes recalculate every rank without changing encounter totals.
@@ -60,21 +75,27 @@ for Deadly. Text remains the primary rank indicator.
 ## Workspace persistence
 
 The calculator automatically stores one complete editable workspace in browser
-local storage under `zippin-toolkit.encounter-workspace.v1`. The stored JSON
-object has `version`, `party`, and ordered `encounters` fields. Party groups and
-monster rows are ordered arrays. Numeric controls are stored as finite JSON
+local storage under `zippin-toolkit.encounter-workspace.v1`. The storage key is
+unchanged for compatibility, but newly saved JSON uses workspace schema version
+2. The object has `version`, `party`, and ordered `encounters` fields. Party
+groups and monster rows are ordered arrays. Each monster has exactly `name`,
+`cr`, `xp`, `quantity`, `url`, and `minion`: `cr` is `null` or a supported CR
+string, and `minion` is a boolean. Numeric controls are stored as finite JSON
 numbers or `null`; empty or unexpectedly nonnumeric controls become `null`,
 while out-of-range values remain numbers so validation can resume after refresh.
 
-On startup, a supported version-1 workspace is restored before the calculator
-renders, then thresholds, totals, ranks, and validation messages are derived
-again. Calculated results, validation presentation, focus, and generated DOM
-identifiers are not stored. Missing storage uses the normal defaults. If storage
-is unavailable, unreadable, malformed, or unsupported, the calculator remains
-usable, leaves the unreadable value untouched during loading, loads defaults,
-and reports the problem in an accessible status message. The next successful
-autosave after an edit replaces that value with the current workspace. Save
-failures are likewise reported without interrupting in-memory editing.
+On startup, a valid version-1 workspace is explicitly migrated before the
+calculator renders. Migration preserves each monster's XP and other existing
+fields, adds `cr: null` and `minion: false`, and produces version 2 for later
+saves. Version-2 workspaces restore directly. Thresholds, totals, ranks, and
+validation messages are derived again; calculated results, validation
+presentation, focus, and generated DOM identifiers are not stored. Missing
+storage uses the normal defaults. If storage is unavailable, unreadable,
+malformed, or unsupported, the calculator remains usable, leaves the unreadable
+value untouched during loading, loads defaults, and reports the problem in an
+accessible status message. The next successful autosave after an edit replaces
+that value with the current version-2 workspace. Save failures are likewise
+reported without interrupting in-memory editing.
 
 ## YAML backup export
 
@@ -82,10 +103,10 @@ The **Export YAML backup** button downloads the workspace currently visible in
 the calculator as `encounter-workspace.yml`. Export uses the in-memory state, so
 it includes the latest edits even if browser storage is unavailable or full.
 
-The YAML document uses the same stable version-1 source schema as storage:
+The YAML document uses the same strict version-2 source schema as storage:
 
 ```yaml
-version: 1
+version: 2
 party:
   groups:
     - playerCount: 4
@@ -96,25 +117,30 @@ encounters:
   - name: Encounter 1
     monsters:
       - name: ""
+        cr: null
         xp: null
         quantity: 1
         url: ""
+        minion: false
 ```
 
-Array order is significant. Numeric fields are unquoted YAML numbers or `null`;
-out-of-range numbers round-trip and `null` restores as an empty input. Names,
-modifier types, and URLs are ordinary YAML
-strings; let a YAML editor preserve or add quoting for characters such as `:`,
-`#`, line breaks, and non-ASCII text. Derived totals, ranks, validation markup,
-focus, and generated DOM identifiers are never exported.
+Array order is significant. CR is `null` or a quoted canonical string, Minion
+is a YAML boolean, and numeric fields are unquoted YAML numbers or `null`.
+Out-of-range numbers round-trip and `null` restores as an empty input. Names,
+modifier types, and URLs are ordinary YAML strings; let a YAML editor preserve
+or add quoting for characters such as `:`, `#`, line breaks, and non-ASCII text.
+Derived totals, ranks, validation markup, focus, and generated DOM identifiers
+are never exported.
 
 ## YAML backup import
 
-The **Import YAML backup** control accepts `.yml` and `.yaml` files using the
-documented version-1 schema. The complete document is safely parsed and
-validated before a permanent-replacement warning is shown. Unknown or missing
-fields, unsupported versions, wrong scalar types, non-finite numeric values,
-custom YAML tags, and non-HTTP(S) statblock URLs are rejected.
+The **Import YAML backup** control accepts `.yml` and `.yaml` files. Version-1
+documents migrate to version 2 with existing XP preserved, blank CR, and Minion
+off. Version-2 documents require the exact fields and types shown above. The
+complete document is safely parsed and validated before a permanent-replacement
+warning is shown. Unknown or missing fields, unsupported versions, unsupported
+CR strings, non-boolean Minion values, other wrong scalar types, non-finite
+numeric values, custom YAML tags, and non-HTTP(S) statblock URLs are rejected.
 
 After confirmation, the calculator replaces the visible workspace, derives
 totals, ranks, and validation messages again, and saves the imported snapshot.
@@ -127,18 +153,23 @@ Import successes, cancellations, and failures are reported in alert dialogs.
 
 ## Boundaries
 
-The tool does not import monster data, apply monster-count or party-size
-multipliers, or share encounters.
+Encounter validation, totals, and difficulty ranks remain based only on the
+editable XP and quantity values. CR and Minion do not add monster-count,
+encounter, or party-size multipliers. The tool also does not import monster
+data or share encounters.
 
 ## Implementation
 
 - `src/party-calculator.ts` aggregates and adjusts party thresholds.
 - `src/party-ui.ts` manages party groups and shared validation.
+- `src/challenge-rating-calculator.ts` defines canonical CR values and the
+  standard and Minion XP mappings.
 - `src/encounter-calculator.ts` validates monsters, totals XP, and ranks
   encounters.
 - `src/encounter-ui.ts` manages independent encounter instances and distributes
   shared thresholds.
-- `src/workspace-state.ts` defines and validates the versioned source state.
+- `src/workspace-state.ts` defines, validates, and migrates versioned source
+  state.
 - `src/workspace-storage.ts` loads and saves the state without depending on the
   DOM.
 - `src/workspace-yaml.ts` serializes the stable YAML backup representation.
