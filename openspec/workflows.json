@@ -1,0 +1,11 @@
+{
+  "profile": "custom",
+  "delivery": "skills",
+  "workflows": [
+    "explore",
+    "propose",
+    "apply",
+    "verify",
+    "archive"
+  ]
+}
