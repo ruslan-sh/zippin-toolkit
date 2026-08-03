@@ -92,6 +92,8 @@ function validateActiveScaffold(paths, slug) {
       && typeof initiative === "object"
       && !Array.isArray(initiative)
       && Object.keys(initiative).length === 2
+      && typeof initiative.store === "string"
+      && typeof initiative.id === "string"
       && /^([a-z0-9]+)(?:-[a-z0-9]+)*$/.test(initiative.store)
       && /^([a-z0-9]+)(?:-[a-z0-9]+)*$/.test(initiative.id);
     if (!valid) throw new Error(`Active change ${slug} has invalid initiative metadata.`);

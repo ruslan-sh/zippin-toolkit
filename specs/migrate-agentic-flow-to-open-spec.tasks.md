@@ -72,7 +72,7 @@ Definition of done:
 - No product roadmap item or OpenSpec change is created as a conversion side effect.
 
 ## Task 4: Select roadmap work into an active OpenSpec change
-Status: in-progress
+Status: done
 Summary: A contributor can transactionally claim one eligible roadmap item as a same-slug active OpenSpec change, and invalid or partial workflow state is detected before further work proceeds.
 Scope:
 - Provide strict, non-idempotent `npm run opsx:select -- <roadmap-slug>` using the shared lifecycle lock, validation, snapshot, and rollback behavior.

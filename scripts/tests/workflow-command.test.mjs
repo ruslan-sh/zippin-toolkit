@@ -120,6 +120,8 @@ test("rejects empty and malformed active scaffolds but accepts resumable proposa
       ["schema: spec-driven\naffected_areas: nope\n", /invalid affected_areas/i],
       ["schema: spec-driven\ninitiative: invalid\n", /invalid initiative/i],
       ["schema: spec-driven\ninitiative:\n  store: valid-store\n  id: Invalid\n", /invalid initiative/i],
+      ["schema: spec-driven\ninitiative:\n  store: 123\n  id: valid-id\n", /invalid initiative/i],
+      ["schema: spec-driven\ninitiative:\n  store: valid-store\n  id: 456\n", /invalid initiative/i],
       ["schema: spec-driven\nskip_specs: nope\n", /invalid skip_specs/i],
     ]) {
       writeFileSync(path.join(directory, ".openspec.yaml"), metadata);
