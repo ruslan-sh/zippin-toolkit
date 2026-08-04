@@ -1,3 +1,6 @@
+> Archived after implementation on 2026-08-03. The current contributor
+> workflow is documented in [OpenSpec Workflow](../../docs/openspec-workflow.md).
+
 # Migrate the Agentic Workflow to OpenSpec
 
 ## Summary

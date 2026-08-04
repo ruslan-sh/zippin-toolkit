@@ -3,33 +3,23 @@ version: 1
 application-wide:
   description: Applies across the Toolkit landing page and tools.
   items:
-    - slug: migrate-agentic-flow-to-open-spec
-      prerequisites: []
-      description: >-
-        Migrate the repository's agentic specification workflow to OpenSpec,
-        including contributor instructions, agent configuration, and the
-        supporting specification lifecycle skills.
     - slug: add-pr-quality-gate
-      prerequisites:
-        - migrate-agentic-flow-to-open-spec
+      prerequisites: []
       description: >-
         Add a pull-request and main-branch quality workflow that installs from
         the lockfile and runs all repository and agentic-workflow checks.
     - slug: adopt-openspec-for-other-agents
-      prerequisites:
-        - migrate-agentic-flow-to-open-spec
+      prerequisites: []
       description: >-
         Extend repository-managed OpenSpec regeneration to supported non-Codex
         agents while preserving equivalent lifecycle guarantees.
     - slug: enable-advanced-openspec-workflows
-      prerequisites:
-        - migrate-agentic-flow-to-open-spec
+      prerequisites: []
       description: >-
         Enable bulk-archive and onboard after integrating them with roadmap
         selection, verification receipts, and safe archive behavior.
     - slug: remove-legacy-spec-workflow
-      prerequisites:
-        - migrate-agentic-flow-to-open-spec
+      prerequisites: []
       description: >-
         Remove the legacy spec skills, validator, and bootstrap guidance after
         this migration completes its lifecycle.
@@ -61,8 +51,8 @@ fantasy-calendar:
     - slug: fantasy-calendar-preact-migration
       prerequisites: []
       description: >-
-        Convert imperative rendering to Preact while keeping calendar, moon,
-        and URL logic framework-independent.
+        Convert imperative rendering to Preact while keeping calendar, moon, and
+        URL logic framework-independent.
     - slug: astronomical-events
       prerequisites: []
       description: Add astronomical events to the model and rendered calendar.
