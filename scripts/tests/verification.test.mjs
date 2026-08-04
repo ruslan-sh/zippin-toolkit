@@ -138,3 +138,12 @@ test("rejects incomplete, malformed, incorrect, and stale evidence without leavi
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("rejects invalid slugs before resolving verification receipt paths", () => {
+  const { root, paths } = fixture();
+  try {
+    assert.throws(() => requireFreshVerification(paths, "../outside"), /invalid change slug/i);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});

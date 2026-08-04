@@ -5,6 +5,7 @@ import path from "node:path";
 import { parse } from "yaml";
 import {
   BOOTSTRAP_SLUG,
+  SLUG_PATTERN,
   archivedChangeSlugs,
   repositoryPaths,
   validateRoadmap,
@@ -133,6 +134,7 @@ export function validateWorkflow(paths = repositoryPaths(), options = {}) {
 }
 
 export async function selectChange(paths, slug, options = {}) {
+  if (!SLUG_PATTERN.test(slug)) throw new Error(`Invalid change slug: ${slug}.`);
   const target = path.join(paths.activeChanges, slug);
   return withLifecycleTransaction(paths, `opsx:select:${slug}`, [target], () => {
     const state = validateWorkflow(paths, { allowLifecycleLock: true });
@@ -180,6 +182,7 @@ function runDiffCheck(paths) {
 }
 
 export async function archiveChange(paths, slug, options = {}) {
+  if (!SLUG_PATTERN.test(slug)) throw new Error(`Invalid change slug: ${slug}.`);
   const target = path.join(paths.activeChanges, slug);
   const receipt = path.join(paths.receipts, `${slug}.json`);
   const snapshots = [paths.roadmap, target, paths.archives, paths.currentSpecs, receipt];

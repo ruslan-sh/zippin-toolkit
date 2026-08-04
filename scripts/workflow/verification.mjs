@@ -115,6 +115,7 @@ export function recordVerification(paths, slug) {
 }
 
 export function requireFreshVerification(paths, slug) {
+  if (!SLUG_PATTERN.test(slug)) throw new Error(`Invalid change slug: ${slug}.`);
   const file = receiptPath(paths, slug);
   if (!existsSync(file)) throw new Error(`Fresh verification receipt is missing for ${slug}.`);
   let receipt;

@@ -71,6 +71,16 @@ test("rejects missing and blocked selections without mutation", async () => {
   }
 });
 
+test("rejects invalid selection slugs before creating lifecycle state", async () => {
+  const { root, paths } = fixture();
+  try {
+    await assert.rejects(selectChange(paths, "../outside", { createChange: () => {} }), /invalid change slug/i);
+    assert.equal(existsSync(paths.lock), false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("rolls back partial selection failures", async () => {
   const { root, paths } = fixture();
   const target = path.join(paths.activeChanges, "ready-item");

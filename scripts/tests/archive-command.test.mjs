@@ -228,6 +228,16 @@ test("rejects missing and stale receipts before archive mutation", async () => {
   }
 });
 
+test("rejects invalid archive slugs before creating lifecycle state", async () => {
+  const { root, paths } = fixture();
+  try {
+    await assert.rejects(archiveChange(paths, "../outside"), /invalid change slug/i);
+    assert.equal(existsSync(paths.lock), false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("restores roadmap, active change, archives, specs, and receipt after handled failures", async () => {
   for (const boundary of ["archive", "post-archive-validation", "diff-check"]) {
     const { root, paths, slug, change } = fixture();
