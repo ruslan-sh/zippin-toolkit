@@ -108,3 +108,4 @@ Use only:
 - `blocked`: the task itself cannot progress until its blocker is resolved.
 
 Keep the format stable so later updates can preserve status cleanly.
+> Legacy reference: use only for `migrate-agentic-flow-to-open-spec`; unavailable for new work.

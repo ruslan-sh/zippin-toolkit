@@ -30,3 +30,4 @@ The spec should be:
 - scoped enough to avoid unrelated cleanup;
 - explicit about validation expectations;
 - clear about behavior-preserving vs behavior-changing work.
+> Legacy reference: use only for `migrate-agentic-flow-to-open-spec`; unavailable for new work.

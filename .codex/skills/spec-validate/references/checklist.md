@@ -48,3 +48,4 @@ Use this checklist while reviewing:
 - If task statuses no longer reflect repo state, update the tasks file.
 - If the implemented product intentionally diverged from the spec, update the spec.
 - If the spec and implementation differ only because work is still in progress, report the gap but do not rewrite the spec.
+> Legacy reference: use only for `migrate-agentic-flow-to-open-spec`; unavailable for new work.

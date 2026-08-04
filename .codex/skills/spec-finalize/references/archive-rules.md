@@ -39,7 +39,8 @@ Add a short archival note at the top stating that:
 Remove the active spec file from `specs/`.
 If `specs/<name>.tasks.md` exists beside the active spec, delete that tasks file instead of archiving it.
 
-After the archive file exists, check `specs/roadmap.md` for an entry whose slug
+For the legacy bootstrap only, use `npm run opsx:finalize-bootstrap`; do not
+apply the superseded Markdown-roadmap rule below. The old rule checked an entry whose slug
 matches the original spec basename. If exactly one entry matches, remove it
 from its `h3` slug heading through its content, without changing sibling
 entries or the tool heading. If no entry matches, leave the roadmap unchanged.
@@ -70,3 +71,4 @@ Avoid:
 - "current status" sections that merely say the docs are current;
 - duplicated speculative design discussion that is no longer needed;
 - feature-plan wording such as "proposed behavior", "validation plan", or "risks and mitigations" unless those sections still serve a real documentation purpose.
+> Legacy reference: use only for `migrate-agentic-flow-to-open-spec`; unavailable for new work.

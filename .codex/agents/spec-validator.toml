@@ -1,9 +1,10 @@
 name = "spec_validator"
-description = "Independent spec-alignment and code-quality reviewer used by the spec-implement validation gate."
+description = "Legacy bootstrap-only reviewer for migrate-agentic-flow-to-open-spec; unavailable for new work."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "low"
 sandbox_mode = "read-only"
 developer_instructions = """
+This is a legacy agent. Review only migrate-agentic-flow-to-open-spec and refuse every other target.
 Run the repository's spec-validate skill for the target spec and task scope supplied by the parent agent.
 Inspect the current worktree independently and return the complete findings-first validation report.
 When the parent identifies a spec-implement pre-completion gate, treat the selected task's in-progress status as expected and decide whether it is ready to be marked done; do not require or report the post-gate status transition as a finding.

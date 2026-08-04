@@ -17,3 +17,4 @@ Run verification suitable for documentation-focused changes:
 ## Reporting
 
 If no code changed, it is usually sufficient to report that build, tests, and lint were not run because the change was documentation-only.
+> Legacy reference: use only for `migrate-agentic-flow-to-open-spec`; unavailable for new work.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Spec Create"
-  short_description: "Create an implementation-ready feature spec"
+  short_description: "Legacy bootstrap-only spec workflow"
   default_prompt: "Use $spec-create to create an implementation-ready spec for this feature after verifying its roadmap prerequisites are satisfied."

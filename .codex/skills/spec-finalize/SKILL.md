@@ -1,9 +1,11 @@
 ---
 name: spec-finalize
-description: Update current-state project documentation from an implemented spec, and archive the spec as cleanup when appropriate. Use when a spec in specs/ reflects shipped behavior that should now live in docs/ or other project documentation.
+description: Legacy finalization only for migrate-agentic-flow-to-open-spec. Unavailable for new work.
 ---
 
 # Spec Finalize
+
+> **Legacy only:** Use only to finalize `migrate-agentic-flow-to-open-spec`. Use `$openspec-archive-change` afterward.
 
 ## Overview
 
@@ -53,12 +55,10 @@ If appropriate, archive the spec according to [`references/archive-rules.md`](./
 Treat archival as cleanup after the documentation is correctly updated, not as the primary goal of the skill.
 If the spec has a sibling `*.tasks.md` file, delete it as part of the same cleanup.
 
-After the spec has been successfully archived, remove its matching entry from
-`specs/roadmap.md` if one exists. Do not remove the roadmap entry before the
-archive is in place. Then remove the archived spec basename from every
-`Prerequisite` field that references it. Set `Prerequisite: none` when that
-removes an entry's final prerequisite, even if the archived spec had no
-matching roadmap entry. Leave all other roadmap content unchanged.
+For this bootstrap, first run `npm run opsx:finalize-bootstrap`. It uses shared
+lifecycle code to remove only the canonical YAML item and its prerequisite
+references, then deletes `specs/roadmap-legacy.md`. After that succeeds, archive
+the legacy spec and delete its sibling tracker. Do not mutate YAML by hand.
 
 ### 4. Rewrite as current-state documentation
 

@@ -1,9 +1,11 @@
 ---
 name: spec-validate
-description: Validate repository implementation against a spec in `specs/*.md` and its sibling `*.tasks.md`, then perform a focused general code review when no major spec gaps block it. Use when the user asks whether current code matches the spec, whether completed tasks really satisfy the spec, whether the spec/tasks file need updates, or wants a combined spec-alignment and code-quality review after implementation work.
+description: Legacy bootstrap-only validation for migrate-agentic-flow-to-open-spec. Unavailable for new work.
 ---
 
 # Spec Validate
+
+> **Legacy only:** Validate only `migrate-agentic-flow-to-open-spec`. Read `specs/roadmap-legacy.md` only for that bootstrap. Use `$openspec-verify-change` afterward.
 
 Validate spec alignment first. When the requested implementation has no major
 spec misses, follow it with a focused general code review of the same change
@@ -39,7 +41,7 @@ normally.
 - task boundaries and validation requirements;
 - any explicit non-goals.
 
-Also inspect `specs/roadmap.md` for a matching slug. If it exists, verify that
+Also inspect `specs/roadmap-legacy.md` for the bootstrap slug. Verify that
 its status is `in-progress` and its `Prerequisite` field is `none`. Treat an
 active spec with unresolved prerequisites as workflow drift and report it, but
 keep the roadmap read-only during validation.
@@ -97,7 +99,7 @@ keep the roadmap read-only during validation.
 - Do not ask to update the spec just because later tasks are still open.
 - Treat the spec as the intended end state unless the implementation proves the spec is internally inconsistent or materially outdated.
 - If task boundaries are blurred but still coherent, call that out as a note, not a defect.
-- Treat `specs/roadmap.md` as read-only during validation. Do not delete, add, or update roadmap entries; roadmap cleanup belongs to the post-implementation archival workflow.
+- Treat `specs/roadmap-legacy.md` as read-only during bootstrap validation. Do not delete, add, or update it; cleanup belongs to bootstrap finalization.
 - Report stale prerequisite references, missing prerequisite metadata, and a
   matching roadmap entry whose status does not reflect the active spec.
 

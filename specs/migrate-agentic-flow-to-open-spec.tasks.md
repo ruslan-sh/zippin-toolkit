@@ -96,7 +96,7 @@ Definition of done:
 - The bootstrap legacy state is accepted only through its narrow documented exception.
 
 ## Task 5: Record independent verification as a fresh repository receipt
-Status: todo
+Status: done
 Summary: The OpenSpec verification workflow can record a clean independent review and the complete required command suite, then produce a receipt that becomes stale after any relevant repository edit.
 Scope:
 - Add mandatory root-agent verification instructions for a fresh read-only reviewer, at most three review-and-fix iterations, primary-agent remediation, no self-review fallback, and the complete no-waiver command suite.
@@ -120,7 +120,7 @@ Definition of done:
 - Failure to obtain an independent review or pass any required command blocks verification.
 
 ## Task 6: Archive a verified change transactionally
-Status: todo
+Status: done
 Summary: A contributor can archive one fully completed and freshly verified OpenSpec change while synchronizing current specs and cleaning its roadmap dependencies, with exact rollback on handled failure.
 Scope:
 - Provide mandatory `npm run opsx:archive -- <slug>` and make raw archival unsupported through repository guidance and contract validation.
@@ -146,7 +146,7 @@ Definition of done:
 - Interrupted operations remain diagnosable and cannot be bypassed automatically.
 
 ## Dev Task 7: Prove the complete lifecycle with the pinned real CLI
-Status: todo
+Status: done
 Summary: Add one isolated integration harness that proves Tasks 3 through 6 work together against OpenSpec 1.7.0 without touching the repository's real roadmap or active changes.
 Scope:
 - Build a temporary-project integration test with a synthetic roadmap and the repository-pinned real OpenSpec CLI.
@@ -168,7 +168,7 @@ Definition of done:
 - The repository remains working and this increment clearly advances Task 8.
 
 ## Task 8: Transition contributors to the OpenSpec workflow
-Status: todo
+Status: done
 Summary: Contributors have one authoritative, documented OpenSpec workflow for all future selected work, while the visibly legacy workflow remains narrowly capable of validating and finalizing this bootstrap migration.
 Scope:
 - Make root `AGENTS.md` the sole workflow authority for roadmap intake, OpenSpec proposal/apply/verify/archive behavior, generated-file rules, lifecycle wrappers, and the one-time legacy bootstrap path.

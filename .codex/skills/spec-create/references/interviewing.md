@@ -30,3 +30,4 @@ Probe for:
 ## Completion Condition
 
 Stop interviewing once the spec can be written without relying on large unstated assumptions about behavior, scope, or validation.
+> Legacy reference: use only for `migrate-agentic-flow-to-open-spec`; unavailable for new work.

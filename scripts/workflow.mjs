@@ -1,14 +1,18 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { parse } from "yaml";
 import {
   BOOTSTRAP_SLUG,
+  archivedChangeSlugs,
   repositoryPaths,
   validateRoadmap,
+  writeDocument,
   withLifecycleTransaction,
 } from "./workflow/lifecycle.mjs";
 import { runOpenSpec } from "./workflow/openspec.mjs";
+import { recordVerification, requireFreshVerification } from "./workflow/verification.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const REQUIRED_AGENT_CONTRACT = [
@@ -17,6 +21,7 @@ const REQUIRED_AGENT_CONTRACT = [
   "fresh verification receipt",
   "$openspec-archive-change",
   "npm run opsx:archive",
+  "Raw OpenSpec archival is unsupported",
 ];
 
 function taskFiles(changeDirectory) {
@@ -144,6 +149,74 @@ export async function selectChange(paths, slug, options = {}) {
   });
 }
 
+export function removeRoadmapItemAndPrerequisites(paths, slug, options = {}) {
+  const archived = options.allowArchivedSlug
+    ? archivedChangeSlugs(paths).filter((entry) => entry !== slug)
+    : undefined;
+  const state = validateRoadmap(paths, archived ? { archived } : {});
+  const item = state.bySlug.get(slug);
+  if (!item) throw new Error(`Roadmap item not found: ${slug}.`);
+  const area = state.areas.find((entry) => entry.key === item.area);
+  area.itemsNode.items = area.itemsNode.items.filter((node) => node !== item.node);
+  for (const candidate of state.items) {
+    if (!candidate.prerequisites.includes(slug)) continue;
+    candidate.prerequisitesNode.items = candidate.prerequisitesNode.items.filter((node) => String(node?.value ?? node) !== slug);
+  }
+  writeDocument(paths.roadmap, state.document);
+}
+
+function assertArtifactsComplete(paths, slug, options) {
+  const getStatus = options.getStatus ?? (() => JSON.parse(runOpenSpec(paths.root, ["status", "--change", slug, "--json"])));
+  const status = getStatus(slug);
+  const artifacts = status?.artifacts;
+  if (!Array.isArray(artifacts) || artifacts.length === 0) throw new Error(`OpenSpec status for ${slug} did not report artifacts.`);
+  const incomplete = artifacts.filter((artifact) => !["done", "skipped"].includes(artifact.status));
+  if (incomplete.length > 0) throw new Error(`OpenSpec change ${slug} has incomplete artifacts: ${incomplete.map((artifact) => artifact.id ?? artifact.name ?? "unknown").join(", ")}.`);
+}
+
+function runDiffCheck(paths) {
+  const result = spawnSync("git", ["diff", "--check"], { cwd: paths.root, encoding: "utf8" });
+  if (result.status !== 0) throw new Error(`git diff --check failed:\n${result.stdout}${result.stderr}`.trim());
+}
+
+export async function archiveChange(paths, slug, options = {}) {
+  const target = path.join(paths.activeChanges, slug);
+  const receipt = path.join(paths.receipts, `${slug}.json`);
+  const snapshots = [paths.roadmap, target, paths.archives, paths.currentSpecs, receipt];
+  return withLifecycleTransaction(paths, `opsx:archive:${slug}`, snapshots, () => {
+    const state = validateWorkflow(paths, { allowLifecycleLock: true, requireCompletedTasks: true });
+    if (!state.active.includes(slug)) throw new Error(`Active OpenSpec change not found: ${slug}.`);
+    assertArtifactsComplete(paths, slug, options);
+    requireFreshVerification(paths, slug);
+    const strictValidate = options.strictValidate ?? ((args) => runOpenSpec(paths.root, args));
+    strictValidate(["validate", slug, "--strict"]);
+    const hasDeltaSpecs = existsSync(path.join(target, "specs"));
+    const archive = options.archive ?? ((args) => runOpenSpec(paths.root, args));
+    archive(["archive", slug, "--yes", "--json", ...(hasDeltaSpecs ? [] : ["--skip-specs"])]);
+    if (existsSync(target)) throw new Error(`OpenSpec archive left the active change in place: ${slug}.`);
+    const matches = readdirSync(paths.archives, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name.replace(/^\d{4}-\d{2}-\d{2}-/, "") === slug);
+    if (matches.length !== 1) throw new Error(`OpenSpec archive did not create exactly one archive for ${slug}.`);
+    removeRoadmapItemAndPrerequisites(paths, slug, { allowArchivedSlug: true });
+    validateRoadmap(paths);
+    validateWorkflow(paths, { allowLifecycleLock: true });
+    strictValidate(["validate", "--all", "--strict"]);
+    (options.diffCheck ?? (() => runDiffCheck(paths)))();
+    rmSync(receipt, { force: true });
+  });
+}
+
+export async function finalizeBootstrapRoadmap(paths) {
+  return withLifecycleTransaction(paths, "opsx:finalize-bootstrap", [paths.roadmap, paths.legacyRoadmap], () => {
+    const state = validateRoadmap(paths);
+    if (!state.bySlug.has(BOOTSTRAP_SLUG)) throw new Error(`Bootstrap roadmap item not found: ${BOOTSTRAP_SLUG}.`);
+    if (!existsSync(paths.legacyRoadmap)) throw new Error("Frozen legacy bootstrap roadmap is missing.");
+    removeRoadmapItemAndPrerequisites(paths, BOOTSTRAP_SLUG);
+    rmSync(paths.legacyRoadmap);
+    validateRoadmap(paths);
+  });
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [command, slug] = process.argv.slice(2);
   const paths = repositoryPaths(root);
@@ -154,8 +227,17 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     } else if (command === "select" && slug) {
       await selectChange(paths, slug);
       process.stdout.write(`Selected ${slug} as an active OpenSpec change.\n`);
+    } else if (command === "record-verification" && slug) {
+      const receipt = recordVerification(paths, slug);
+      process.stdout.write(`Recorded fresh verification for ${slug}: ${receipt.fingerprint}.\n`);
+    } else if (command === "archive" && slug) {
+      await archiveChange(paths, slug);
+      process.stdout.write(`Archived verified OpenSpec change ${slug}.\n`);
+    } else if (command === "finalize-bootstrap" && !slug) {
+      await finalizeBootstrapRoadmap(paths);
+      process.stdout.write("Removed the legacy bootstrap from the canonical roadmap.\n");
     } else {
-      throw new Error("Usage: node scripts/workflow.mjs <validate|select <slug>>");
+      throw new Error("Usage: node scripts/workflow.mjs <validate|select <slug>|record-verification <slug>|archive <slug>|finalize-bootstrap>");
     }
   } catch (error) {
     process.stderr.write(`${error.message}\n`);

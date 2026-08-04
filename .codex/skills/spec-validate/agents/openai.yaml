@@ -1,4 +1,4 @@
 interface:
   display_name: "Spec Validate"
-  short_description: "Validate spec alignment, then review code quality."
+  short_description: "Legacy bootstrap-only validation"
   default_prompt: "Use $spec-validate to validate implementation against the target spec, then perform a focused general code review when no major spec gaps remain."

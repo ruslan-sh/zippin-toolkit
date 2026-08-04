@@ -1,9 +1,11 @@
 ---
 name: spec-plan
-description: Split a spec into user-testable vertical delivery slices, with smaller development tasks when a slice is too large, and keep a task-tracking file beside the spec. Use when the user wants a spec in specs/ converted into executable tasks or an existing tasks file updated after the spec changes.
+description: Legacy bootstrap-only task planning for migrate-agentic-flow-to-open-spec. Unavailable for new work.
 ---
 
 # Spec Plan
+
+> **Legacy only:** Use only for `migrate-agentic-flow-to-open-spec`. Read `specs/roadmap-legacy.md` only for that bootstrap. Use OpenSpec afterward.
 
 ## Overview
 
@@ -46,7 +48,7 @@ Use it for both:
 
 ## Workflow
 
-Before decomposing a roadmap-backed spec, read `specs/roadmap.md`. If the
+Before decomposing the bootstrap spec, read `specs/roadmap-legacy.md`. If the
 matching slug still lists prerequisites, do not create or update its task
 tracker; report the unresolved prerequisite slugs. A task breakdown may proceed
 only when the matching entry says `Prerequisite: none` or no matching roadmap

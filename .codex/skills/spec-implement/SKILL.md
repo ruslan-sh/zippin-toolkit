@@ -1,9 +1,11 @@
 ---
 name: spec-implement
-description: Implement work from the repository's active specs and sibling task trackers. Use when the user asks to implement the next spec, next open task, current spec work, or an entire feature/spec. Default to the first actionable open task; implement every remaining task only when the user explicitly requests the whole feature, whole spec, or all remaining tasks.
+description: Legacy bootstrap-only implementation for migrate-agentic-flow-to-open-spec. Unavailable for new work.
 ---
 
 # Spec Implement
+
+> **Legacy only:** Use only to finish `migrate-agentic-flow-to-open-spec`. Read `specs/roadmap-legacy.md` only for that slug. Use `$openspec-apply-change` afterward.
 
 Implement the selected scope completely, including code, tests, validation, and task tracking. Follow the repository and project-scoped `AGENTS.md` files.
 
@@ -12,7 +14,7 @@ Implement the selected scope completely, including code, tests, validation, and 
 1. Use a spec or task file explicitly named by the user.
 2. Otherwise inspect `specs/*.tasks.md`, excluding `specs/archive/`. Select the single tracker containing unfinished work.
 3. If multiple trackers contain unfinished work and repository context does not identify one as active, ask the user which spec to use. Do not guess based only on filename ordering.
-4. Read the complete spec, its sibling task tracker, `specs/roadmap.md`, and applicable `AGENTS.md` files before editing code.
+4. Read the complete bootstrap spec, its sibling task tracker, `specs/roadmap-legacy.md`, and applicable `AGENTS.md` files before editing code.
 
 If the spec's matching roadmap entry lists any prerequisite slug, stop before
 implementation and report the unresolved prerequisites. Do not offer or accept

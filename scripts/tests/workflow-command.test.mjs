@@ -11,7 +11,7 @@ function fixture() {
   const root = mkdtempSync(path.join(os.tmpdir(), "zippin-workflow-command-"));
   mkdirSync(path.join(root, "specs"), { recursive: true });
   mkdirSync(path.join(root, "openspec", "changes", "archive"), { recursive: true });
-  writeFileSync(path.join(root, "AGENTS.md"), "$openspec-verify-change independent read-only review fresh verification receipt $openspec-archive-change npm run opsx:archive\n");
+  writeFileSync(path.join(root, "AGENTS.md"), "$openspec-verify-change independent read-only review fresh verification receipt $openspec-archive-change npm run opsx:archive Raw OpenSpec archival is unsupported\n");
   writeFileSync(path.join(root, "specs", "roadmap.yml"), `version: 1
 test-area:
   description: Test area.
@@ -156,6 +156,16 @@ test("accepts only the complete legacy bootstrap combination", () => {
     ));
     writeFileSync(paths.legacyRoadmap, "### `migrate-agentic-flow-to-open-spec`\n\nStatus: in-progress\nPrerequisite: other-item\n\n### `other-item`\n\nStatus: planned\nPrerequisite: none\n");
     assert.throws(() => validateWorkflow(paths), /does not authorize/i);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("requires an explicit contract that raw OpenSpec archival is unsupported", () => {
+  const { root, paths } = fixture();
+  try {
+    writeFileSync(path.join(root, "AGENTS.md"), "$openspec-verify-change independent read-only review fresh verification receipt $openspec-archive-change npm run opsx:archive\n");
+    assert.throws(() => validateWorkflow(paths), /Raw OpenSpec archival is unsupported/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

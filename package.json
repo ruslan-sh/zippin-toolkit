@@ -19,7 +19,10 @@
     "roadmap:validate": "node scripts/roadmap.mjs validate",
     "roadmap:add": "node scripts/roadmap.mjs add",
     "workflow:validate": "node scripts/workflow.mjs validate",
-    "opsx:select": "node scripts/workflow.mjs select"
+    "opsx:select": "node scripts/workflow.mjs select",
+    "opsx:record-verification": "node scripts/workflow.mjs record-verification",
+    "opsx:archive": "node scripts/workflow.mjs archive",
+    "opsx:finalize-bootstrap": "node scripts/workflow.mjs finalize-bootstrap"
   },
   "repository": {
     "type": "git",
