@@ -1,0 +1,15 @@
+schema: spec-driven
+
+context: |
+  Repository-managed OpenSpec changes must be selected from specs/roadmap.yml.
+  Proposal artifacts must not duplicate roadmap linkage metadata; the active
+  change directory name is the canonical slug.
+
+rules:
+  proposal:
+    - Use the active change directory name as the canonical roadmap slug.
+    - Do not add roadmap linkage, rationale, or alternate identity fields.
+  verify:
+    - Follow the mandatory independent review and verification receipt process in root AGENTS.md.
+  archive:
+    - Use npm run opsx:archive; raw OpenSpec archival is unsupported.

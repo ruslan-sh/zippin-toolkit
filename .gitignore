@@ -4,6 +4,9 @@ node_modules/
 # Build artifacts #
 dist/
 .tmp-tests/
+openspec/.verification/
+openspec/.lifecycle-lock
+.tmp-tests/
 
 # OS generated files #
 .DS_Store

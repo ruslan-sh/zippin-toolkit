@@ -1,9 +1,11 @@
 ---
 name: spec-create
-description: Create a spec for a specified feature. Use when the user wants to define or refine an implementation plan in specs/ before coding.
+description: Legacy bootstrap-only spec creation workflow. Unavailable for new work.
 ---
 
 # Spec Create
+
+> **Legacy only:** Retained only for `migrate-agentic-flow-to-open-spec`; do not create new work. Use `$openspec-propose` afterward.
 
 ## Overview
 
@@ -21,7 +23,8 @@ Trigger this skill for requests like:
 - "turn this issue into a spec"
 - "plan this feature before implementation"
 
-If the target feature is omitted, infer it from conversation context when possible. If it is still ambiguous, inspect `specs/roadmap.md` before asking an open-ended clarification question. Propose only relevant roadmap items whose `Prerequisite` field is `none` so the user can choose the intended feature.
+This retained skill cannot select a target. It recognizes only the
+`migrate-agentic-flow-to-open-spec` bootstrap in `specs/roadmap-legacy.md`.
 
 ## Workflow
 
@@ -31,7 +34,7 @@ Determine the feature, change, or issue the spec should cover.
 
 When the feature is unclear:
 
-1. Read `specs/roadmap.md` if it exists.
+1. Read `specs/roadmap-legacy.md` only for the bootstrap slug.
 2. Exclude items whose `Prerequisite` field lists any slug. Propose the
    remaining applicable `planned` items by slug and short description.
 3. Ask the user to select one or clarify a different feature.

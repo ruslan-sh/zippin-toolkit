@@ -1,0 +1,113 @@
+version: 1
+
+application-wide:
+  description: Applies across the Toolkit landing page and tools.
+  items:
+    - slug: add-pr-quality-gate
+      prerequisites: []
+      description: >-
+        Add a pull-request and main-branch quality workflow that installs from
+        the lockfile and runs all repository and agentic-workflow checks.
+    - slug: adopt-openspec-for-other-agents
+      prerequisites: []
+      description: >-
+        Extend repository-managed OpenSpec regeneration to supported non-Codex
+        agents while preserving equivalent lifecycle guarantees.
+    - slug: enable-advanced-openspec-workflows
+      prerequisites: []
+      description: >-
+        Enable bulk-archive and onboard after integrating them with roadmap
+        selection, verification receipts, and safe archive behavior.
+    - slug: remove-legacy-spec-workflow
+      prerequisites: []
+      description: >-
+        Remove the legacy spec skills, validator, and bootstrap guidance after
+        this migration completes its lifecycle.
+    - slug: standardize-ui-library
+      prerequisites:
+        - app-preact-migration
+        - fantasy-calendar-preact-migration
+        - encounter-calculator-preact-migration
+      description: >-
+        Select and adopt a shared UI library, common components, and theme
+        tokens across the landing page and tools.
+    - slug: dark-mode
+      prerequisites:
+        - standardize-ui-library
+      description: Add a consistent dark color theme across the Toolkit.
+    - slug: automate-pr-review-follow-up
+      prerequisites: []
+      description: Monitor open pull requests for review comments and check results,
+        safely apply clear in-scope fixes, and stop when the latest head is
+        clean.
+    - slug: migrate-roadmap-to-github-issues
+      prerequisites: []
+      description: Migrate the canonical YAML roadmap and its intake, prerequisite,
+        selection, and archival lifecycle to GitHub Issues without losing
+        backlog structure or workflow guarantees.
+
+toolkit-landing-page:
+  description: Applies to the Toolkit landing page in app/.
+  items:
+    - slug: app-preact-migration
+      prerequisites: []
+      description: >-
+        Convert the landing page UI to Preact while preserving its behavior,
+        styles, static delivery, and lightweight bundle.
+
+fantasy-calendar:
+  description: Applies to the Fantasy Calendar tool.
+  items:
+    - slug: fantasy-calendar-preact-migration
+      prerequisites: []
+      description: >-
+        Convert imperative rendering to Preact while keeping calendar, moon, and
+        URL logic framework-independent.
+    - slug: astronomical-events
+      prerequisites: []
+      description: Add astronomical events to the model and rendered calendar.
+    - slug: render-configuration
+      prerequisites: []
+      description: >-
+        Add options to hide the current-day highlight and calendar events.
+    - slug: foldable-footer
+      prerequisites: []
+      description: Allow the calendar footer to be collapsed and expanded.
+    - slug: calendar-properties
+      prerequisites: []
+      description: Expose calendar properties for inspection and configuration.
+    - slug: local-configuration-storage
+      prerequisites: []
+      description: Persist and restore calendar configuration in local storage.
+
+encounter-difficulty-calculator:
+  description: Applies to the Encounter Difficulty Calculator tool.
+  items:
+    - slug: encounter-calculator-preact-migration
+      prerequisites: []
+      description: >-
+        Convert party and encounter UI layers to Preact while retaining pure
+        calculator modules, styles, and lightweight static output.
+    - slug: encounter-builder-keyboard-support
+      prerequisites: []
+      description: >-
+        Add complete keyboard workflows for monster and statblock-link editing.
+    - slug: encounter-markdown-export
+      prerequisites: []
+      description: Export the current workspace as readable Markdown.
+    - slug: encounter-list-enhancements
+      prerequisites: []
+      description: >-
+        Let users reorder, duplicate, and difficulty-color encounters.
+    - slug: monster-cr-mode-support
+      prerequisites: []
+      description: >-
+        Add monsters by Challenge Rating with automatic CR-to-XP conversion.
+    - slug: encounter-generation
+      prerequisites: []
+      description: >-
+        Suggest a balanced encounter for a party and target difficulty.
+    - slug: monster-library
+      prerequisites: []
+      description: >-
+        Provide a searchable, filterable library for adding monsters directly.

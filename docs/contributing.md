@@ -1,5 +1,8 @@
 # Contribution Conventions
 
+Use the repository [OpenSpec workflow](./openspec-workflow.md) for roadmap
+intake, proposal, implementation, verification, and archival.
+
 ## Branch Names
 
 Use lowercase kebab-case branch names in this format:

@@ -27,3 +27,4 @@ If the updated spec significantly changes the plan:
 ## Goal
 
 Do not blindly overwrite progress tracking. Keep the task files useful as both an execution plan and an active status board.
+> Legacy reference: use only for `migrate-agentic-flow-to-open-spec`; unavailable for new work.

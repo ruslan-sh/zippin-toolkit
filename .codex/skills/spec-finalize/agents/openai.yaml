@@ -1,4 +1,4 @@
 interface:
   display_name: "Spec Finalize"
-  short_description: "Turn implemented specs into current-state docs"
+  short_description: "Legacy bootstrap-only finalization"
   default_prompt: "Use $spec-finalize to document and archive an implemented spec, then remove its roadmap entry and unblock dependent prerequisites."

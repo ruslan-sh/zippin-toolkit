@@ -2,13 +2,27 @@
   "name": "zippin-toolkit",
   "version": "1.0.1",
   "description": "A collection of focused tools for tabletop role-playing games.",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "start": "webpack serve --open --config webpack.dev.js",
-    "lint": "eslint app/src encounter-difficulty-calculator/src encounter-difficulty-calculator/tests fantasy-calendar/src fantasy-calendar/tests",
+    "lint": "eslint app/src encounter-difficulty-calculator/src encounter-difficulty-calculator/tests fantasy-calendar/src fantasy-calendar/tests scripts",
     "lint:styles": "stylelint \"app/src/**/*.scss\" \"encounter-difficulty-calculator/src/**/*.scss\" \"fantasy-calendar/src/**/*.scss\" \"shared/src/**/*.scss\"",
     "test": "npm run test:unit",
-    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/fantasy-calendar/tests/*.test.js .tmp-tests/encounter-difficulty-calculator/tests/*.test.js"
+    "test:workflow": "node --test scripts/tests/*.test.mjs",
+    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/fantasy-calendar/tests/*.test.js .tmp-tests/encounter-difficulty-calculator/tests/*.test.js",
+    "openspec": "node scripts/openspec-cli.mjs",
+    "openspec:update": "node scripts/openspec-integration.mjs update",
+    "openspec:check": "node scripts/openspec-integration.mjs check",
+    "roadmap:validate": "node scripts/roadmap.mjs validate",
+    "roadmap:add": "node scripts/roadmap.mjs add",
+    "workflow:validate": "node scripts/workflow.mjs validate",
+    "opsx:select": "node scripts/workflow.mjs select",
+    "opsx:record-verification": "node scripts/workflow.mjs record-verification",
+    "opsx:archive": "node scripts/workflow.mjs archive",
+    "opsx:finalize-bootstrap": "node scripts/workflow.mjs finalize-bootstrap"
   },
   "repository": {
     "type": "git",
@@ -29,6 +43,7 @@
   },
   "homepage": "https://ruslan-sh.github.io/zippin-toolkit/",
   "devDependencies": {
+    "@fission-ai/openspec": "1.7.0",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "css-loader": "^7",

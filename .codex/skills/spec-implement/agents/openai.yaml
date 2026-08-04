@@ -1,4 +1,4 @@
 interface:
   display_name: "Spec Implement"
-  short_description: "Implement the next task or full active spec"
+  short_description: "Legacy bootstrap-only implementation"
   default_prompt: "Use $spec-implement to verify roadmap prerequisites, then implement the next open task in the active spec."
