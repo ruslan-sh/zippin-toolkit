@@ -1,6 +1,6 @@
 import {
     DEFAULT_WORKSPACE_STATE,
-    isWorkspaceState,
+    migrateWorkspaceState,
     WorkspaceState,
 } from "./workspace-state";
 
@@ -51,8 +51,8 @@ export function loadWorkspace(storage: WorkspaceStorage | null): WorkspaceLoadRe
     if (serialized === null) return { state: DEFAULT_WORKSPACE_STATE, error: null };
 
     try {
-        const candidate: unknown = JSON.parse(serialized);
-        if (isWorkspaceState(candidate)) return { state: candidate, error: null };
+        const candidate = migrateWorkspaceState(JSON.parse(serialized));
+        if (candidate) return { state: candidate, error: null };
     } catch {
         // The original value is deliberately left untouched for recovery.
     }

@@ -1,6 +1,6 @@
 import { parseDocument, stringify } from "yaml";
 
-import { isWorkspaceState, WorkspaceState } from "./workspace-state";
+import { migrateWorkspaceState, WorkspaceState } from "./workspace-state";
 
 export const WORKSPACE_EXPORT_FILENAME = "encounter-workspace.yml";
 
@@ -20,6 +20,7 @@ export function parseWorkspaceYaml(source: string): WorkspaceState {
     } catch {
         throw new Error("The backup is not valid YAML.");
     }
-    if (!isWorkspaceState(candidate)) throw new Error("The backup does not use the supported workspace format.");
-    return candidate;
+    const migrated = migrateWorkspaceState(candidate);
+    if (!migrated) throw new Error("The backup does not use the supported workspace format.");
+    return migrated;
 }

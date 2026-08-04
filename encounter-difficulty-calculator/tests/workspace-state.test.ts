@@ -6,6 +6,7 @@ import {
     DEFAULT_WORKSPACE_STATE,
     isWorkspaceNumber,
     isWorkspaceState,
+    migrateWorkspaceState,
     WorkspaceState,
 } from "../src/workspace-state";
 
@@ -33,7 +34,7 @@ test("accepts the versioned workspace shape and UI-invalid numeric values", () =
         },
         encounters: [{
             name: "Boss: finale",
-            monsters: [{ name: "Ogre", xp: -1, quantity: 1.5, url: "https://example.com/ogre" }],
+            monsters: [{ name: "Ogre", cr: "4", xp: -1, quantity: 1.5, url: "https://example.com/ogre", minion: true }],
         }],
     });
     assert.equal(isWorkspaceState(value), true);
@@ -49,7 +50,7 @@ test("accepts only finite numbers or null for workspace numeric fields", () => {
 });
 
 test("rejects unsupported, ambiguous, and unsafe workspace structures", () => {
-    assert.equal(isWorkspaceState({ ...workspace(), version: 2 }), false);
+    assert.equal(isWorkspaceState({ ...workspace(), version: 3 }), false);
     assert.equal(isWorkspaceState({ ...workspace(), extra: true }), false);
     assert.equal(isWorkspaceState(workspace({ party: { ...DEFAULT_WORKSPACE_STATE.party, groups: [] } })), false);
     assert.equal(isWorkspaceState(workspace({
@@ -57,17 +58,42 @@ test("rejects unsupported, ambiguous, and unsafe workspace structures", () => {
     })), false);
     assert.equal(isWorkspaceState(workspace({ encounters: [{
         name: "Sanitized",
-        monsters: [{ name: "", xp: Number.NaN, quantity: 1, url: "" }],
+        monsters: [{ name: "", cr: null, xp: Number.NaN, quantity: 1, url: "", minion: false }],
     }] })), false);
     assert.equal(isWorkspaceState(workspace({ encounters: [{
         name: "Unsafe",
-        monsters: [{ name: "", xp: 1, quantity: 1, url: "javascript:alert(1)" }],
+        monsters: [{ name: "", cr: null, xp: 1, quantity: 1, url: "javascript:alert(1)", minion: false }],
+    }] })), false);
+    const monster = workspace().encounters[0].monsters[0];
+    assert.equal(isWorkspaceState(workspace({ encounters: [{
+        name: "Bad CR", monsters: [{ ...monster, cr: "1.5" as never }],
+    }] })), false);
+    assert.equal(isWorkspaceState(workspace({ encounters: [{
+        name: "Bad Minion", monsters: [{ ...monster, minion: "false" as never }],
+    }] })), false);
+    assert.equal(isWorkspaceState(workspace({ encounters: [{
+        name: "Unknown Field", monsters: [{ ...monster, extra: true } as never],
     }] })), false);
     assert.equal(isWorkspaceState(workspace({ encounters: [{ name: " ", monsters: [] }] })), false);
 
     const inheritedProperty = workspace();
     Object.setPrototypeOf(inheritedProperty, { extra: true });
     assert.equal(isWorkspaceState(inheritedProperty), false);
+});
+
+test("migrates an exact version-1 workspace without changing source XP", () => {
+    const migrated = migrateWorkspaceState({
+        version: 1,
+        party: { groups: [{ playerCount: 4, level: 5 }], modifierType: "percentage", modifierValue: 0 },
+        encounters: [{
+            name: "Legacy",
+            monsters: [{ name: "Ogre", xp: 450, quantity: 2, url: "" }],
+        }],
+    });
+    assert.deepEqual(migrated?.encounters[0].monsters[0], {
+        name: "Ogre", xp: 450, quantity: 2, url: "", cr: null, minion: false,
+    });
+    assert.equal(migrated?.version, 2);
 });
 
 test("coordinates complete ordered state updates", () => {
@@ -80,7 +106,7 @@ test("coordinates complete ordered state updates", () => {
     });
     coordinator.updateEncounters([
         { name: "Second", monsters: [] },
-        { name: "First", monsters: [{ name: "Goblin", xp: 50, quantity: 2, url: "" }] },
+        { name: "First", monsters: [{ name: "Goblin", cr: "1/4", xp: 50, quantity: 2, url: "", minion: false }] },
     ]);
     assert.deepEqual(coordinator.getState(), updates[1]);
     assert.equal(updates[1].party.modifierValue, 10);

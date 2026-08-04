@@ -1,4 +1,10 @@
 import { encounterTotal, MonsterInput, rankEncounter, safeStatblockUrl } from "./encounter-calculator";
+import {
+    CHALLENGE_RATINGS,
+    isChallengeRating,
+    minionXpForChallengeRating,
+    standardXpForChallengeRating,
+} from "./challenge-rating-calculator";
 import { Thresholds } from "./party-calculator";
 import {
     DEFAULT_WORKSPACE_STATE,
@@ -82,7 +88,7 @@ export function initializeEncounterBuilder(
         const headers = document.createElement("div");
         headers.className = "monster-headers";
         headers.setAttribute("aria-hidden", "true");
-        ["Monster Name", "XP", "Quantity", ""].forEach((text) => {
+        ["Monster Name", "Minion", "CR", "XP", "Quantity", ""].forEach((text) => {
             const header = document.createElement("span");
             header.textContent = text;
             headers.append(header);
@@ -139,6 +145,35 @@ export function initializeEncounterBuilder(
             };
             const monsterName = makeInput("Monster Name", "text");
             monsterName.value = initialMonster?.name ?? "";
+            const minionLabel = document.createElement("label");
+            minionLabel.className = "minion-control";
+            const minion = document.createElement("input");
+            minion.type = "checkbox";
+            minion.checked = initialMonster?.minion ?? false;
+            const minionText = document.createElement("span");
+            minionText.textContent = "Minion";
+            minionLabel.append(minion, minionText);
+            fieldset.append(minionLabel);
+            const crLabel = document.createElement("label");
+            crLabel.textContent = `Challenge Rating for ${name.textContent}, monster ${monsterId}`;
+            crLabel.className = "visually-hidden";
+            const cr = document.createElement("select");
+            cr.id = `encounter-${encounterId}-monster-${monsterId}-challenge-rating`;
+            cr.className = "monster-cr";
+            crLabel.htmlFor = cr.id;
+            inputLabels.push({ element: crLabel, text: "Challenge Rating" });
+            const blankCr = document.createElement("option");
+            blankCr.value = "";
+            blankCr.textContent = "CR";
+            cr.append(blankCr);
+            CHALLENGE_RATINGS.forEach((challengeRating) => {
+                const option = document.createElement("option");
+                option.value = challengeRating;
+                option.textContent = challengeRating;
+                cr.append(option);
+            });
+            cr.value = initialMonster?.cr ?? "";
+            fieldset.append(crLabel, cr);
             const xp = makeInput("XP", "number", true);
             xp.value = workspaceInputValue(initialMonster?.xp ?? null);
             xp.min = "0";
@@ -198,6 +233,7 @@ export function initializeEncounterBuilder(
                 inputLabels.forEach(({ element, text }) => {
                     element.textContent = `${text} for ${encounterName}, monster ${monsterId}`;
                 });
+                minion.setAttribute("aria-label", `Minion for ${encounterName}, monster ${monsterId}`);
                 remove.setAttribute("aria-label", `Remove monster ${monsterId} from ${encounterName}`);
                 editStatblock.setAttribute(
                     "aria-label",
@@ -212,9 +248,11 @@ export function initializeEncounterBuilder(
             });
             const readState = (): MonsterState => ({
                 name: monsterName.value,
+                cr: isChallengeRating(cr.value) ? cr.value : null,
                 xp: parseWorkspaceNumber(xp.value),
                 quantity: parseWorkspaceNumber(quantity.value),
                 url: savedUrl,
+                minion: minion.checked,
             });
             const validate = (notify = false): void => {
                 const quantityInvalid = quantity.value === "" || !Number.isInteger(Number(quantity.value)) || Number(quantity.value) < 1;
@@ -241,6 +279,20 @@ export function initializeEncounterBuilder(
                 if (notify) publishState();
             };
             [monsterName, quantity, xp].forEach((input) => input.addEventListener("input", () => validate(true)));
+            cr.addEventListener("change", () => {
+                const mappedXp = minion.checked
+                    ? minionXpForChallengeRating(cr.value)
+                    : standardXpForChallengeRating(cr.value);
+                if (mappedXp !== null) xp.value = String(mappedXp);
+                validate(true);
+            });
+            minion.addEventListener("change", () => {
+                const mappedXp = minion.checked
+                    ? minionXpForChallengeRating(cr.value)
+                    : standardXpForChallengeRating(cr.value);
+                if (mappedXp !== null) xp.value = String(mappedXp);
+                validate(true);
+            });
             editStatblock.addEventListener("click", () => {
                 const enteredUrl = document.defaultView?.prompt("Statblock URL", savedUrl);
                 if (enteredUrl === null || enteredUrl === undefined) return;
@@ -261,6 +313,7 @@ export function initializeEncounterBuilder(
             });
             monsters.set(monsterId, { read, readState, refreshLabels });
             rows.append(fieldset);
+            refreshLabels();
             validate();
             if (publish) publishState();
             if (focusNewMonster) monsterName.focus();
@@ -293,7 +346,7 @@ export function initializeEncounterBuilder(
             }),
         });
         encountersElement.append(section);
-        (initialEncounter?.monsters ?? [{ name: "", xp: null, quantity: 1, url: "" }])
+        (initialEncounter?.monsters ?? [{ name: "", cr: null, xp: null, quantity: 1, url: "", minion: false }])
             .forEach((monster, index) => addMonsterRow(focusNewEncounter && index === 0, monster, false));
         if (publish) publishState();
     };
