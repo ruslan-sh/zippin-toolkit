@@ -46,6 +46,15 @@ application-wide:
         selection, and archival lifecycle to GitHub Issues without losing
         backlog structure or workflow guarantees.
 
+map-drawing-tool:
+  description: Applies to the standalone Map Drawing Tool.
+  items:
+    - slug: map-drawing-tool
+      prerequisites: []
+      description: >-
+        Create a standalone browser-based tool for drawing grid-based TTRPG maps.
+        Support hex grids in the first version; defer other grid types.
+
 toolkit-landing-page:
   description: Applies to the Toolkit landing page in app/.
   items:
@@ -54,6 +63,10 @@ toolkit-landing-page:
       description: >-
         Convert the landing page UI to Preact while preserving its behavior,
         styles, static delivery, and lightweight bundle.
+
+map-drawing-tool:
+  description: Applies to the Map Drawing Tool.
+  items: []
 
 fantasy-calendar:
   description: Applies to the Fantasy Calendar tool.
