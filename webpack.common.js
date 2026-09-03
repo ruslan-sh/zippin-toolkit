@@ -6,6 +6,7 @@ module.exports = {
         app: "./app/src/index.ts",
         "encounter-difficulty-calculator": "./encounter-difficulty-calculator/src/index.ts",
         "fantasy-calendar": "./fantasy-calendar/src/index.ts",
+        "map-drawing-tool": "./map-drawing-tool/src/index.ts",
     },
     module: {
         rules: [
@@ -34,6 +35,11 @@ module.exports = {
             template: "./fantasy-calendar/src/index.ejs",
             filename: "fantasy-calendar/index.html",
             chunks: ["fantasy-calendar"],
+        }),
+        new HtmlWebpackPlugin({
+            template: "./map-drawing-tool/src/index.ejs",
+            filename: "map-drawing-tool/index.html",
+            chunks: ["map-drawing-tool"],
         }),
     ],
     resolve: {

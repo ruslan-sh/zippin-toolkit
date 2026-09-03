@@ -12,6 +12,7 @@
   "include": [
     "./app/src/**/*",
     "./encounter-difficulty-calculator/src/**/*",
-    "./fantasy-calendar/src/**/*"
+    "./fantasy-calendar/src/**/*",
+    "./map-drawing-tool/src/**/*"
   ]
 }

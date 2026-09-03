@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Paint a simple pointy-top hex map and export it as a PNG image." />
+    <title>Map Drawing Tool | Zippin's Toolkit</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="map-tool">
+      <header class="map-tool__header">
+        <div>
+          <a href="../">Zippin's Toolkit</a>
+          <h1>Map Drawing Tool</h1>
+        </div>
+        <div class="map-tool__controls" aria-label="Map drawing controls">
+          <label for="paint-color">Color</label>
+          <input id="paint-color" type="color" value="#ffffff" />
+          <button id="paint-tool" type="button" aria-pressed="true">Paint</button>
+          <button id="eraser-tool" type="button" aria-pressed="false">Eraser</button>
+          <button id="export-png" type="button" disabled>Export</button>
+        </div>
+      </header>
+      <div id="map-viewport" class="map-tool__viewport" tabindex="0" aria-label="Scrollable hex map">
+        <canvas id="map-canvas" aria-label="100 by 100 pointy-top hex grid"></canvas>
+      </div>
+      <p id="map-status" class="map-tool__status" role="status" aria-live="polite"></p>
+    </main>
+  </body>
+</html>

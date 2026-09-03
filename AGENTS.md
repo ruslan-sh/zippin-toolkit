@@ -77,6 +77,26 @@ Validation policy for substantive changes:
 
 # Specs and Roadmap
 
+## Model routing
+
+- The primary coordinator must use Sol with low reasoning. It handles design
+  questions, difficult debugging, independent-review remediation, and the final
+  verification gate.
+- For approved implementation and routine fixes, automatically delegate one
+  coherent scope to `toolkit_implementer`. Give it the ownership context,
+  acceptance criteria, artifact paths, and required checks. It acts on the
+  primary agent's ownership claim, does not claim tasks itself, and does not
+  recursively delegate.
+- Reuse the implementation worker for related work. Do not repeat its
+  exploration or passing checks unless a concrete risk or the mandatory gate
+  requires it.
+- Use a fresh `toolkit_reviewer` for every independent-review iteration. The
+  reviewer is read-only. The primary agent owns all remediation and keeps the
+  three-iteration limit.
+- If a required role is unavailable, or the coordinator is not Sol with low
+  reasoning, report the issue and ask the user for guidance. Do not silently
+  select another model or use self-review.
+
 ## Repository-managed OpenSpec integration
 
 ### Mandatory verification gate

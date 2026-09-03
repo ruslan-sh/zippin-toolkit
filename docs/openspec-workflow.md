@@ -9,6 +9,24 @@ For Codex, use `$openspec-explore` for read-only discussion,
 `$openspec-apply-change` for implementation. Selection must start with
 `npm run opsx:select -- <slug>`. The active change is the ownership claim.
 
+The Sol/low primary coordinator handles design questions, difficult debugging,
+review remediation, and the final gate. For approved implementation and routine
+fixes, it automatically delegates a coherent scope to `toolkit_implementer`.
+The delegated scope includes the ownership context, acceptance criteria,
+artifact paths, and required checks. Workers act for the primary's ownership
+claim; they do not claim tasks or recursively delegate.
+Reuse the worker for related work and use its fresh evidence. The primary
+repeats checks only when a concrete risk or the mandatory gate requires it.
+Model settings are defined in `.codex/agents/toolkit-implementer.toml` and
+`.codex/agents/toolkit-reviewer.toml`. A new Codex session may be needed to
+discover newly added roles; instructions cannot switch the active model.
+
+Use a fresh read-only `toolkit_reviewer` for every independent-review
+iteration. The primary owns remediation and retains the three-iteration limit.
+If a required role is unavailable, or the coordinator is not Sol/low, report
+the issue and ask the user for guidance. Do not select another model silently
+or use self-review.
+
 Use `$openspec-verify-change` after implementation. A fresh independent
 read-only reviewer must report no actionable findings. Run every command in
 the root `AGENTS.md` gate without waivers. Write concise `verification.md`

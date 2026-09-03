@@ -46,15 +46,6 @@ application-wide:
         selection, and archival lifecycle to GitHub Issues without losing
         backlog structure or workflow guarantees.
 
-map-drawing-tool:
-  description: Applies to the standalone Map Drawing Tool.
-  items:
-    - slug: map-drawing-tool
-      prerequisites: []
-      description: >-
-        Create a standalone browser-based tool for drawing grid-based TTRPG maps.
-        Support hex grids in the first version; defer other grid types.
-
 toolkit-landing-page:
   description: Applies to the Toolkit landing page in app/.
   items:
@@ -66,7 +57,22 @@ toolkit-landing-page:
 
 map-drawing-tool:
   description: Applies to the Map Drawing Tool.
-  items: []
+  items:
+    - slug: map-export-background-color
+      prerequisites: []
+      description: Allow users to select the background color used for PNG export.
+    - slug: map-image-overlay
+      prerequisites: []
+      description: Allow users to add an image overlay to the map.
+    - slug: map-controls-enhancements
+      prerequisites: []
+      description: Improve the Map Drawing Tool controls and interaction workflows.
+    - slug: map-color-palette
+      prerequisites: []
+      description: Provide a color palette for selecting and reusing paint colors.
+    - slug: map-save-load
+      prerequisites: []
+      description: Allow users to save editable map data and load it again later.
 
 fantasy-calendar:
   description: Applies to the Fantasy Calendar tool.
