@@ -1,10 +1,9 @@
-## Purpose
+# hex-map-editor Specification
 
+## Purpose
 The hex map editor lets users create a simple color-coded pointy-top hex map
 and export the painted portion as a portable PNG image.
-
-## ADDED Requirements
-
+## Requirements
 ### Requirement: Fixed hex map workspace
 The system SHALL provide a fixed 100 by 100 pointy-top hex grid at a fixed zoom
 level. Unpainted hexes SHALL appear black, the editor SHALL show grid lines,
@@ -55,7 +54,7 @@ hexes plus a small black margin. The PNG SHALL use a black background, SHALL
 exclude editor grid lines, and SHALL download as `map.png`.
 
 #### Scenario: Painted map is exported
-- **WHEN** at least one hex is painted and the user activates Export PNG
+- **WHEN** at least one hex is painted and the user activates Export
 - **THEN** the system downloads `map.png` cropped to the painted bounds with a black margin and no grid lines
 
 #### Scenario: Black is used as paint
@@ -64,7 +63,7 @@ exclude editor grid lines, and SHALL download as `map.png`.
 
 #### Scenario: Empty map cannot be exported
 - **WHEN** no hex is painted
-- **THEN** the Export PNG control is disabled
+- **THEN** the Export control is disabled
 
 #### Scenario: PNG generation fails
 - **WHEN** the browser cannot generate or download the PNG

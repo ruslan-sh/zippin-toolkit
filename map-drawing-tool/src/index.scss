@@ -1,0 +1,72 @@
+@use "../../shared/src/scss/theme";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  background: var(--color-surface);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.map-tool {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-1);
+  height: 100%;
+  padding: var(--space-2);
+}
+
+.map-tool__header,
+.map-tool__controls {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.map-tool__header {
+  justify-content: space-between;
+}
+
+.map-tool h1 {
+  margin: var(--space-half) 0 0;
+  font-family: var(--font-header);
+}
+
+.map-tool__controls {
+  flex-wrap: wrap;
+}
+
+.map-tool__controls button[aria-pressed="true"] {
+  font-weight: 700;
+  outline: var(--focus-width) solid var(--color-text);
+}
+
+.map-tool__viewport {
+  min-height: 0;
+  overflow: auto;
+  border: 0.0625rem solid var(--color-text);
+  background: #000;
+}
+
+.map-tool__viewport canvas {
+  display: block;
+}
+
+.map-tool__status {
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--color-error);
+}

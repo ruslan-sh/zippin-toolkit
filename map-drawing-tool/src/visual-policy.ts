@@ -1,0 +1,3 @@
+export const EDITOR_EMPTY_COLOR = "#000000";
+export const EDITOR_GRID_COLOR = "#666666";
+export const EXPORT_BACKGROUND_COLOR = "#000000";
