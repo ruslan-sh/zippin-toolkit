@@ -55,6 +55,25 @@ toolkit-landing-page:
         Convert the landing page UI to Preact while preserving its behavior,
         styles, static delivery, and lightweight bundle.
 
+map-drawing-tool:
+  description: Applies to the Map Drawing Tool.
+  items:
+    - slug: map-export-background-color
+      prerequisites: []
+      description: Allow users to select the background color used for PNG export.
+    - slug: map-image-overlay
+      prerequisites: []
+      description: Allow users to add an image overlay to the map.
+    - slug: map-controls-enhancements
+      prerequisites: []
+      description: Improve the Map Drawing Tool controls and interaction workflows.
+    - slug: map-color-palette
+      prerequisites: []
+      description: Provide a color palette for selecting and reusing paint colors.
+    - slug: map-save-load
+      prerequisites: []
+      description: Allow users to save editable map data and load it again later.
+
 fantasy-calendar:
   description: Applies to the Fantasy Calendar tool.
   items:

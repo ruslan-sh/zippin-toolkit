@@ -10,6 +10,8 @@
     "encounter-difficulty-calculator/src/**/*.ts",
     "encounter-difficulty-calculator/tests/**/*.ts",
     "fantasy-calendar/src/**/*.ts",
-    "fantasy-calendar/tests/**/*.ts"
+    "fantasy-calendar/tests/**/*.ts",
+    "map-drawing-tool/src/**/*.ts",
+    "map-drawing-tool/tests/**/*.ts"
   ]
 }
