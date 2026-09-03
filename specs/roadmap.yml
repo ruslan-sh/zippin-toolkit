@@ -45,6 +45,10 @@ application-wide:
       description: Migrate the canonical YAML roadmap and its intake, prerequisite,
         selection, and archival lifecycle to GitHub Issues without losing
         backlog structure or workflow guarantees.
+    - slug: terra-sol-routing
+      prerequisites: []
+      description: Route approved implementation to Terra and planning and independent
+        review to Sol.
 
 toolkit-landing-page:
   description: Applies to the Toolkit landing page in app/.
