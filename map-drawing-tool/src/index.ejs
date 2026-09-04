@@ -26,11 +26,22 @@
           <input id="paint-color" type="color" value="#ffffff" />
           <button id="paint-tool" type="button" aria-pressed="true">Paint</button>
           <button id="eraser-tool" type="button" aria-pressed="false">Eraser</button>
+          <button id="move-image-tool" type="button" aria-pressed="false" disabled>Move image</button>
+          <label for="tracing-image">Image</label>
+          <input id="tracing-image" type="file" accept="image/png,image/jpeg,image/webp" />
+          <button id="remove-image" type="button" disabled>Remove image</button>
+          <label for="image-size">Size <output id="image-size-value">100%</output></label>
+          <input id="image-size" type="range" min="10" max="400" value="100" disabled />
+          <label for="image-opacity">Opacity <output id="image-opacity-value">50%</output></label>
+          <input id="image-opacity" type="range" min="0" max="100" value="50" disabled />
           <button id="export-png" type="button" disabled>Export</button>
         </div>
       </header>
       <div id="map-viewport" class="map-tool__viewport" tabindex="0" aria-label="Scrollable hex map">
-        <canvas id="map-canvas" aria-label="100 by 100 pointy-top hex grid"></canvas>
+        <div id="map-workspace" class="map-tool__workspace">
+          <canvas id="map-canvas" aria-label="100 by 100 pointy-top hex grid"></canvas>
+          <img id="tracing-image-layer" alt="" hidden />
+        </div>
       </div>
       <p id="map-status" class="map-tool__status" role="status" aria-live="polite"></p>
     </main>

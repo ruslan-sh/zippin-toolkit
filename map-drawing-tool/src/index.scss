@@ -61,8 +61,20 @@ input {
   background: #000;
 }
 
+.map-tool__workspace {
+  position: relative;
+  width: max-content;
+  overflow: clip;
+}
+
 .map-tool__viewport canvas {
   display: block;
+}
+
+.map-tool__workspace img {
+  position: absolute;
+  z-index: 1;
+  cursor: move;
 }
 
 .map-tool__status {
