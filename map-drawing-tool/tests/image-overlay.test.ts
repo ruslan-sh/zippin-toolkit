@@ -17,11 +17,16 @@ class FakeImage {
     onpointercancel: (() => void) | null = null;
     draggable = true;
     ondragstart: ((event: DragEvent) => void) | null = null;
-    setPointerCapture(_pointerId: number): void {}
-    hasPointerCapture(_pointerId: number): boolean {
-        return false;
+    private readonly capturedPointers = new Set<number>();
+    setPointerCapture(pointerId: number): void {
+        this.capturedPointers.add(pointerId);
     }
-    releasePointerCapture(_pointerId: number): void {}
+    hasPointerCapture(pointerId: number): boolean {
+        return this.capturedPointers.has(pointerId);
+    }
+    releasePointerCapture(pointerId: number): void {
+        this.capturedPointers.delete(pointerId);
+    }
     removeAttribute(_name: string): void {
         this.src = "";
     }
@@ -50,7 +55,7 @@ function createOverlay() {
             return candidate as unknown as HTMLImageElement;
         },
     });
-    return { overlay, image, candidates, revoked, restore: () => {
+    return { overlay, image, candidates, revoked, get createdUrlCount() { return number; }, restore: () => {
         URL.createObjectURL = originalCreate;
         URL.revokeObjectURL = originalRevoke;
     } };
@@ -143,6 +148,37 @@ test("resizing keeps the image center, opacity changes independently, and moveme
     }
 });
 
+for (const termination of ["release", "cancel", "tool change", "removal"] as const) {
+    test(`${termination} releases capture and stops image movement`, async () => {
+        const fixture = createOverlay();
+        try {
+            const loading = fixture.overlay.load(pngFile);
+            fixture.candidates[0].naturalWidth = 100;
+            fixture.candidates[0].naturalHeight = 100;
+            fixture.candidates[0].onload?.();
+            await loading;
+            fixture.overlay.setMoveEnabled(true);
+            fixture.image.onpointerdown?.({ button: 0, clientX: 0, clientY: 0, pointerId: 1 } as PointerEvent);
+            assert.equal(fixture.image.hasPointerCapture(1), true);
+            fixture.image.onpointermove?.({ clientX: 20, clientY: 30, pointerId: 1 } as PointerEvent);
+            const position = { left: fixture.image.style.left, top: fixture.image.style.top };
+
+            switch (termination) {
+                case "release": fixture.image.onpointerup?.(); break;
+                case "cancel": fixture.image.onpointercancel?.(); break;
+                case "tool change": fixture.overlay.setMoveEnabled(false); break;
+                case "removal": fixture.overlay.remove(); break;
+            }
+
+            assert.equal(fixture.image.hasPointerCapture(1), false);
+            fixture.image.onpointermove?.({ clientX: 80, clientY: 90, pointerId: 1 } as PointerEvent);
+            assert.deepEqual({ left: fixture.image.style.left, top: fixture.image.style.top }, position);
+        } finally {
+            fixture.restore();
+        }
+    });
+}
+
 test("unsupported file types are rejected before an object URL is created", async () => {
     const fixture = createOverlay();
     try {
@@ -150,7 +186,7 @@ test("unsupported file types are rejected before an object URL is created", asyn
             kind: "error",
             message: "Select a PNG, JPEG, or WebP image.",
         });
-        assert.deepEqual(fixture.revoked, []);
+        assert.equal(fixture.createdUrlCount, 0);
     } finally {
         fixture.restore();
     }
