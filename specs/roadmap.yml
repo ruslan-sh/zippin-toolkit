@@ -61,9 +61,6 @@ map-drawing-tool:
     - slug: map-export-background-color
       prerequisites: []
       description: Allow users to select the background color used for PNG export.
-    - slug: map-image-overlay
-      prerequisites: []
-      description: Allow users to add an image overlay to the map.
     - slug: map-controls-enhancements
       prerequisites: []
       description: Improve the Map Drawing Tool controls and interaction workflows.
