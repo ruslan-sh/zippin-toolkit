@@ -103,6 +103,28 @@ test("PNG export uses a black background, painted fills, and no grid strokes", a
     assert.equal(downloads[0].filename, "map.png");
 });
 
+test("PNG export can use a selected color or keep its background transparent", async () => {
+    const state = new HexMapState();
+    state.paint({ row: 10, column: 10 }, "#ff0000");
+    const canvases: FakeExportCanvas[] = [];
+    const dependencies = {
+        createCanvas: (width: number, height: number) => {
+            const canvas = new FakeExportCanvas(width, height);
+            canvases.push(canvas);
+            return canvas;
+        },
+        download: () => undefined,
+    };
+
+    await exportMapPng(state, dependencies, "#123456");
+    await exportMapPng(state, dependencies, null);
+
+    assert.equal(canvases[0].context.backgrounds[0].color, "#123456");
+    assert.deepEqual(canvases[1].context.backgrounds, []);
+    assert.equal(canvases[1].context.fillCount, 1);
+    assert.equal(canvases[1].context.strokeCount, 0);
+});
+
 test("empty map export returns without creating a canvas", async () => {
     let createCount = 0;
 

@@ -43,6 +43,23 @@ class FakeRangeInput {
     oninput: (() => void) | null = null;
 }
 
+class FakeDialog {
+    oncancel: ((event: Event) => void) | null = null;
+    open = false;
+    showCount = 0;
+    closeCount = 0;
+
+    showModal(): void {
+        this.open = true;
+        this.showCount += 1;
+    }
+
+    close(): void {
+        this.open = false;
+        this.closeCount += 1;
+    }
+}
+
 function createElements(): {
     elements: AppElements;
     context: FakeContext;
@@ -60,6 +77,12 @@ function createElements(): {
     image: { style: CSSStyleDeclaration };
     imageInput: { value: string; files: File[] | null; onchange: (() => Promise<void>) | null };
     exportButton: FakeButton;
+    exportDialog: FakeDialog;
+    exportBackgroundInput: { value: string; disabled: boolean };
+    transparentBackgroundInput: { checked: boolean; onchange: (() => void) | null };
+    exportCancelButton: FakeButton;
+    exportConfirmButton: FakeButton;
+    exportError: { textContent: string | null };
     viewport: {
         scrollWidth: number;
         scrollHeight: number;
@@ -109,6 +132,12 @@ function createElements(): {
     imageOpacityInput.value = "50";
     const workspace = { querySelector: () => image };
     const exportButton = new FakeButton();
+    const exportDialog = new FakeDialog();
+    const exportBackgroundInput = { value: "#000000", disabled: false };
+    const transparentBackgroundInput = { checked: false, onchange: null as (() => void) | null };
+    const exportCancelButton = new FakeButton();
+    const exportConfirmButton = new FakeButton();
+    const exportError = { textContent: null as string | null };
     const viewport = {
         scrollWidth: 3600,
         scrollHeight: 3040,
@@ -134,6 +163,12 @@ function createElements(): {
             imageOpacityValue: { textContent: "50%" } as HTMLElement,
             workspace: workspace as unknown as HTMLElement,
             exportButton: exportButton as unknown as HTMLButtonElement,
+            exportDialog: exportDialog as unknown as HTMLDialogElement,
+            exportBackgroundInput: exportBackgroundInput as unknown as HTMLInputElement,
+            transparentBackgroundInput: transparentBackgroundInput as unknown as HTMLInputElement,
+            exportCancelButton: exportCancelButton as unknown as HTMLButtonElement,
+            exportConfirmButton: exportConfirmButton as unknown as HTMLButtonElement,
+            exportError: exportError as unknown as HTMLElement,
             viewport: viewport as unknown as HTMLElement,
             status: status as unknown as HTMLElement,
         },
@@ -146,6 +181,12 @@ function createElements(): {
         image,
         imageInput,
         exportButton,
+        exportDialog,
+        exportBackgroundInput,
+        transparentBackgroundInput,
+        exportCancelButton,
+        exportConfirmButton,
+        exportError,
         viewport,
         status,
     };
@@ -196,7 +237,7 @@ test("page controls paint with a selected color and erase the same cell", () => 
     assert.equal(fixture.eraserButton.getAttribute("aria-pressed"), "true");
 });
 
-test("export failure keeps the map available and reports a short error", async () => {
+test("export dialog keeps settings during the page session and reports errors inside the modal", async () => {
     const fixture = createElements();
     initializeEditor(fixture.elements, async () => {
         throw new Error("Could not create the PNG image.");
@@ -204,10 +245,93 @@ test("export failure keeps the map available and reports a short error", async (
     const center = getHexCenter({ row: 50, column: 50 });
     fixture.canvas.onpointerdown?.(pointerAt(center.x, center.y));
 
-    await fixture.exportButton.onclick?.();
+    fixture.exportButton.onclick?.();
+    assert.equal(fixture.exportDialog.open, true);
+    assert.equal(fixture.exportDialog.showCount, 1);
+    assert.equal(fixture.exportBackgroundInput.value, "#000000");
+    fixture.exportBackgroundInput.value = "#123456";
+    fixture.transparentBackgroundInput.checked = true;
+    fixture.transparentBackgroundInput.onchange?.();
+    assert.equal(fixture.exportBackgroundInput.disabled, true);
+    fixture.transparentBackgroundInput.checked = false;
+    fixture.transparentBackgroundInput.onchange?.();
+    assert.equal(fixture.exportBackgroundInput.value, "#123456");
+    await fixture.exportConfirmButton.onclick?.();
 
-    assert.equal(fixture.status.textContent, "Could not create the PNG image.");
+    assert.equal(fixture.exportError.textContent, "Could not create the PNG image.");
+    assert.equal(fixture.exportDialog.open, true);
     assert.equal(fixture.exportButton.disabled, false);
+});
+
+test("export dialog prevents duplicate saves and stays open when saving is cancelled", async () => {
+    const fixture = createElements();
+    let calls = 0;
+    let finishExport: ((exported: boolean) => void) | undefined;
+    initializeEditor(fixture.elements, async () => {
+        calls += 1;
+        return new Promise<boolean>((resolve) => {
+            finishExport = resolve;
+        });
+    });
+    const center = getHexCenter({ row: 50, column: 50 });
+    fixture.canvas.onpointerdown?.(pointerAt(center.x, center.y));
+
+    fixture.exportButton.onclick?.();
+    const firstSave = fixture.exportConfirmButton.onclick?.();
+    fixture.exportConfirmButton.onclick?.();
+    assert.equal(calls, 1);
+    assert.equal(fixture.exportConfirmButton.disabled, true);
+    finishExport?.(true);
+    await firstSave;
+    assert.equal(fixture.exportDialog.open, false);
+
+    initializeEditor(fixture.elements, async () => false);
+    fixture.exportButton.onclick?.();
+    await fixture.exportConfirmButton.onclick?.();
+    assert.equal(fixture.exportDialog.open, true);
+    assert.equal(fixture.exportError.textContent, "");
+});
+
+test("Escape cannot hide a pending save failure and becomes available after failure", async () => {
+    const fixture = createElements();
+    let failSave: ((reason: Error) => void) | undefined;
+    initializeEditor(fixture.elements, () => new Promise<boolean>((_resolve, reject) => {
+        failSave = reject;
+    }));
+    fixture.exportButton.onclick?.();
+    const saving = fixture.exportConfirmButton.onclick?.();
+    const pendingCancel = new Event("cancel", { cancelable: true });
+    fixture.exportDialog.oncancel?.(pendingCancel);
+    assert.equal(pendingCancel.defaultPrevented, true);
+
+    failSave?.(new Error("Disk full"));
+    await saving;
+    assert.equal(fixture.exportDialog.open, true);
+    assert.equal(fixture.exportError.textContent, "Disk full");
+    const retryCancel = new Event("cancel", { cancelable: true });
+    fixture.exportDialog.oncancel?.(retryCancel);
+    assert.equal(retryCancel.defaultPrevented, false);
+    assert.equal(fixture.exportConfirmButton.disabled, false);
+});
+
+test("export dialog passes its selected color or transparent background to the exporter", async () => {
+    const fixture = createElements();
+    const backgrounds: Array<string | null> = [];
+    initializeEditor(fixture.elements, async (_state, background) => {
+        backgrounds.push(background);
+        return false;
+    });
+    const center = getHexCenter({ row: 50, column: 50 });
+    fixture.canvas.onpointerdown?.(pointerAt(center.x, center.y));
+    fixture.exportBackgroundInput.value = "#123456";
+
+    fixture.exportButton.onclick?.();
+    await fixture.exportConfirmButton.onclick?.();
+    fixture.transparentBackgroundInput.checked = true;
+    fixture.transparentBackgroundInput.onchange?.();
+    await fixture.exportConfirmButton.onclick?.();
+
+    assert.deepEqual(backgrounds, ["#123456", null]);
 });
 
 test("a loaded image supports tracing and tool transitions without entering PNG output", async (t) => {
@@ -269,7 +393,8 @@ test("a loaded image supports tracing and tool transitions without entering PNG 
 
     assert.deepEqual(fixture.context.fillStyles, ["#ffffff"]);
     assert.equal(fixture.exportButton.disabled, false);
-    await fixture.exportButton.onclick?.();
+    fixture.exportButton.onclick?.();
+    await fixture.exportConfirmButton.onclick?.();
     const expected = new HexMapState();
     expected.paint(cell, "#ffffff");
     const region = getExportRegion(expected)!;
@@ -298,6 +423,7 @@ test("a loaded image supports tracing and tool transitions without entering PNG 
     assert.equal(fixture.moveImageButton.disabled, true);
     assert.equal(fixture.elements.imageSizeInput.disabled, true);
     assert.equal(fixture.exportButton.disabled, false);
-    await fixture.exportButton.onclick?.();
+    fixture.exportButton.onclick?.();
+    await fixture.exportConfirmButton.onclick?.();
     assert.deepEqual(exports[1], exports[0]);
 });

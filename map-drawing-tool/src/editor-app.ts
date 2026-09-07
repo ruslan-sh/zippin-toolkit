@@ -18,11 +18,17 @@ export interface AppElements {
     imageOpacityValue: HTMLElement;
     workspace: HTMLElement;
     exportButton: HTMLButtonElement;
+    exportDialog: HTMLDialogElement;
+    exportBackgroundInput: HTMLInputElement;
+    transparentBackgroundInput: HTMLInputElement;
+    exportCancelButton: HTMLButtonElement;
+    exportConfirmButton: HTMLButtonElement;
+    exportError: HTMLElement;
     viewport: HTMLElement;
     status: HTMLElement;
 }
 
-export type ExportAction = (state: HexMapState) => Promise<boolean>;
+export type ExportAction = (state: HexMapState, background: string | null) => Promise<boolean>;
 
 function pointerCell(canvas: HTMLCanvasElement, event: PointerEvent) {
     const bounds = canvas.getBoundingClientRect();
@@ -139,13 +145,45 @@ export function initializeEditor(
     };
     elements.canvas.onpointerup = () => controller.pointerUp();
     elements.canvas.onpointerleave = () => controller.pointerUp();
-    elements.exportButton.onclick = async () => {
+    let savingExport = false;
+    elements.exportDialog.oncancel = (event) => {
+        if (savingExport) {
+            event.preventDefault();
+        }
+    };
+    const updateExportBackground = () => {
+        elements.exportBackgroundInput.disabled = elements.transparentBackgroundInput.checked;
+    };
+    elements.transparentBackgroundInput.onchange = updateExportBackground;
+    elements.exportCancelButton.onclick = () => elements.exportDialog.close();
+    elements.exportButton.onclick = () => {
         elements.status.textContent = "";
+        elements.exportError.textContent = "";
+        elements.exportDialog.showModal();
+    };
+    elements.exportConfirmButton.onclick = async () => {
+        if (savingExport) {
+            return;
+        }
+        savingExport = true;
+        elements.exportConfirmButton.disabled = true;
+        elements.exportCancelButton.disabled = true;
+        elements.exportError.textContent = "";
         try {
-            await exportAction(state);
+            const exported = await exportAction(
+                state,
+                elements.transparentBackgroundInput.checked ? null : elements.exportBackgroundInput.value,
+            );
+            if (exported) {
+                elements.exportDialog.close();
+            }
         } catch (error) {
-            elements.status.textContent =
+            elements.exportError.textContent =
                 error instanceof Error ? error.message : "Could not create the PNG image.";
+        } finally {
+            savingExport = false;
+            elements.exportConfirmButton.disabled = false;
+            elements.exportCancelButton.disabled = false;
         }
     };
 
