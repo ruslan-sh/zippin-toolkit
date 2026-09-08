@@ -1,8 +1,5 @@
-# model-routing Specification
+## MODIFIED Requirements
 
-## Purpose
-Route implementation and independent review to defined models while preserving task ownership and the repository verification gate.
-## Requirements
 ### Requirement: Automatic implementation routing
 The coordinator SHALL apply budget routing to all repository work, including direct requests without an OpenSpec skill. Sol with low reasoning SHALL be the default coordinator. Explicit user model choices SHALL take precedence. Small, clear edits SHALL use Luna with low reasoning; normal implementation SHALL use Terra with medium reasoning. Delegated work SHALL include scope, ownership, acceptance criteria, relevant paths, and required checks. Routing SHALL NOT authorize work beyond the user request or bypass the change lifecycle.
 
@@ -24,14 +21,6 @@ The coordinator SHALL apply budget routing to all repository work, including dir
 - **THEN** it returns evidence to the coordinator without recursive delegation or wider edits
 - **AND** the coordinator routes a Luna task to Terra when it needs normal implementation judgment
 
-### Requirement: Independent Sol review
-The workflow SHALL use a fresh read-only Sol reviewer with low reasoning for each verification iteration. The primary agent SHALL own remediation and retain the existing three-iteration limit, validation suite, and receipt requirements.
-
-#### Scenario: Verification after implementation
-- **WHEN** implementation is ready for the mandatory gate
-- **THEN** a fresh Sol reviewer compares it with all change artifacts without editing files
-- **AND** a clean review is followed by all required checks and fresh verification evidence
-
 ### Requirement: Explicit routing failures
 The coordinator SHALL report unavailable roles before the affected phase. A callable generic agent MAY use the exact required model, reasoning, and role instructions as a disclosed fallback. The coordinator SHALL request guidance if no equivalent agent is available. It SHALL NOT silently change models or use self-review. Instructions SHALL NOT claim to switch the active coordinator model.
 
@@ -44,6 +33,8 @@ The coordinator SHALL report unavailable roles before the affected phase. A call
 - **WHEN** the user explicitly selects a coordinator other than Sol Low
 - **THEN** the coordinator respects that choice and still applies budget routing to delegated work
 
+## ADDED Requirements
+
 ### Requirement: Focused Astra consultation
 The coordinator SHALL use Astra with low reasoning only for a difficult diagnosis or design decision that needs stronger reasoning, or when explicitly requested. A consultation SHALL receive a compact question, relevant paths, constraints, and prior evidence. It SHALL return a diagnosis or plan without edits or recursive delegation. It SHALL NOT become a routine extra review phase. A further consultation SHALL require a new unresolved question or new evidence.
 
@@ -55,4 +46,3 @@ The coordinator SHALL use Astra with low reasoning only for a difficult diagnosi
 #### Scenario: Routine review
 - **WHEN** a normal change is ready for independent review
 - **THEN** the workflow retains the fresh Sol Low reviewer and existing verification gate without adding Astra
-
