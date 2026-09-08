@@ -82,3 +82,32 @@ input {
   margin: 0;
   color: var(--color-error);
 }
+
+.map-tool__export-dialog {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 0.0625rem solid var(--color-text);
+}
+
+.map-tool__export-dialog menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  padding: 0;
+}
+
+.map-tool__export-error {
+  min-height: 1.5em;
+  color: var(--color-error);
+}
+
+.map-tool__export-primary {
+  color: var(--color-surface);
+  font-weight: 700;
+  background: var(--color-text);
+  border: 0.0625rem solid var(--color-text);
+}
+
+.map-tool__export-primary:disabled {
+  opacity: 0.5;
+}

@@ -21,6 +21,7 @@ export interface ExportCanvas {
 export interface ExportDependencies {
     createCanvas: (width: number, height: number) => ExportCanvas;
     download: (blob: Blob, filename: string) => void;
+    save?: (blob: Blob, filename: string) => Promise<boolean>;
 }
 
 export interface ExportRegion {
@@ -65,6 +66,7 @@ function createPngBlob(canvas: ExportCanvas): Promise<Blob> {
 export async function exportMapPng(
     state: HexMapState,
     dependencies: ExportDependencies,
+    background: string | null = EXPORT_BACKGROUND_COLOR,
 ): Promise<boolean> {
     const region = getExportRegion(state);
     if (!region) {
@@ -77,14 +79,19 @@ export async function exportMapPng(
         throw new Error("Could not create the PNG image.");
     }
 
-    context.fillStyle = EXPORT_BACKGROUND_COLOR;
-    context.fillRect(0, 0, region.width, region.height);
+    if (background !== null) {
+        context.fillStyle = background;
+        context.fillRect(0, 0, region.width, region.height);
+    }
     context.translate(-region.x, -region.y);
     state
         .getPaintedEntries()
         .forEach(({ cell, color }) => renderCell(context, cell, color, false));
 
     const blob = await createPngBlob(canvas);
+    if (dependencies.save) {
+        return dependencies.save(blob, "map.png");
+    }
     dependencies.download(blob, "map.png");
     return true;
 }

@@ -58,9 +58,6 @@ toolkit-landing-page:
 map-drawing-tool:
   description: Applies to the Map Drawing Tool.
   items:
-    - slug: map-export-background-color
-      prerequisites: []
-      description: Allow users to select the background color used for PNG export.
     - slug: map-controls-enhancements
       prerequisites: []
       description: Improve the Map Drawing Tool controls and interaction workflows.
