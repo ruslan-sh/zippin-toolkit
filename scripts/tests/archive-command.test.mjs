@@ -15,7 +15,7 @@ function git(root, ...args) {
   return execFileSync("git", args, { cwd: root, encoding: "utf8" });
 }
 
-function fixture({ delta = true } = {}) {
+function fixture({ delta = true, modifiesExistingSpec = false } = {}) {
   const root = mkdtempSync(path.join(os.tmpdir(), "zippin-archive-command-"));
   const paths = repositoryPaths(root);
   const slug = "ready-item";
@@ -24,6 +24,9 @@ function fixture({ delta = true } = {}) {
   mkdirSync(change, { recursive: true });
   mkdirSync(path.join(paths.openspec, "specs"), { recursive: true });
   cpSync(path.join(repositoryRoot, "openspec", "config.yaml"), path.join(paths.openspec, "config.yaml"));
+  if (existsSync(path.join(repositoryRoot, ".gitattributes"))) {
+    cpSync(path.join(repositoryRoot, ".gitattributes"), path.join(root, ".gitattributes"));
+  }
   if (delta) mkdirSync(path.join(change, "specs", "feature"), { recursive: true });
   writeFileSync(path.join(root, ".gitignore"), "openspec/.verification/\nopenspec/.lifecycle-lock\n");
   writeFileSync(path.join(root, "AGENTS.md"), "$openspec-verify-change independent read-only review fresh verification receipt $openspec-archive-change npm run opsx:archive Raw OpenSpec archival is unsupported\n");
@@ -84,7 +87,26 @@ Use an isolated temporary project.
 
 Temporary files are removed after the test.
 `);
-  if (delta) writeFileSync(path.join(change, "specs", "feature", "spec.md"), `## ADDED Requirements
+  if (modifiesExistingSpec) {
+    mkdirSync(path.join(paths.currentSpecs, "feature"), { recursive: true });
+    cpSync(path.join(repositoryRoot, "openspec", "specs", "hex-map-editor", "spec.md"), path.join(paths.currentSpecs, "feature", "spec.md"));
+  }
+  if (delta) writeFileSync(path.join(change, "specs", "feature", "spec.md"), modifiesExistingSpec ? `## MODIFIED Requirements
+
+### Requirement: Fixed hex map workspace
+The system SHALL provide a fixed 101 by 101 pointy-top hex grid at a fixed zoom
+level. Unpainted hexes SHALL appear black, the editor SHALL show grid lines,
+and the editor SHALL use standard scrollbars with the initial viewport centered
+on the grid.
+
+#### Scenario: Editor opens
+- **WHEN** the user opens the Map Drawing Tool
+- **THEN** the system shows the center of a black 101 by 101 pointy-top hex grid
+
+#### Scenario: User navigates the grid
+- **WHEN** the grid is larger than the available editor viewport
+- **THEN** the system provides horizontal and vertical scrollbars
+` : `## ADDED Requirements
 
 ### Requirement: Archive test behavior
 The system SHALL archive a verified temporary change.
@@ -185,6 +207,37 @@ for (const delta of [true, false]) {
     }
   });
 }
+
+test("archives a pinned-CLI modification with the real Git whitespace check", async () => {
+  const { root, paths, slug } = fixture({ modifiesExistingSpec: true });
+  try {
+    await archiveChange(paths, slug, {
+      getStatus: () => JSON.parse(runOpenSpec(repositoryRoot, ["status", "--change", slug, "--json"], { cwd: root })),
+      strictValidate: (args) => runOpenSpec(repositoryRoot, args, { cwd: root }),
+      archive: (args) => runOpenSpec(repositoryRoot, args, { cwd: root }),
+      diffCheck: () => git(root, "diff", "--check"),
+    });
+    const spec = readFileSync(path.join(paths.currentSpecs, "feature", "spec.md"), "utf8");
+    assert.match(spec, /fixed 101 by 101 pointy-top hex grid/);
+    assert.match(spec, /\n\n$/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("keeps trailing whitespace checks active for canonical OpenSpec specs", () => {
+  const { root, paths } = fixture({ modifiesExistingSpec: true });
+  try {
+    const spec = path.join(paths.currentSpecs, "feature", "spec.md");
+    writeFileSync(spec, `${readFileSync(spec, "utf8")}Trailing spaces remain invalid.  \n`);
+    assert.throws(
+      () => git(root, "diff", "--check"),
+      (error) => error.status === 2 && /trailing whitespace/.test(error.stdout),
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 test("uses the documented infrastructure archive path when no delta specs exist", async () => {
   const { root, paths, slug } = fixture({ delta: false });
