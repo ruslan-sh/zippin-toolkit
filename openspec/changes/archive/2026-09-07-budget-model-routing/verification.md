@@ -23,16 +23,10 @@ all change artifacts, root routing, workflow documentation, and role files.
 It checked direct questions, small edits, normal implementation, consultation,
 escalation, and independent review against the requirements.
 
-All required checks passed again at HEAD 1dcd824 after reuse of the existing
-archive prerequisite from PR 21 (original commit 4fafa4b). The first clean gate
-was followed by an archive rollback due to the generated EOF blank line. A
-fresh reviewer checked the full delivery, including that prerequisite, and
-the complete gate ran again. The prerequisite is patch-identical to PR 21.
-Unit tests: 137 passed, zero failed. Strict OpenSpec validation: three items
-passed. Generated skill integration is reproducible. The build passed with an
-existing outdated Browserslist data warning.
-The additional workflow regression suite passed all 50 tests, including the
-real CLI archive and trailing whitespace checks for the prerequisite.
+All required checks passed for the routing change. Unit tests: 137 passed,
+zero failed. Strict OpenSpec validation: three items passed. Generated skill
+integration is reproducible. The build passed with the existing outdated
+Browserslist data warning. The additional workflow suite passed all 50 tests.
 
 The existing Terra implementation and Sol review roles ran successfully.
 New Luna and Astra role settings and boundaries were reviewed, but discovery

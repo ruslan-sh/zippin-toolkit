@@ -61,26 +61,27 @@ Routing does not expand the user request or bypass the change workflow. Give
 each worker a bounded scope, ownership, acceptance criteria, relevant paths,
 and required checks.
 
-- Sol with low reasoning is the default coordinator. An explicit user model
-  choice takes precedence. Instructions cannot switch the active coordinator
-  model. If another model is active without an explicit user choice, report the
-  mismatch and request the required setting before the affected phase.
-- Answer a simple question directly when the available context is sufficient;
-  do not delegate solely to select a model.
-- Delegate a small, clear edit to `toolkit_small_task` on Luna with low
-  reasoning. The worker returns a blocker to the coordinator when the work
-  needs normal implementation judgment; the coordinator then routes it to
-  Terra.
-- Delegate normal implementation to `toolkit_implementer` on Terra with medium
-  reasoning. Give a compact brief with the ownership context, acceptance
-  criteria, relevant paths, and required checks.
+- Sol with low reasoning is the default coordinator. Explicit user model
+  choices take precedence. If another model is active without an explicit user
+  choice, report the mismatch and continue through configured roles; stop only
+  before a required phase whose exact model or execution constraints cannot be
+  satisfied.
+- Handle questions and read-only checks directly when context is sufficient,
+  including initial evidence gathering for a reported problem.
+- Delegate to `toolkit_small_task` on Luna with low reasoning only for a
+  localized edit with settled behavior, known affected paths, and known
+  validation. Route work needing behavior or design judgment, coordinated
+  edits, debugging remediation with a known cause, or test changes to Terra.
+- Delegate to `toolkit_implementer` on Terra with medium reasoning when work
+  requires behavior judgment, coordinated edits, test changes, or debugging
+  remediation with a known cause. Give a compact brief with ownership,
+  acceptance criteria, paths, and required checks.
 - Use a fresh, independent, read-only `toolkit_reviewer` on Sol with low
   reasoning for required review. The coordinator owns remediation.
-- Use `toolkit_consultant` on Astra with low reasoning only for a difficult
-  diagnosis or design decision, or when the user explicitly asks. Give it a
-  compact question, relevant paths, constraints, and prior evidence. It returns
-  a diagnosis or plan without edits or delegation. Do not add it as a routine
-  review phase; consult again only for a new unresolved question or evidence.
+- Use `toolkit_consultant` on Astra with low reasoning only when gathered
+  evidence leaves one unresolved diagnosis or material design trade-off, or
+  when the user explicitly asks. Give it one question, relevant paths,
+  constraints, and prior evidence; do not use it as routine review.
   Route the resulting implementation to Luna or Terra as appropriate.
 - Reuse the appropriate worker and its passing evidence for related work unless
   a concrete risk or the mandatory gate requires a repeat. Workers do not claim
