@@ -53,6 +53,45 @@ Validation policy for substantive changes:
 - Avoid new dependencies unless explicitly required.
 - Do not refactor unrelated code in the same change.
 
+# Budget Model Routing
+
+Apply this policy to all repository work, including direct requests, reviews,
+diagnostics, and skill workflows.
+Routing does not expand the user request or bypass the change workflow. Give
+each worker a bounded scope, ownership, acceptance criteria, relevant paths,
+and required checks.
+
+- Sol with low reasoning is the default coordinator. Explicit user model
+  choices take precedence. If another model is active without an explicit user
+  choice, report the mismatch and continue through configured roles; stop only
+  before a required phase whose exact model or execution constraints cannot be
+  satisfied.
+- Handle questions and read-only checks directly when context is sufficient,
+  including initial evidence gathering for a reported problem.
+- Delegate to `toolkit_small_task` on Luna with low reasoning only for a
+  localized edit with settled behavior, known affected paths, and known
+  validation. Route work needing behavior or design judgment, coordinated
+  edits, debugging remediation with a known cause, or test changes to Terra.
+- Delegate to `toolkit_implementer` on Terra with medium reasoning when work
+  requires behavior judgment, coordinated edits, test changes, or debugging
+  remediation with a known cause. Give a compact brief with ownership,
+  acceptance criteria, paths, and required checks.
+- Use a fresh, independent, read-only `toolkit_reviewer` on Sol with low
+  reasoning for required review. The coordinator owns remediation.
+- Use `toolkit_consultant` on Astra with low reasoning only when gathered
+  evidence leaves one unresolved diagnosis or material design trade-off, or
+  when the user explicitly asks. Give it one question, relevant paths,
+  constraints, and prior evidence; do not use it as routine review.
+  Route the resulting implementation to Luna or Terra as appropriate.
+- Reuse the appropriate worker and its passing evidence for related work unless
+  a concrete risk or the mandatory gate requires a repeat. Workers do not claim
+  tasks, broaden scope, or recursively delegate.
+- If a named role is unavailable, use a callable generic agent only when it can
+  use the exact required model, reasoning setting, and role constraints;
+  disclose the fallback. A reviewer fallback must also be independent and
+  read-only. Otherwise stop the affected phase and request guidance. Do not
+  silently substitute a model or use self-review.
+
 # Change Workflow
 
 1. Identify the affected project and shared integration points.
@@ -76,26 +115,6 @@ Validation policy for substantive changes:
 - Do not rewrite existing history solely to apply the convention.
 
 # Specs and Roadmap
-
-## Model routing
-
-- The primary coordinator must use Sol with low reasoning. It handles design
-  questions, difficult debugging, independent-review remediation, and the final
-  verification gate.
-- For approved implementation and routine fixes, automatically delegate one
-  coherent scope to `toolkit_implementer`. Give it the ownership context,
-  acceptance criteria, artifact paths, and required checks. It acts on the
-  primary agent's ownership claim, does not claim tasks itself, and does not
-  recursively delegate.
-- Reuse the implementation worker for related work. Do not repeat its
-  exploration or passing checks unless a concrete risk or the mandatory gate
-  requires it.
-- Use a fresh `toolkit_reviewer` for every independent-review iteration. The
-  reviewer is read-only. The primary agent owns all remediation and keeps the
-  three-iteration limit.
-- If a required role is unavailable, or the coordinator is not Sol with low
-  reasoning, report the issue and ask the user for guidance. Do not silently
-  select another model or use self-review.
 
 ## Repository-managed OpenSpec integration
 
