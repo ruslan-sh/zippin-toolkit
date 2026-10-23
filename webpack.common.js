@@ -3,8 +3,9 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     entry: {
-        app: "./app/src/index.ts",
-        "encounter-difficulty-calculator": "./encounter-difficulty-calculator/src/index.ts",
+        app: "./app/src/index.tsx",
+        "encounter-difficulty-calculator":
+            "./encounter-difficulty-calculator/src/index.ts",
         "fantasy-calendar": "./fantasy-calendar/src/index.ts",
         "map-drawing-tool": "./map-drawing-tool/src/index.ts",
     },
@@ -27,7 +28,7 @@ module.exports = {
             chunks: ["encounter-difficulty-calculator"],
         }),
         new HtmlWebpackPlugin({
-            template: "./app/src/index.ejs",
+            template: "./app/src/index.html",
             filename: "index.html",
             chunks: ["app"],
         }),

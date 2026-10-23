@@ -29,24 +29,6 @@ h3 {
   color: var(--color-muted);
 }
 
-.toolkit__tool {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-top: 1rem;
-  padding: 1rem;
-  color: inherit;
-  text-decoration: none;
-  border: 0.0625rem solid var(--color-text);
-  border-radius: 0.375rem;
-}
-
-.toolkit__tool:hover,
-.toolkit__tool:focus-visible {
-  background-color: var(--color-highlight);
-  outline: none;
-}
-
 .toolkit__tool h3 {
   margin-top: 0;
   margin-bottom: 0.5rem;
