@@ -1,4 +1,0 @@
-interface:
-  display_name: "Spec Plan"
-  short_description: "Legacy bootstrap-only task planning"
-  default_prompt: "Use $spec-plan to verify roadmap prerequisites, then split a spec into executable implementation tasks or update its existing task file."

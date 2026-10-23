@@ -9,8 +9,8 @@ phases, date arithmetic, interactive date selection, and shareable URL state.
 ## Development
 
 Dependencies and commands are managed from the repository root. See the root
-[README](../README.md) for the shared development workflow and
-[AGENTS.md](AGENTS.md) for calendar-specific contribution guidance.
+[README](../README.md) for the shared development workflow and contribution
+guidance.
 
 ## Architecture
 
@@ -40,5 +40,5 @@ update the URL hash while preserving the nested calendar path.
 - [Calendar logic](docs/calendar-logic.md)
 - [Moon-phase calculation](docs/moon-phase-calculation.md)
 
-Archived legacy specifications live in `specs/archive/`. Planned follow-up work
-is tracked in the canonical [roadmap intake queue](../specs/roadmap.yml).
+The repository documentation describes the shared development and contribution
+workflow. Tool-specific behavior is documented in the files under `docs/`.
