@@ -6,14 +6,14 @@ module.exports = [
         ignores: ["dist/**", "webpack.*", "eslint.config.js"],
     },
     {
-        files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+        files: ["**/*.{js,mjs,cjs,ts,tsx,mts,cts}"],
         languageOptions: {
             ecmaVersion: "latest",
             sourceType: "module",
         },
     },
     {
-        files: ["**/*.{ts,mts,cts}"],
+        files: ["**/*.{ts,tsx,mts,cts}"],
         languageOptions: {
             parser: tsParser,
         },
