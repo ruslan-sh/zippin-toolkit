@@ -67,7 +67,6 @@ Use a scope when it adds useful context. Preferred scopes are:
 - `calendar`: Fantasy Calendar
 - `encounter`: Encounter Difficulty Calculator
 - `shared`: cross-tool source
-- `agents`: contributor instructions and coding-tool skills
 - `build`: shared build configuration
 
 Write the summary in imperative present tense, start with a lowercase letter,
