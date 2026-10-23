@@ -12,17 +12,14 @@ at its own subpath.
 - `encounter-difficulty-calculator/` is self-contained for implementation,
   tests, documentation, and contributor guidance.
 - `fantasy-calendar/` is self-contained for implementation, tests,
-  documentation, archived planning, and contributor guidance.
+  documentation, and contributor guidance.
 - `shared/` contains theme source consumed by the landing page and both tools.
 - `docs/` contains current repository-wide documentation.
-- `specs/` contains active repository-wide plans; implemented plans are moved
-  to `specs/archive/`.
 - Dependencies and build, test, and lint orchestration remain at the repository
   root.
 
-Nested `README.md` and `AGENTS.md` files own tool-specific documentation and
-contribution rules. Root documentation stays focused on shared repository
-behavior.
+Nested `README.md` files own tool-specific documentation. Root documentation
+stays focused on shared repository behavior.
 
 ## Shared Tooling
 

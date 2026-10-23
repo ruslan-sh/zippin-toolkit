@@ -1,7 +1,6 @@
 # Contribution Conventions
 
-Use the repository [OpenSpec workflow](./openspec-workflow.md) for roadmap
-intake, proposal, implementation, verification, and archival.
+Use focused changes with the repository-level build, test, and lint commands.
 
 ## Branch Names
 
@@ -68,8 +67,6 @@ Use a scope when it adds useful context. Preferred scopes are:
 - `calendar`: Fantasy Calendar
 - `encounter`: Encounter Difficulty Calculator
 - `shared`: cross-tool source
-- `specs`: specifications and roadmap
-- `agents`: contributor instructions and coding-tool skills
 - `build`: shared build configuration
 
 Write the summary in imperative present tense, start with a lowercase letter,
