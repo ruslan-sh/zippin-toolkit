@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Calculate D&amp;D 5.5 encounter difficulty from party and monster XP."
+    />
+    <title>Encounter Difficulty Calculator | Zippin's Toolkit</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main>
+      <a href="../../">Zippin's Toolkit</a>
+      <div class="page-header">
+        <h1>D&amp;D 5.5 Encounter Difficulty Calculator</h1>
+        <div class="workspace-actions">
+          <label class="workspace-action" aria-label="Import YAML backup" title="Import YAML backup">
+            <span class="material-icons" aria-hidden="true">file_upload</span>
+            <input id="import-workspace" class="visually-hidden" type="file" accept=".yml,.yaml,application/yaml,text/yaml" />
+          </label>
+          <button id="export-workspace" type="button" aria-label="Export YAML backup" title="Export YAML backup">
+            <span class="material-icons" aria-hidden="true">file_download</span>
+          </button>
+        </div>
+      </div>
+      <p id="workspace-status" class="workspace-status" role="status" aria-live="polite"></p>
+      <section aria-labelledby="party-heading">
+        <h2 id="party-heading">Party</h2>
+        <div class="party-row-headers" aria-hidden="true">
+          <span>Players</span>
+          <span>Level</span>
+          <span></span>
+          <span></span>
+        </div>
+        <div id="party-rows">
+          <div class="party-row" data-party-row="1">
+            <div class="party-row-controls">
+              <label class="visually-hidden" for="player-count-1">Players in group 1</label>
+              <input id="player-count-1" type="number" min="1" step="1" value="4" aria-describedby="player-count-1-error" />
+              <label class="visually-hidden" for="party-level-1">Level for group 1</label>
+              <input id="party-level-1" type="number" min="1" max="20" step="1" value="5" aria-describedby="party-level-1-error" />
+              <button class="remove-party-row" type="button" aria-label="Remove party group 1" hidden>
+                <span class="material-icons" aria-hidden="true">delete</span>
+              </button>
+              <button id="add-party-row" class="add-party-row" type="button" aria-label="Add party group">
+                <span class="material-icons party-add-icon" aria-hidden="true">add_circle</span>
+              </button>
+            </div>
+            <p id="player-count-1-error" class="visually-hidden" aria-live="polite"></p>
+            <p id="party-level-1-error" class="visually-hidden" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="party-summary">
+          <div class="modifier-field">
+            <div class="modifier-controls">
+              <label class="modifier-label" for="modifier-value">Modifier</label>
+              <input id="modifier-value" type="number" step="any" value="0" aria-describedby="modifier-value-error" />
+              <label class="visually-hidden" for="modifier-type">Modifier type</label>
+              <select id="modifier-type">
+                <option value="percentage">%</option>
+                <option value="flat">XP</option>
+              </select>
+            </div>
+            <p id="modifier-value-error" class="error" aria-live="polite"></p>
+          </div>
+          <dl class="results" aria-live="polite">
+            <div><dt>Low</dt><dd id="low-result">—</dd></div>
+            <div><dt>Moderate</dt><dd id="moderate-result">—</dd></div>
+            <div><dt>High</dt><dd id="high-result">—</dd></div>
+          </dl>
+        </div>
+      </section>
+      <div id="encounters"></div>
+      <button id="add-encounter" type="button">
+        <span class="material-icons" aria-hidden="true">add_circle</span>
+        <span class="add-encounter-label">Add Encounter</span>
+      </button>
+    </main>
+  </body>
+</html>

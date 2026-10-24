@@ -12,9 +12,12 @@
     "skipLibCheck": true
   },
   "include": [
-    "./app/src/**/*",
-    "./encounter-difficulty-calculator/src/**/*",
-    "./fantasy-calendar/src/**/*",
-    "./map-drawing-tool/src/**/*"
+    "src/app/**/*",
+    "src/apps/encounters/**/*",
+    "src/apps/calendar/**/*",
+    "src/apps/map-editor/**/*"
+  ],
+  "exclude": [
+    "src/apps/**/__tests__/**"
   ]
 }

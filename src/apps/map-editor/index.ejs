@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Paint a simple pointy-top hex map and export it as a PNG image." />
+    <title>Map Drawing Tool | Zippin's Toolkit</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="map-tool">
+      <header class="map-tool__header">
+        <div>
+          <a href="../../">Zippin's Toolkit</a>
+          <h1>Map Drawing Tool</h1>
+        </div>
+        <div class="map-tool__controls" aria-label="Map drawing controls">
+          <label for="paint-color">Color</label>
+          <input id="paint-color" type="color" value="#ffffff" />
+          <button id="paint-tool" type="button" aria-pressed="true">Paint</button>
+          <button id="eraser-tool" type="button" aria-pressed="false">Eraser</button>
+          <button id="move-image-tool" type="button" aria-pressed="false" disabled>Move image</button>
+          <label for="tracing-image">Image</label>
+          <input id="tracing-image" type="file" accept="image/png,image/jpeg,image/webp" />
+          <button id="remove-image" type="button" disabled>Remove image</button>
+          <label for="image-size">Size <output id="image-size-value">100%</output></label>
+          <input id="image-size" type="range" min="10" max="400" value="100" disabled />
+          <label for="image-opacity">Opacity <output id="image-opacity-value">50%</output></label>
+          <input id="image-opacity" type="range" min="0" max="100" value="50" disabled />
+          <button id="export-png" type="button" disabled>Export</button>
+        </div>
+      </header>
+      <div id="map-viewport" class="map-tool__viewport" tabindex="0" aria-label="Scrollable hex map">
+        <div id="map-workspace" class="map-tool__workspace">
+          <canvas id="map-canvas" aria-label="100 by 100 pointy-top hex grid"></canvas>
+          <img id="tracing-image-layer" alt="" hidden />
+        </div>
+      </div>
+      <p id="map-status" class="map-tool__status" role="status" aria-live="polite"></p>
+      <dialog id="export-dialog" class="map-tool__export-dialog" aria-labelledby="export-dialog-title">
+        <form method="dialog">
+          <h2 id="export-dialog-title">Export PNG</h2>
+          <p>
+            <label for="export-background">Background color</label>
+            <input id="export-background" type="color" value="#000000" />
+          </p>
+          <p>
+            <label><input id="transparent-background" type="checkbox" /> Transparent background</label>
+          </p>
+          <p id="export-error" class="map-tool__export-error" role="alert" aria-live="assertive"></p>
+          <menu>
+            <button id="cancel-export" type="button">Cancel</button>
+            <button id="confirm-export" class="map-tool__export-primary" type="button">Export</button>
+          </menu>
+        </form>
+      </dialog>
+    </main>
+  </body>
+</html>
