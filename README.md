@@ -9,10 +9,10 @@ tabletop role-playing games.
 
 ## Tools
 
-- [Fantasy Calendar](fantasy-calendar/) —
-  [open app](https://ruslan-sh.github.io/zippin-toolkit/fantasy-calendar/)
-- [Encounter Difficulty Calculator](encounter-difficulty-calculator/) —
-  [open app](https://ruslan-sh.github.io/zippin-toolkit/encounter-difficulty-calculator/)
+- [Fantasy Calendar](docs/calendar/) —
+  [open app](https://ruslan-sh.github.io/zippin-toolkit/apps/calendar/)
+- [Encounter Difficulty Calculator](docs/encounters/) —
+  [open app](https://ruslan-sh.github.io/zippin-toolkit/apps/encounters/)
 
 ## Development
 
@@ -33,7 +33,6 @@ Generated files in `dist/` should not be edited directly.
 
 ## Documentation
 
-- [Project structure and deployment](docs/project-structure.md)
 - [Contribution, branch, and commit conventions](docs/contributing.md)
 
 ## Deployment

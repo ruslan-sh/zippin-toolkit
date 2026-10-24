@@ -3,11 +3,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     entry: {
-        app: "./app/src/index.tsx",
-        "encounter-difficulty-calculator":
-            "./encounter-difficulty-calculator/src/index.ts",
-        "fantasy-calendar": "./fantasy-calendar/src/index.ts",
-        "map-drawing-tool": "./map-drawing-tool/src/index.ts",
+        app: "./src/app/index.tsx",
+        "apps/encounters":
+            "./src/apps/encounters/index.ts",
+        "apps/calendar": "./src/apps/calendar/index.ts",
+        "apps/map-editor": "./src/apps/map-editor/index.ts",
     },
     module: {
         rules: [
@@ -17,31 +17,41 @@ module.exports = {
         ],
     },
     output: {
-        filename: "[name]/[name].bundle.js",
+        filename: "[name]/index.js",
         path: path.resolve(__dirname, "dist"),
         clean: true,
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./encounter-difficulty-calculator/src/index.ejs",
-            filename: "encounter-difficulty-calculator/index.html",
-            chunks: ["encounter-difficulty-calculator"],
+            template: "./src/apps/encounters/index.ejs",
+            filename: "apps/encounters/index.html",
+            chunks: ["apps/encounters"],
         }),
         new HtmlWebpackPlugin({
-            template: "./app/src/index.html",
+            template: "./src/app/index.html",
             filename: "index.html",
             chunks: ["app"],
         }),
         new HtmlWebpackPlugin({
-            template: "./fantasy-calendar/src/index.ejs",
-            filename: "fantasy-calendar/index.html",
-            chunks: ["fantasy-calendar"],
+            template: "./src/apps/calendar/index.ejs",
+            filename: "apps/calendar/index.html",
+            chunks: ["apps/calendar"],
         }),
         new HtmlWebpackPlugin({
-            template: "./map-drawing-tool/src/index.ejs",
-            filename: "map-drawing-tool/index.html",
-            chunks: ["map-drawing-tool"],
+            template: "./src/apps/map-editor/index.ejs",
+            filename: "apps/map-editor/index.html",
+            chunks: ["apps/map-editor"],
         }),
+        ...[
+            ["fantasy-calendar", "calendar"],
+            ["encounter-difficulty-calculator", "encounters"],
+            ["map-drawing-tool", "map-editor"],
+        ].map(([previousPath, app]) => new HtmlWebpackPlugin({
+            template: "./src/app/redirect.ejs",
+            filename: `${previousPath}/index.html`,
+            target: `../apps/${app}/`,
+            chunks: [],
+        })),
     ],
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
