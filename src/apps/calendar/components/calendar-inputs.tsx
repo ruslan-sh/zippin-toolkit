@@ -1,11 +1,11 @@
 import type { FunctionComponent } from "preact";
 import { useCallback, useState } from "preact/hooks";
+import { Button } from "../../../shared/components/button";
 import { Flex } from "../../../shared/components/flex";
-import { Calendar } from "../ts/calendar";
-import type { CalendarDate, CalendarMonth } from "../ts/types";
 import { Input } from "../../../shared/components/input";
 import { Select } from "../../../shared/components/select";
-import { Button } from "../../../shared/components/button";
+import { Calendar } from "../ts/calendar";
+import type { CalendarDate } from "../ts/types";
 
 interface CalendarInputsProps {
   calendar: Calendar;
@@ -18,40 +18,18 @@ export const CalendarInputs: FunctionComponent<CalendarInputsProps> = ({
   date,
   onDateChange,
 }) => {
-  const [addDays, setAddDays] = useState(1);
+  const [addDays, setAddDays] = useState(0);
   const [display, setDisplay] = useState(true);
 
   const dateChangeHandler = useCallback(
     (newDate: CalendarDate) => {
-      let internalNewDate = newDate;
-      const isLeap = calendar.isLeapYear(internalNewDate.year);
-
-      let month: CalendarMonth | undefined = calendar.getMonthByName(
-        internalNewDate.month,
-      );
-      if (!month || (month.leapDayMode === "leap-only" && !isLeap)) {
-        // find first non leap month
-        month = calendar.months.find(
-          (calendarMonth) => calendarMonth.leapDayMode !== "leap-only",
-        );
-        if (!month) {
-          throw new Error("Invalid month");
-        }
-        internalNewDate.month = month?.name;
-      }
-
-      internalNewDate.day = Math.min(
-        internalNewDate.day,
-        calendar.getDaysInMonth(internalNewDate),
-      );
-
-      onDateChange(internalNewDate);
+      onDateChange(calendar.normalizeDate(newDate));
     },
     [onDateChange, calendar],
   );
 
   return (
-    <Flex justify="center" gap={4}>
+    <Flex justify="center" gap={4} wrap="wrap">
       {display && (
         <Flex gap={2} align="center" justify="center">
           <Input
@@ -65,11 +43,17 @@ export const CalendarInputs: FunctionComponent<CalendarInputsProps> = ({
             value={date.month}
             onValueChange={(month) => dateChangeHandler({ ...date, month })}
           >
-            {calendar.months.map((month) => (
-              <option value={month.name}>
-                {`${month.name} ${month.isFestival ? "Festival" : ""}`}
-              </option>
-            ))}
+            {calendar.months
+              .filter(
+                (month) =>
+                  month.leapDayMode !== "leap-only" ||
+                  calendar.isLeapYear(date.year),
+              )
+              .map((month) => (
+                <option key={month.name} value={month.name}>
+                  {`${month.name} ${month.isFestival ? "Festival" : ""}`}
+                </option>
+              ))}
           </Select>
           <Input
             type="integer"
@@ -88,7 +72,7 @@ export const CalendarInputs: FunctionComponent<CalendarInputsProps> = ({
             />
             <Button
               onClick={() => {
-                onDateChange(calendar.calculateDate(date, addDays));
+                dateChangeHandler(calendar.calculateDate(date, addDays));
               }}
             >
               Add

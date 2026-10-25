@@ -19,10 +19,30 @@ export class Calendar {
         return this.props.calendar.months;
     }
 
+    public get days(): CalendarConfig["days"] {
+        return this.props.calendar.days;
+    }
+
+    public get yearName(): string {
+        return this.props.calendar.yearName;
+    }
+
     public constructor(private readonly props: CalendarProps) {}
 
-    getYearDate(year: number): CalendarDate {
-        return { year, month: this.months[0].name, day: 1 };
+    public normalizeDate(date: CalendarDate): CalendarDate {
+        const availableMonths = this.months.filter(
+            (month) => this.getDaysInMonth(date.year, month) > 0,
+        );
+        const month = availableMonths.find((month) => month.name === date.month)
+            ?? availableMonths[0];
+        if (!month) {
+            throw new Error("Calendar has no available months");
+        }
+        return {
+            year: date.year,
+            month: month.name,
+            day: Math.max(1, Math.min(date.day, this.getDaysInMonth(date.year, month))),
+        };
     }
 
     public getMonthByName(monthName: string): CalendarMonth {
@@ -142,6 +162,10 @@ export class Calendar {
 
         let newDay = currentDayOfYear + daysToAdd;
         let newYear = currentDate.year;
+        while (newDay < 1) {
+            newYear -= 1;
+            newDay += this.getDaysInYear(newYear);
+        }
         while (newDay > this.getDaysInYear(newYear)) {
             newDay -= this.getDaysInYear(newYear);
             newYear += 1;

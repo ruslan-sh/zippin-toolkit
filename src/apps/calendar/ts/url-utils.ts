@@ -12,10 +12,16 @@ export function readDateFromUrl(): QueryParams {
     const hashValue = window.location.hash.slice(1);
     if (hashValue) {
         const [yearSegment, monthSegment, daySegment] = hashValue.split("/");
+        let month: string | null = null;
+        try {
+            month = monthSegment ? decodeURIComponent(monthSegment) : null;
+        } catch {
+            // A malformed URL month uses the same fallback as a missing month.
+        }
 
         return {
             year: parseInteger(yearSegment),
-            month: monthSegment ? decodeURIComponent(monthSegment) : null,
+            month,
             day: parseInteger(daySegment),
         };
     }

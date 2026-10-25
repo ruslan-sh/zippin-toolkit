@@ -50,6 +50,15 @@ test("readDateFromUrl rejects invalid numeric date parts in hashes and queries",
     }
 });
 
+test("readDateFromUrl treats malformed encoded months as missing", () => {
+    withMockWindow({
+        location: { hash: "#1500/%E0%A4%A/1", search: "", pathname: "/calendar" },
+        history: { pushState: () => undefined },
+    }, () => {
+        assert.deepEqual(readDateFromUrl(), { year: 1500, month: null, day: 1 });
+    });
+});
+
 test("readDateFromUrl preserves valid integer years including zero", () => {
     withMockWindow({
         location: { hash: "#0/Hammer/21", search: "", pathname: "/calendar" },

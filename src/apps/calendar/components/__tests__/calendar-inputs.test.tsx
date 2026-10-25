@@ -26,6 +26,11 @@ describe("CalendarInputs", () => {
     expect(onDateChange).not.toHaveBeenCalled();
   });
 
+  it("omits leap-only months from the ordinary-year selector", () => {
+    setup({ year: 1501, month: "Hammer", day: 1 });
+    expect(Array.from(screen.getByLabelText<HTMLSelectElement>("Month:").options).map((option) => option.value)).not.toContain("Shieldmeet");
+  });
+
   it("changes the year while preserving the month and day", () => {
     const { onDateChange } = setup();
     fireEvent.input(screen.getByLabelText("Year:"), { target: { value: "1504" } });
