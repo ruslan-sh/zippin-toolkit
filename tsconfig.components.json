@@ -7,6 +7,7 @@
     "noEmit": true
   },
   "include": [
+    "src/app/styles.d.ts",
     "src/apps/calendar/**/__tests__/*.test.tsx",
     "src/shared/**/__tests__/*.test.tsx",
     "src/shared/components/__tests__/setup.ts",

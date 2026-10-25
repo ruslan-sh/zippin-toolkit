@@ -3,11 +3,13 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es2020",
+    "types": ["node"],
     "outDir": ".tmp-tests",
     "rootDir": "src/apps"
   },
   "include": [
-    "src/apps/**/*.ts"
+    "src/apps/**/*.ts",
+    "src/app/styles.d.ts"
   ],
   "exclude": [
     "node_modules",
