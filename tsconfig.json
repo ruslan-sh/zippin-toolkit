@@ -15,9 +15,10 @@
     "src/app/**/*",
     "src/apps/encounters/**/*",
     "src/apps/calendar/**/*",
-    "src/apps/map-editor/**/*"
+    "src/apps/map-editor/**/*",
+    "src/shared/components/button.tsx",
+    "src/shared/components/input.tsx",
+    "src/shared/components/select.tsx"
   ],
-  "exclude": [
-    "src/apps/**/__tests__/**"
-  ]
+  "exclude": ["src/apps/**/__tests__/**"]
 }

@@ -1,6 +1,6 @@
 import { Calendar } from "./calendar";
 import { MoonPhaseState } from "./types";
-import type { MonthMoonPhases, MoonProps } from "./types";
+import type { CalendarDate, MonthMoonPhases, MoonProps } from "./types";
 
 class MoonWindow {
     public static readonly Full = 0.025;
@@ -75,29 +75,38 @@ export class Moon {
         return MoonPhaseState.None;
     }
 
-    public getDaysOffsetFromFullMoon(yearId: number, monthName: string, dayId: number): number {
+    public getDaysOffsetFromFullMoon(date: CalendarDate): number {
         const { fullMoon } = this.props.calendar;
         const baseYearDays = Math.floor(this.props.astronomical.daysInYear);
 
         return (
-            this.calendar.getDayOfYear(yearId, monthName, dayId) -
+            this.calendar.getDayOfYear(date) -
             fullMoon.day +
-            (yearId - fullMoon.year) * baseYearDays +
-            this.calendar.countLeapYearsBetween(fullMoon.year, yearId)
+            (date.year - fullMoon.year) * baseYearDays +
+            this.calendar.countLeapYearsBetween(fullMoon.year, date.year)
         );
     }
 
-    public getMoonCyclePosition(yearId: number, monthName: string, dayId: number): number {
-        const daysOffset = this.getDaysOffsetFromFullMoon(yearId, monthName, dayId);
-        return this.normalizeMoonCyclePosition(daysOffset / this.props.astronomical.moon.period);
+    public getMoonCyclePosition(date: CalendarDate): number {
+        const daysOffset = this.getDaysOffsetFromFullMoon(date);
+        return this.normalizeMoonCyclePosition(
+            daysOffset / this.props.astronomical.moon.period,
+        );
     }
 
-    public getMonthMoonPhases(yearId: number, monthName: string): MonthMoonPhases {
+    public getMonthMoonPhases(
+        yearId: number,
+        monthName: string,
+    ): MonthMoonPhases {
         const month = this.calendar.getMonthByName(monthName);
         const monthMoonPhases: MonthMoonPhases = {};
-        const monthDays = this.calendar.getMonthDaysInYear(yearId, month);
+        const monthDays = this.calendar.getDaysInMonth(yearId, month);
 
-        let cyclePos = this.getMoonCyclePosition(yearId, monthName, 1);
+        let cyclePos = this.getMoonCyclePosition({
+            year: yearId,
+            month: monthName,
+            day: 1,
+        });
         for (let dayId = 1; dayId <= monthDays; dayId += 1) {
             const moonPhase = this.classifyMoonPhase(cyclePos);
 

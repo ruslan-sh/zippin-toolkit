@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { Calendar } from "../ts/calendar";
-import type { CalendarProps } from "../ts/calendar";
+import { Calendar } from "../calendar";
+import type { CalendarProps } from "../calendar";
 
 const leapOnlyCalendarProps: CalendarProps = {
     astronomical: {
@@ -75,36 +75,46 @@ test("isLeapYear honors the configured first leap year boundary", () => {
     assert.equal(calendar.isLeapYear(104), true);
 });
 
-test("getMonthDaysInYear handles regular, leap-only, and extra-day months", () => {
+test("getDaysInMonth accepts dates, month names and month objects", () => {
+    const calendar = new Calendar(leapOnlyCalendarProps);
+    for (const year of [100, 101]) {
+        const expected = year === 100 ? 1 : 0;
+        assert.equal(calendar.getDaysInMonth({ year, month: "Leapfest", day: 1 }), expected);
+        assert.equal(calendar.getDaysInMonth(year, "Leapfest"), expected);
+        assert.equal(calendar.getDaysInMonth(year, calendar.getMonthByName("Leapfest")), expected);
+    }
+});
+
+test("getDaysInMonth handles regular, leap-only, and extra-day months", () => {
     const leapOnlyCalendar = new Calendar(leapOnlyCalendarProps);
     const extraDayCalendar = new Calendar(extraDayCalendarProps);
 
-    assert.equal(leapOnlyCalendar.getMonthDaysInYear(101, leapOnlyCalendar.getMonthByName("Dawn")), 30);
+    assert.equal(leapOnlyCalendar.getDaysInMonth(101, leapOnlyCalendar.getMonthByName("Dawn")), 30);
     assert.equal(
-        leapOnlyCalendar.getMonthDaysInYear(101, leapOnlyCalendar.getMonthByName("Leapfest")),
+        leapOnlyCalendar.getDaysInMonth(101, leapOnlyCalendar.getMonthByName("Leapfest")),
         0,
     );
     assert.equal(
-        leapOnlyCalendar.getMonthDaysInYear(100, leapOnlyCalendar.getMonthByName("Leapfest")),
+        leapOnlyCalendar.getDaysInMonth(100, leapOnlyCalendar.getMonthByName("Leapfest")),
         1,
     );
     assert.equal(
-        extraDayCalendar.getMonthDaysInYear(101, extraDayCalendar.getMonthByName("Harvest")),
+        extraDayCalendar.getDaysInMonth(101, extraDayCalendar.getMonthByName("Harvest")),
         30,
     );
     assert.equal(
-        extraDayCalendar.getMonthDaysInYear(100, extraDayCalendar.getMonthByName("Harvest")),
+        extraDayCalendar.getDaysInMonth(100, extraDayCalendar.getMonthByName("Harvest")),
         31,
     );
 });
 
-test("getDaysSinceYearStart and getDayOfYear account for skipped leap-only festivals", () => {
+test("getDayOfTheYear and getDayOfYear account for skipped leap-only festivals", () => {
     const calendar = new Calendar(leapOnlyCalendarProps);
 
-    assert.equal(calendar.getDaysSinceYearStart(101, "Dusk"), 30);
-    assert.equal(calendar.getDayOfYear(101, "Dusk", 1), 31);
-    assert.equal(calendar.getDaysSinceYearStart(100, "Dusk"), 31);
-    assert.equal(calendar.getDayOfYear(100, "Night", 31), 92);
+    assert.equal(calendar.getDayOfTheYear(101, "Dusk"), 30);
+    assert.equal(calendar.getDayOfYear({ year: 101, month: "Dusk", day: 1 }), 31);
+    assert.equal(calendar.getDayOfTheYear(100, "Dusk"), 31);
+    assert.equal(calendar.getDayOfYear({ year: 100, month: "Night", day: 31 }), 92);
 });
 
 test("countLeapYearsBetween counts leap years across forward and reverse ranges", () => {
@@ -115,6 +125,30 @@ test("countLeapYearsBetween counts leap years across forward and reverse ranges"
     assert.equal(calendar.countLeapYearsBetween(101, 108), 1);
     assert.equal(calendar.countLeapYearsBetween(101, 109), 2);
     assert.equal(calendar.countLeapYearsBetween(109, 101), -2);
+});
+
+test("normalizeDate clamps days and replaces unknown or unavailable months without mutation", () => {
+    const calendar = new Calendar(leapOnlyCalendarProps);
+    for (const [input, expected] of [
+        [{ year: 101, month: "Missing", day: 99 }, { year: 101, month: "Dawn", day: 30 }],
+        [{ year: 101, month: "Leapfest", day: 1 }, { year: 101, month: "Dawn", day: 1 }],
+        [{ year: 100, month: "Leapfest", day: 5 }, { year: 100, month: "Leapfest", day: 1 }],
+        [{ year: 101, month: "Dusk", day: 0 }, { year: 101, month: "Dusk", day: 1 }],
+    ]) {
+        const original = { ...input };
+        assert.deepEqual(calendar.normalizeDate(input), expected);
+        assert.deepEqual(input, original);
+    }
+});
+
+test("calculateDate subtracts across year and leap festival boundaries", () => {
+    const calendar = new Calendar(leapOnlyCalendarProps);
+    assert.deepEqual(calendar.calculateDate({ year: 101, month: "Dawn", day: 1 }, -1),
+        { year: 100, month: "Night", day: 31 });
+    assert.deepEqual(calendar.calculateDate({ year: 100, month: "Dusk", day: 1 }, -1),
+        { year: 100, month: "Leapfest", day: 1 });
+    assert.deepEqual(calendar.calculateDate({ year: 101, month: "Dusk", day: 1 }, -1),
+        { year: 101, month: "Dawn", day: 30 });
 });
 
 test("calculateDate rolls across year boundaries in non-leap and leap years", () => {
@@ -141,3 +175,5 @@ test("calculateDate rolls across year boundaries in non-leap and leap years", ()
         { year: 101, month: "Dawn", day: 1 },
     );
 });
+
+

@@ -11,10 +11,44 @@ export interface CalendarProps {
 }
 
 export class Calendar {
+    public static isSameDate(a: CalendarDate, b: CalendarDate): boolean {
+        return a.year === b.year && a.month === b.month && a.day === b.day;
+    }
+
+    public get months(): CalendarMonth[] {
+        return this.props.calendar.months;
+    }
+
+    public get days(): CalendarConfig["days"] {
+        return this.props.calendar.days;
+    }
+
+    public get yearName(): string {
+        return this.props.calendar.yearName;
+    }
+
     public constructor(private readonly props: CalendarProps) {}
 
+    public normalizeDate(date: CalendarDate): CalendarDate {
+        const availableMonths = this.months.filter(
+            (month) => this.getDaysInMonth(date.year, month) > 0,
+        );
+        const month = availableMonths.find((month) => month.name === date.month)
+            ?? availableMonths[0];
+        if (!month) {
+            throw new Error("Calendar has no available months");
+        }
+        return {
+            year: date.year,
+            month: month.name,
+            day: Math.max(1, Math.min(date.day, this.getDaysInMonth(date.year, month))),
+        };
+    }
+
     public getMonthByName(monthName: string): CalendarMonth {
-        const month = this.props.calendar.months.find((calendarMonth) => calendarMonth.name === monthName);
+        const month = this.props.calendar.months.find(
+            (calendarMonth) => calendarMonth.name === monthName,
+        );
         if (!month) {
             throw new Error(`Month not found: ${monthName}`);
         }
@@ -26,7 +60,30 @@ export class Calendar {
         return (yearId - leapYear.first) % leapYear.frequency === 0;
     }
 
-    public getMonthDaysInYear(yearId: number, month: CalendarMonth): number {
+    public getDaysInMonth(date: CalendarDate): number;
+    public getDaysInMonth(year: number, month: string | CalendarMonth): number;
+    public getDaysInMonth(
+        yearOrDate: number | CalendarDate,
+        monthOrName?: string | CalendarMonth,
+    ): number {
+        const yearId =
+            typeof yearOrDate === "number" ? yearOrDate : yearOrDate.year;
+        const selectedMonth =
+            typeof yearOrDate === "number" ? monthOrName : yearOrDate.month;
+
+        if (selectedMonth === undefined) {
+            throw new Error("Month is required when passing a year");
+        }
+
+        const month =
+            typeof selectedMonth === "string"
+                ? this.getMonthByName(selectedMonth)
+                : selectedMonth;
+
+        return this.getDaysInMonthInternal(yearId, month);
+    }
+
+    private getDaysInMonthInternal(yearId: number, month: CalendarMonth): number {
         if (!month.leapDayMode) {
             return month.days;
         }
@@ -38,22 +95,30 @@ export class Calendar {
         return this.isLeapYear(yearId) ? month.days + 1 : month.days;
     }
 
-    public getDaysSinceYearStart(yearId: number, monthName: string): number {
-        const monthIndex = this.props.calendar.months.findIndex((month) => month.name === monthName);
+    public getDayOfTheYear(yearId: number, monthName: string): number {
+        const monthIndex = this.props.calendar.months.findIndex(
+            (month) => month.name === monthName,
+        );
         if (monthIndex < 0) {
             throw new Error(`Month not found: ${monthName}`);
         }
 
-        return this.props.calendar.months.reduce((accumulator, month, index) => {
-            if (index < monthIndex) {
-                return accumulator + this.getMonthDaysInYear(yearId, month);
-            }
+        return this.props.calendar.months.reduce(
+            (accumulator, month, index) => {
+                if (index < monthIndex) {
+                    return accumulator + this.getDaysInMonth(yearId, month);
+                }
 
-            return accumulator;
-        }, 0);
+                return accumulator;
+            },
+            0,
+        );
     }
 
-    public countLeapYearsBetween(startYearId: number, endYearId: number): number {
+    public countLeapYearsBetween(
+        startYearId: number,
+        endYearId: number,
+    ): number {
         if (startYearId === endYearId) {
             return 0;
         }
@@ -64,28 +129,43 @@ export class Calendar {
 
         const firstLeapYearInRange =
             leapYear.first +
-            Math.ceil((rangeStart - leapYear.first) / leapYear.frequency) * leapYear.frequency;
+            Math.ceil((rangeStart - leapYear.first) / leapYear.frequency) *
+                leapYear.frequency;
 
         if (firstLeapYearInRange >= rangeEnd) {
             return 0;
         }
 
         const leapYearsInRange =
-            Math.floor((rangeEnd - 1 - firstLeapYearInRange) / leapYear.frequency) + 1;
+            Math.floor(
+                (rangeEnd - 1 - firstLeapYearInRange) / leapYear.frequency,
+            ) + 1;
 
         return startYearId < endYearId ? leapYearsInRange : -leapYearsInRange;
     }
 
-    public getDayOfYear(yearId: number, monthName: string, dayId: number): number {
-        return this.getDaysSinceYearStart(yearId, monthName) + dayId;
+    public getDayOfYear({
+        year: yearId,
+        month: monthName,
+        day: dayId,
+    }: CalendarDate): number {
+        return this.getDayOfTheYear(yearId, monthName) + dayId;
     }
 
-    public calculateDate(currentDate: CalendarDate, daysToAdd: number): CalendarDate {
+    public calculateDate(
+        currentDate: CalendarDate,
+        daysToAdd: number,
+    ): CalendarDate {
         const currentDayOfYear =
-            this.getDaysSinceYearStart(currentDate.year, currentDate.month) + currentDate.day;
+            this.getDayOfTheYear(currentDate.year, currentDate.month) +
+            currentDate.day;
 
         let newDay = currentDayOfYear + daysToAdd;
         let newYear = currentDate.year;
+        while (newDay < 1) {
+            newYear -= 1;
+            newDay += this.getDaysInYear(newYear);
+        }
         while (newDay > this.getDaysInYear(newYear)) {
             newDay -= this.getDaysInYear(newYear);
             newYear += 1;
@@ -100,7 +180,7 @@ export class Calendar {
                 throw new Error("Month not found");
             }
 
-            const monthDays = this.getMonthDaysInYear(newYear, month);
+            const monthDays = this.getDaysInMonth(newYear, month);
 
             if (monthDays === 0) {
                 monthIndex += 1;
@@ -124,7 +204,7 @@ export class Calendar {
         return { year: newYear, month: newMonth, day: newDay };
     }
 
-    private getDaysInYear(yearId: number): number {
+    public getDaysInYear(yearId: number): number {
         return this.isLeapYear(yearId)
             ? Math.ceil(this.props.astronomical.daysInYear)
             : Math.floor(this.props.astronomical.daysInYear);

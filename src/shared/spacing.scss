@@ -1,0 +1,35 @@
+@each $space in 0, half, 1, 2, 3, 4, 6, 8, 12 {
+  $padding: 0;
+
+  @if $space != 0 {
+    $padding: var(--space-#{$space});
+  }
+
+  .p-#{$space} {
+    padding: $padding;
+  }
+
+  .p-x-#{$space} {
+    padding-inline: $padding;
+  }
+
+  .p-y-#{$space} {
+    padding-block: $padding;
+  }
+
+  .p-l-#{$space} {
+    padding-left: $padding;
+  }
+
+  .p-r-#{$space} {
+    padding-right: $padding;
+  }
+
+  .p-b-#{$space} {
+    padding-bottom: $padding;
+  }
+
+  .p-t-#{$space} {
+    padding-top: $padding;
+  }
+}
