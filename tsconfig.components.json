@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmit": true
+  },
+  "include": [
+    "src/apps/calendar/**/__tests__/*.test.tsx",
+    "src/shared/**/__tests__/*.test.tsx",
+    "src/shared/components/__tests__/setup.ts",
+    "vitest.config.mts"
+  ],
+  "exclude": ["node_modules"]
+}

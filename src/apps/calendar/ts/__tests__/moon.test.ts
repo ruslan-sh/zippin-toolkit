@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { Calendar } from "../ts/calendar";
-import { Moon } from "../ts/moon";
-import type { CalendarMonth, MoonProps } from "../ts/types";
-import { MoonPhaseState } from "../ts/types";
+import { Calendar } from "../calendar";
+import { Moon } from "../moon";
+import type { CalendarMonth, MoonProps } from "../types";
+import { MoonPhaseState } from "../types";
 
 function assertClose(actual: number, expected: number, message?: string): void {
     assert.ok(
@@ -196,19 +196,17 @@ test("getDaysOffsetFromFullMoon returns zero at the configured anchor full moon"
 
     assert.equal(
         moon.getDaysOffsetFromFullMoon(
-            testMoonProps.calendar.fullMoon.year,
-            anchorFullMoonDate.monthName,
-            anchorFullMoonDate.dayId,
+            { year: testMoonProps.calendar.fullMoon.year, month: anchorFullMoonDate.monthName, day: anchorFullMoonDate.dayId },
         ),
         0,
     );
 });
 
 test("getDaysOffsetFromFullMoon accounts for leap and non-leap year lengths in both directions", () => {
-    assert.equal(moon.getDaysOffsetFromFullMoon(1373, "Hammer", 1), 366);
-    assert.equal(moon.getDaysOffsetFromFullMoon(1376, "Hammer", 1), 1461);
-    assert.equal(moon.getDaysOffsetFromFullMoon(1376, "Shieldmeet", 1), 1674);
-    assert.equal(moon.getDaysOffsetFromFullMoon(1371, "Hammer", 1), -365);
+    assert.equal(moon.getDaysOffsetFromFullMoon({ year: 1373, month: "Hammer", day: 1 }), 366);
+    assert.equal(moon.getDaysOffsetFromFullMoon({ year: 1376, month: "Hammer", day: 1 }), 1461);
+    assert.equal(moon.getDaysOffsetFromFullMoon({ year: 1376, month: "Shieldmeet", day: 1 }), 1674);
+    assert.equal(moon.getDaysOffsetFromFullMoon({ year: 1371, month: "Hammer", day: 1 }), -365);
 });
 
 test("getMoonCyclePosition initializes directly from the anchor for past and future dates", () => {
@@ -226,7 +224,7 @@ test("getMoonCyclePosition initializes directly from the anchor for past and fut
         );
 
         assertClose(
-            moon.getMoonCyclePosition(yearId, monthName, dayId),
+            moon.getMoonCyclePosition({ year: yearId, month: monthName, day: dayId }),
             expectedCyclePosition,
             `${yearId} ${monthName} ${dayId}`,
         );
@@ -251,7 +249,7 @@ test("getMoonCyclePosition matches a naive reference across a wide year range", 
                 );
 
                 assertClose(
-                    moon.getMoonCyclePosition(yearId, monthName, dayId),
+                    moon.getMoonCyclePosition({ year: yearId, month: monthName, day: dayId }),
                     expectedCyclePosition,
                     `${yearId} ${monthName} ${dayId}`,
                 );
@@ -261,10 +259,10 @@ test("getMoonCyclePosition matches a naive reference across a wide year range", 
 });
 
 test("getMoonCyclePosition advances continuously across month and leap-day boundaries", () => {
-    const flameruleLastDay = moon.getMoonCyclePosition(1376, "Flamerule", 30);
-    const midsummer = moon.getMoonCyclePosition(1376, "Midsummer", 1);
-    const shieldmeet = moon.getMoonCyclePosition(1376, "Shieldmeet", 1);
-    const eleasis = moon.getMoonCyclePosition(1376, "Eleasis", 1);
+    const flameruleLastDay = moon.getMoonCyclePosition({ year: 1376, month: "Flamerule", day: 30 });
+    const midsummer = moon.getMoonCyclePosition({ year: 1376, month: "Midsummer", day: 1 });
+    const shieldmeet = moon.getMoonCyclePosition({ year: 1376, month: "Shieldmeet", day: 1 });
+    const eleasis = moon.getMoonCyclePosition({ year: 1376, month: "Eleasis", day: 1 });
 
     assertClose(midsummer, moon.advanceMoonCyclePosition(flameruleLastDay));
     assertClose(shieldmeet, moon.advanceMoonCyclePosition(midsummer));
@@ -272,13 +270,11 @@ test("getMoonCyclePosition advances continuously across month and leap-day bound
 });
 
 test("festival and normal months use the same day-start moon logic", () => {
-    const greengrassCyclePosition = moon.getMoonCyclePosition(1372, "Greengrass", 1);
+    const greengrassCyclePosition = moon.getMoonCyclePosition({ year: 1372, month: "Greengrass", day: 1 });
     const dayBeforeFestival = moon.getMoonCyclePosition(
-        1372,
-        "Tarsakh",
-        getMonthByName("Tarsakh").days,
+        { year: 1372, month: "Tarsakh", day: getMonthByName("Tarsakh").days },
     );
-    const dayAfterFestival = moon.getMoonCyclePosition(1372, "Mirtul", 1);
+    const dayAfterFestival = moon.getMoonCyclePosition({ year: 1372, month: "Mirtul", day: 1 });
 
     assertClose(greengrassCyclePosition, moon.advanceMoonCyclePosition(dayBeforeFestival));
     assertClose(dayAfterFestival, moon.advanceMoonCyclePosition(greengrassCyclePosition));
@@ -290,7 +286,7 @@ test("getMonthMoonPhases returns only classified days for a normal month", () =>
 
     for (let dayId = 1; dayId <= hammerDays; dayId += 1) {
         const expectedMoonPhase = moon.classifyMoonPhase(
-            moon.getMoonCyclePosition(1372, "Hammer", dayId),
+            moon.getMoonCyclePosition({ year: 1372, month: "Hammer", day: dayId }),
         );
 
         if (expectedMoonPhase === MoonPhaseState.None) {
@@ -306,10 +302,10 @@ test("getMonthMoonPhases applies the same classification rules to festival days"
     const midsummerMoonPhases = moon.getMonthMoonPhases(1375, "Midsummer");
     const shieldmeetMoonPhases = moon.getMonthMoonPhases(1376, "Shieldmeet");
     const midsummerMoonPhase = moon.classifyMoonPhase(
-        moon.getMoonCyclePosition(1375, "Midsummer", 1),
+        moon.getMoonCyclePosition({ year: 1375, month: "Midsummer", day: 1 }),
     );
     const shieldmeetMoonPhase = moon.classifyMoonPhase(
-        moon.getMoonCyclePosition(1376, "Shieldmeet", 1),
+        moon.getMoonCyclePosition({ year: 1376, month: "Shieldmeet", day: 1 }),
     );
 
     assert.deepEqual(
@@ -329,7 +325,7 @@ test("getMonthMoonPhases returns no days for leap-only festivals outside leap ye
 test("getMonthMoonPhases advances month state day by day from the month start", () => {
     const moonPhases = moon.getMonthMoonPhases(1376, "Eleint");
     const eleintDays = getMonthByName("Eleint").days;
-    let cyclePos = moon.getMoonCyclePosition(1376, "Eleint", 1);
+    let cyclePos = moon.getMoonCyclePosition({ year: 1376, month: "Eleint", day: 1 });
 
     for (let dayId = 1; dayId <= eleintDays; dayId += 1) {
         const expectedMoonPhase = moon.classifyMoonPhase(cyclePos);

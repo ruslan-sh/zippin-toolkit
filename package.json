@@ -10,8 +10,9 @@
     "start": "webpack serve --open --config webpack.dev.js",
     "lint": "eslint src",
     "lint:styles": "stylelint \"src/**/*.scss\"",
-    "test": "npm run test:unit",
-    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/calendar/__tests__/*.test.js .tmp-tests/encounters/__tests__/*.test.js .tmp-tests/map-editor/__tests__/*.test.js"
+    "test": "npm run test:unit && npm run test:components",
+    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/calendar/ts/__tests__/*.test.js .tmp-tests/encounters/__tests__/*.test.js .tmp-tests/map-editor/__tests__/*.test.js",
+    "test:components": "tsc --project tsconfig.components.json && vitest run"
   },
   "repository": {
     "type": "git",
@@ -32,12 +33,15 @@
   },
   "homepage": "https://ruslan-sh.github.io/zippin-toolkit/",
   "devDependencies": {
+    "@testing-library/preact": "^3.2.6",
+    "@types/node": "^20.19.43",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "css-loader": "^7",
     "css-minimizer-webpack-plugin": "^7",
     "eslint": "^9.39.2",
     "html-webpack-plugin": "^5",
+    "jsdom": "^29.1.1",
     "mini-css-extract-plugin": "^2",
     "postcss-scss": "^4.0.9",
     "sass": "^1.93.3",
@@ -48,6 +52,7 @@
     "stylelint-config-standard": "^40.0.0",
     "ts-loader": "^9",
     "typescript": "^5",
+    "vitest": "^4.1.12",
     "webpack": "^5",
     "webpack-cli": "^6",
     "webpack-dev-server": "^5"

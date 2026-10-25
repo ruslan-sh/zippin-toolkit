@@ -4,9 +4,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
     entry: {
         app: "./src/app/index.tsx",
-        "apps/encounters":
-            "./src/apps/encounters/index.ts",
-        "apps/calendar": "./src/apps/calendar/index.ts",
+        "apps/encounters": "./src/apps/encounters/index.ts",
+        "apps/calendar": "./src/apps/calendar/index.tsx",
         "apps/map-editor": "./src/apps/map-editor/index.ts",
     },
     module: {
@@ -33,7 +32,7 @@ module.exports = {
             chunks: ["app"],
         }),
         new HtmlWebpackPlugin({
-            template: "./src/apps/calendar/index.ejs",
+            template: "./src/apps/calendar/index.html",
             filename: "apps/calendar/index.html",
             chunks: ["apps/calendar"],
         }),
@@ -46,12 +45,15 @@ module.exports = {
             ["fantasy-calendar", "calendar"],
             ["encounter-difficulty-calculator", "encounters"],
             ["map-drawing-tool", "map-editor"],
-        ].map(([previousPath, app]) => new HtmlWebpackPlugin({
-            template: "./src/app/redirect.ejs",
-            filename: `${previousPath}/index.html`,
-            target: `../apps/${app}/`,
-            chunks: [],
-        })),
+        ].map(
+            ([previousPath, app]) =>
+                new HtmlWebpackPlugin({
+                    template: "./src/app/redirect.ejs",
+                    filename: `${previousPath}/index.html`,
+                    target: `../apps/${app}/`,
+                    chunks: [],
+                }),
+        ),
     ],
     resolve: {
         extensions: [".ts", ".tsx", ".js"],

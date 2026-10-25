@@ -1,5 +1,5 @@
 import { FunctionComponent } from "preact";
-import { IconName } from "../../shared/icon-name";
+import { IconName } from "../../shared/tokens";
 import { Card } from "../../shared/components/card";
 import { Flex } from "../../shared/components/flex";
 

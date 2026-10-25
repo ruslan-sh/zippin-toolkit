@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { readDateFromUrl, writeDateToUrl } from "../ts/url-utils";
+import { readDateFromUrl, writeDateToUrl } from "../url-utils";
 
 interface MockHistory {
     pushState: (state: object, unused: string, url?: string | URL | null) => void;
@@ -14,6 +14,7 @@ interface MockLocation {
 }
 
 type MockWindow = {
+    dispatchEvent?: (event: Event) => boolean;
     location: MockLocation;
     history: MockHistory;
 };
@@ -23,7 +24,7 @@ function withMockWindow(mockWindow: MockWindow, callback: () => void): void {
 
     Object.defineProperty(globalThis, "window", {
         configurable: true,
-        value: mockWindow,
+        value: { dispatchEvent: () => true, ...mockWindow },
     });
 
     try {
@@ -35,6 +36,28 @@ function withMockWindow(mockWindow: MockWindow, callback: () => void): void {
         });
     }
 }
+
+test("readDateFromUrl rejects invalid numeric date parts in hashes and queries", () => {
+    for (const value of ["NaN", "Infinity", "-Infinity", "abc", "1.5", "", " ", "9007199254740992"]) {
+        for (const location of [
+            { hash: `#${value}/Hammer/${value}`, search: "", pathname: "/calendar" },
+            { hash: "", search: `?y=${encodeURIComponent(value)}&m=Hammer&d=${encodeURIComponent(value)}`, pathname: "/calendar" },
+        ]) {
+            withMockWindow({ location, history: { pushState: () => undefined } }, () => {
+                assert.deepEqual(readDateFromUrl(), { year: null, month: "Hammer", day: null });
+            });
+        }
+    }
+});
+
+test("readDateFromUrl preserves valid integer years including zero", () => {
+    withMockWindow({
+        location: { hash: "#0/Hammer/21", search: "", pathname: "/calendar" },
+        history: { pushState: () => undefined },
+    }, () => {
+        assert.deepEqual(readDateFromUrl(), { year: 0, month: "Hammer", day: 21 });
+    });
+});
 
 test("readDateFromUrl reads date parts from hash path segments", () => {
     withMockWindow(
@@ -54,6 +77,28 @@ test("readDateFromUrl reads date parts from hash path segments", () => {
             });
         },
     );
+});
+
+test("writeDateToUrl notifies subscribers after updating history", () => {
+    const events: string[] = [];
+    const mockWindow: MockWindow = {
+        location: { hash: "", search: "", pathname: "/calendar" },
+        history: {
+            pushState: (_state, _unused, url) => {
+                mockWindow.location.hash = new URL(String(url), "https://example.com").hash;
+            },
+        },
+        dispatchEvent: (event) => {
+            events.push(event.type);
+            assert.equal(readDateFromUrl().day, 21);
+            return true;
+        },
+    };
+    withMockWindow(mockWindow, () => {
+        writeDateToUrl(1500, "Hammer", 21);
+        writeDateToUrl(1500, "Hammer", 21);
+    });
+    assert.deepEqual(events, ["urlchange"]);
 });
 
 test("readDateFromUrl falls back to legacy query params when hash is absent", () => {

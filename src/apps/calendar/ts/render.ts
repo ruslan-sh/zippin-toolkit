@@ -11,15 +11,6 @@ const calendar = new Calendar({
 });
 const moon = new Moon(props, calendar);
 
-interface CalendarControls {
-    container: HTMLDivElement;
-    yearInput: HTMLInputElement;
-    monthInput: HTMLSelectElement;
-    dayInput: HTMLInputElement;
-}
-
-let calendarControls: CalendarControls | null = null;
-
 function getRequiredElement<T extends HTMLElement>(id: string): T {
     const element = document.getElementById(id);
     if (!element) {
@@ -28,15 +19,11 @@ function getRequiredElement<T extends HTMLElement>(id: string): T {
     return element as T;
 }
 
-function getCalendarControls(): CalendarControls {
-    if (!calendarControls) {
-        throw new Error("Calendar controls have not been rendered");
-    }
-
-    return calendarControls;
-}
-
-function renderMoonPhase(moonPhases: MonthMoonPhases, dayId: number, element: HTMLElement): void {
+function renderMoonPhase(
+    moonPhases: MonthMoonPhases,
+    dayId: number,
+    element: HTMLElement,
+): void {
     switch (moonPhases[dayId]) {
         case MoonPhaseState.Full:
             element.classList.add("calendar__day--moon-full");
@@ -70,9 +57,7 @@ function setInteractiveDateTarget(
     element.dataset.day = String(dayId);
 }
 
-function readInteractiveDateTarget(
-    element: HTMLElement,
-): CalendarDate | null {
+function readInteractiveDateTarget(element: HTMLElement): CalendarDate | null {
     const { year, month, day } = element.dataset;
     if (!year || !month || !day) {
         return null;
@@ -85,58 +70,27 @@ function readInteractiveDateTarget(
     };
 }
 
-function syncDayInputState(monthName: string): void {
-    const month = calendar.getMonthByName(monthName);
-    const { dayInput } = getCalendarControls();
-    dayInput.disabled = Boolean(month.isFestival);
-    if (month.isFestival) {
-        dayInput.value = "1";
-    }
-}
-
-function renderSelectedDate(): void {
-    const { yearInput, monthInput, dayInput } = getCalendarControls();
-
-    const year = Number(yearInput.value);
-    const month = monthInput.value;
-    const day = Number(dayInput.value);
-
-    renderYear(year, month, day);
-    writeDateToUrl(year, month, day);
+export function renderSelectedDate(date: CalendarDate): void {
+    renderYear(date);
+    writeDateToUrl(date.year, date.month, date.day);
 }
 
 function selectDate(date: CalendarDate): void {
-    const { yearInput, monthInput, dayInput } = getCalendarControls();
-
-    const currentSelection: CalendarDate = {
-        year: Number(yearInput.value),
-        month: monthInput.value,
-        day: Number(dayInput.value),
-    };
-
-    if (
-        currentSelection.year === date.year &&
-        currentSelection.month === date.month &&
-        currentSelection.day === date.day
-    ) {
-        return;
-    }
-
-    yearInput.value = String(date.year);
-    monthInput.value = date.month;
-    dayInput.value = String(date.day);
-    syncDayInputState(date.month);
-    renderSelectedDate();
+    writeDateToUrl(date.year, date.month, date.day);
 }
 
 export function registerCalendarDateSelection(): void {
-    getRequiredElement<HTMLDivElement>("calendarContainer").onclick = (event: MouseEvent) => {
+    getRequiredElement<HTMLDivElement>("calendarContainer").onclick = (
+        event: MouseEvent,
+    ) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) {
             return;
         }
 
-        const interactiveDateElement = target.closest<HTMLElement>("[data-year][data-month][data-day]");
+        const interactiveDateElement = target.closest<HTMLElement>(
+            "[data-year][data-month][data-day]",
+        );
         if (!interactiveDateElement) {
             return;
         }
@@ -150,7 +104,11 @@ export function registerCalendarDateSelection(): void {
     };
 }
 
-function renderMonth(yearId: number, monthName: string, currentDay: number): HTMLDivElement {
+function renderMonth(
+    yearId: number,
+    monthName: string,
+    currentDay: number,
+): HTMLDivElement {
     function calculateFirstDay(): number {
         return 0;
     }
@@ -195,7 +153,7 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
     }
 
     const month = calendar.getMonthByName(monthName);
-    const daysInMonth = calendar.getMonthDaysInYear(yearId, month);
+    const daysInMonth = calendar.getDaysInMonth(yearId, month);
     const moonPhases = moon.getMonthMoonPhases(yearId, monthName);
 
     const container = document.createElement("div");
@@ -241,7 +199,11 @@ function renderMonth(yearId: number, monthName: string, currentDay: number): HTM
     return container;
 }
 
-function renderFestival(yearId: number, festivalName: string, currentDay: number): HTMLDivElement | null {
+function renderFestival(
+    yearId: number,
+    festivalName: string,
+    currentDay: number,
+): HTMLDivElement | null {
     const festival = calendar.getMonthByName(festivalName);
     if (festival.leapDayMode === "leap-only" && !calendar.isLeapYear(yearId)) {
         return null;
@@ -265,14 +227,19 @@ function renderFestival(yearId: number, festivalName: string, currentDay: number
     return container;
 }
 
-function renderYear(yearId: number, currentMonth: string, currentDay: number): void {
+function renderYear(currentDate: CalendarDate): void {
+    const {
+        year: currentYear,
+        month: currentMonth,
+        day: currentDay,
+    } = currentDate;
     const container = getRequiredElement<HTMLDivElement>("calendarContainer");
     container.classList.add("calendar");
     container.innerHTML = "";
 
     const yearHeader = document.createElement("h1");
     yearHeader.classList.add("calendar__year");
-    yearHeader.textContent = `${yearId} ${props.calendar.yearName}`;
+    yearHeader.textContent = `${currentYear} ${props.calendar.yearName}`;
     container.appendChild(yearHeader);
 
     const monthsContainer = document.createElement("div");
@@ -282,139 +249,24 @@ function renderYear(yearId: number, currentMonth: string, currentDay: number): v
     for (const month of props.calendar.months) {
         const currentDayOfMonth = month.name === currentMonth ? currentDay : 0;
         if (month.isFestival) {
-            const festivalElement = renderFestival(yearId, month.name, currentDayOfMonth);
+            const festivalElement = renderFestival(
+                currentYear,
+                month.name,
+                currentDayOfMonth,
+            );
             if (festivalElement && lastMonthContainer) {
                 lastMonthContainer.appendChild(festivalElement);
             }
             continue;
         }
 
-        lastMonthContainer = renderMonth(yearId, month.name, currentDayOfMonth);
+        lastMonthContainer = renderMonth(
+            currentYear,
+            month.name,
+            currentDayOfMonth,
+        );
         monthsContainer.appendChild(lastMonthContainer);
     }
 
     container.appendChild(monthsContainer);
-}
-
-export function renderInput(
-    initialYear: number | null,
-    initialMonth: string | null,
-    initialDay: number | null
-): void {
-    const container = getRequiredElement<HTMLDivElement>("inputContainer");
-    container.classList.add("calendar-controls");
-    container.innerHTML = "";
-
-    const yearInputContainer = document.createElement("div");
-    yearInputContainer.classList.add("calendar-controls__group");
-    yearInputContainer.textContent = "Year: ";
-    const yearInput = document.createElement("input");
-    yearInput.type = "number";
-    yearInput.id = "yearInput";
-    yearInput.placeholder = "Enter year";
-    yearInput.value = String(initialYear ?? 1500);
-    yearInputContainer.appendChild(yearInput);
-    container.appendChild(yearInputContainer);
-
-    yearInput.onchange = () => {
-        const yearValue = Number(yearInput.value);
-        const monthInput = getRequiredElement<HTMLSelectElement>("monthInput");
-        monthInput
-            .querySelectorAll<HTMLOptionElement>(".calendar-controls__month-option--leap-only")
-            .forEach((option) => {
-                option.disabled = !calendar.isLeapYear(yearValue);
-            });
-        syncDayInputState(monthInput.value);
-        renderSelectedDate();
-    };
-
-    const monthInputContainer = document.createElement("div");
-    monthInputContainer.classList.add("calendar-controls__group");
-    monthInputContainer.textContent = "Month: ";
-    const monthInput = document.createElement("select");
-    monthInput.id = "monthInput";
-    for (const month of props.calendar.months) {
-        const option = document.createElement("option");
-        option.value = month.name;
-        option.textContent = `${month.isFestival ? "[Day] " : ""}${month.name}`;
-        if (month.leapDayMode === "leap-only") {
-            option.classList.add("calendar-controls__month-option--leap-only");
-        }
-        monthInput.appendChild(option);
-    }
-
-    if (initialMonth) {
-        monthInput.value = initialMonth;
-    }
-
-    monthInputContainer.appendChild(monthInput);
-    container.appendChild(monthInputContainer);
-
-    monthInput.onchange = () => {
-        syncDayInputState(monthInput.value);
-        renderSelectedDate();
-    };
-
-    const dayInputContainer = document.createElement("div");
-    dayInputContainer.classList.add("calendar-controls__group");
-    dayInputContainer.textContent = "Day: ";
-    const dayInput = document.createElement("input");
-    dayInput.type = "number";
-    dayInput.id = "dayInput";
-    dayInput.placeholder = "Enter day";
-    dayInput.value = String(initialDay ?? 1);
-    dayInputContainer.appendChild(dayInput);
-    container.appendChild(dayInputContainer);
-
-    calendarControls = {
-        container,
-        yearInput,
-        monthInput,
-        dayInput,
-    };
-
-    dayInput.onchange = renderSelectedDate;
-
-    const calculatorContainer = document.createElement("div");
-    calculatorContainer.classList.add("calendar-controls__group");
-    calculatorContainer.textContent = "Add days: ";
-
-    const calculatorInputContainer = document.createElement("span");
-    const calculatorInput = document.createElement("input");
-    calculatorInput.type = "number";
-    calculatorInput.id = "calculatorInput";
-    calculatorInput.value = "0";
-    calculatorInputContainer.appendChild(calculatorInput);
-
-    const calculatorButton = document.createElement("button");
-    calculatorButton.textContent = "Add";
-    calculatorButton.onclick = () => {
-        const { yearInput, monthInput, dayInput } = getCalendarControls();
-        const currentDate: CalendarDate = {
-            year: Number(yearInput.value),
-            month: monthInput.value,
-            day: Number(dayInput.value),
-        };
-
-        const newDate = calendar.calculateDate(currentDate, Number(calculatorInput.value));
-        yearInput.value = String(newDate.year);
-        monthInput.value = newDate.month;
-        dayInput.value = String(newDate.day);
-        renderSelectedDate();
-    };
-
-    calculatorInputContainer.appendChild(calculatorButton);
-    calculatorInputContainer.classList.add("calendar-controls__calculator-group");
-    calculatorContainer.appendChild(calculatorInputContainer);
-    container.appendChild(calculatorContainer);
-
-    const hideInputButton = document.createElement("span");
-    hideInputButton.classList.add("material-icons", "calendar-controls__toggle");
-    hideInputButton.onclick = () => {
-        getCalendarControls().container.classList.toggle("calendar-controls--collapsed");
-    };
-    container.appendChild(hideInputButton);
-
-    syncDayInputState(monthInput.value);
-    renderSelectedDate();
 }
