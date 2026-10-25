@@ -76,6 +76,8 @@ function createElements(): {
     moveImageButton: FakeButton;
     image: { style: CSSStyleDeclaration };
     imageInput: { value: string; files: File[] | null; onchange: (() => Promise<void>) | null };
+    imageSizeInput: FakeRangeInput;
+    imageOpacityInput: FakeRangeInput;
     exportButton: FakeButton;
     exportDialog: FakeDialog;
     exportBackgroundInput: { value: string; disabled: boolean };
@@ -180,6 +182,8 @@ function createElements(): {
         moveImageButton,
         image,
         imageInput,
+        imageSizeInput,
+        imageOpacityInput,
         exportButton,
         exportDialog,
         exportBackgroundInput,
@@ -406,9 +410,9 @@ test("a loaded image supports tracing and tool transitions without entering PNG 
     fixture.canvas.onpointerdown?.(pointerAt(center.x, center.y));
     assert.equal(fixture.exportButton.disabled, true);
     fixture.elements.imageSizeInput.value = "200";
-    fixture.elements.imageSizeInput.oninput?.call(fixture.elements.imageSizeInput, {} as Event);
+    fixture.imageSizeInput.oninput?.();
     fixture.elements.imageOpacityInput.value = "10";
-    fixture.elements.imageOpacityInput.oninput?.call(fixture.elements.imageOpacityInput, {} as Event);
+    fixture.imageOpacityInput.oninput?.();
     await load();
     assert.equal(fixture.eraserButton.getAttribute("aria-pressed"), "true");
     assert.equal(fixture.elements.imageSizeInput.value, "100");

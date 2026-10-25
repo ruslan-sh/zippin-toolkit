@@ -16,6 +16,8 @@ tabletop role-playing games.
 
 ## Development
 
+Use Node.js 24 or later.
+
 ```sh
 npm install
 npm run start
