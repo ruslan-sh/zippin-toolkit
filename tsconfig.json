@@ -16,6 +16,7 @@
     "src/apps/encounters/**/*",
     "src/apps/calendar/**/*",
     "src/apps/map-editor/**/*",
+    "src/apps/token-maker/**/*",
     "src/shared/components/button.tsx",
     "src/shared/components/input.tsx",
     "src/shared/components/select.tsx"

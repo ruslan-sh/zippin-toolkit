@@ -11,7 +11,7 @@
     "lint": "eslint src",
     "lint:styles": "stylelint \"src/**/*.scss\"",
     "test": "npm run test:unit && npm run test:components",
-    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/calendar/ts/__tests__/*.test.js .tmp-tests/encounters/__tests__/*.test.js .tmp-tests/map-editor/__tests__/*.test.js",
+    "test:unit": "node -e \"require('fs').rmSync('.tmp-tests', { recursive: true, force: true })\" && npx tsc -p tsconfig.test.json && node --test .tmp-tests/calendar/ts/__tests__/*.test.js .tmp-tests/encounters/__tests__/*.test.js .tmp-tests/map-editor/__tests__/*.test.js .tmp-tests/token-maker/__tests__/*.test.js",
     "test:components": "tsc --project tsconfig.components.json && vitest run"
   },
   "repository": {
