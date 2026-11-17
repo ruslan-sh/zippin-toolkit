@@ -7,6 +7,7 @@ module.exports = {
         "apps/encounters": "./src/apps/encounters/index.ts",
         "apps/calendar": "./src/apps/calendar/index.tsx",
         "apps/map-editor": "./src/apps/map-editor/index.ts",
+        "apps/token-maker": "./src/apps/token-maker/index.ts",
     },
     module: {
         rules: [
@@ -40,6 +41,11 @@ module.exports = {
             template: "./src/apps/map-editor/index.ejs",
             filename: "apps/map-editor/index.html",
             chunks: ["apps/map-editor"],
+        }),
+        new HtmlWebpackPlugin({
+            template: "./src/apps/token-maker/index.html",
+            filename: "apps/token-maker/index.html",
+            chunks: ["apps/token-maker"],
         }),
         ...[
             ["fantasy-calendar", "calendar"],

@@ -31,6 +31,12 @@ export const App: FunctionalComponent = () => (
             icon="grid_on"
             description="Paint a color-coded hex map and export it as a PNG image."
           />
+          <ToolCard
+            link="apps/token-maker/"
+            title="Token Maker"
+            icon="account_circle"
+            description="Make character tokens with custom frames, images, and transparent PNG export."
+          />
         </Flex>
       </section>
     </main>

@@ -1,4 +1,4 @@
-export type IconName = "calendar_month" | "map" | "casino" | "grid_on";
+export type IconName = "calendar_month" | "map" | "casino" | "grid_on" | "account_circle";
 
 export type Spacing = 0 | "half" | 1 | 2 | 3 | 4 | 6 | 8 | 12;
 
